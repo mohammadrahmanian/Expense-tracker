@@ -1,0 +1,70 @@
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: Date;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  color: string;
+  type: "income" | "expense";
+  userId: string;
+}
+
+export interface Transaction {
+  id: string;
+  title: string;
+  amount: number;
+  type: "income" | "expense";
+  date: Date;
+  categoryId: string;
+  category?: Category;
+  userId: string;
+  isRecurring?: boolean;
+  recurringFrequency?: "daily" | "weekly" | "monthly" | "yearly";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Budget {
+  id: string;
+  categoryId: string;
+  category?: Category;
+  amount: number;
+  period: "monthly" | "yearly";
+  userId: string;
+}
+
+export interface AuthContextType {
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
+  logout: () => void;
+  isLoading: boolean;
+}
+
+export interface DashboardStats {
+  totalIncome: number;
+  totalExpenses: number;
+  currentBalance: number;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  monthlySavings: number;
+}
+
+export interface CategorySpending {
+  categoryId: string;
+  categoryName: string;
+  amount: number;
+  color: string;
+  percentage: number;
+}
+
+export interface MonthlyData {
+  month: string;
+  income: number;
+  expenses: number;
+  savings: number;
+}

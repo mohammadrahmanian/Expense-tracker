@@ -1,0 +1,433 @@
+import React, { useState, useEffect } from "react";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { TransactionForm } from "@/components/transactions/TransactionForm";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Plus,
+  Search,
+  Filter,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  ArrowUpRight,
+  ArrowDownLeft,
+} from "lucide-react";
+import { transactionsService, categoriesService } from "@/services/api";
+import { Transaction, Category } from "@/types";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+const Transactions: React.FC = () => {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<
+    Transaction[]
+  >([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"all" | "income" | "expense">(
+    "all",
+  );
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<
+    Transaction | undefined
+  >();
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    filterTransactions();
+  }, [transactions, searchTerm, typeFilter, categoryFilter]);
+
+  const loadData = () => {
+    const allTransactions = transactionsService.getAll();
+    const allCategories = categoriesService.getAll();
+    setTransactions(allTransactions);
+    setCategories(allCategories);
+  };
+
+  const filterTransactions = () => {
+    let filtered = transactions;
+
+    if (searchTerm) {
+      filtered = filtered.filter((transaction) =>
+        transaction.title.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    }
+
+    if (typeFilter !== "all") {
+      filtered = filtered.filter(
+        (transaction) => transaction.type === typeFilter,
+      );
+    }
+
+    if (categoryFilter !== "all") {
+      filtered = filtered.filter(
+        (transaction) => transaction.categoryId === categoryFilter,
+      );
+    }
+
+    // Sort by date (newest first)
+    filtered = filtered.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+
+    setFilteredTransactions(filtered);
+  };
+
+  const getCategoryById = (categoryId: string) => {
+    return categories.find((cat) => cat.id === categoryId);
+  };
+
+  const handleEdit = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
+    setIsFormOpen(true);
+  };
+
+  const handleDelete = (transactionId: string) => {
+    if (confirm("Are you sure you want to delete this transaction?")) {
+      transactionsService.delete(transactionId);
+      loadData();
+      toast.success("Transaction deleted successfully!");
+    }
+  };
+
+  const handleFormSuccess = () => {
+    setIsFormOpen(false);
+    setEditingTransaction(undefined);
+    loadData();
+  };
+
+  const handleFormCancel = () => {
+    setIsFormOpen(false);
+    setEditingTransaction(undefined);
+  };
+
+  const totalIncome = filteredTransactions
+    .filter((t) => t.type === "income")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalExpenses = filteredTransactions
+    .filter((t) => t.type === "expense")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Transactions
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Manage your income and expense transactions.
+            </p>
+          </div>
+          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => setEditingTransaction(undefined)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Transaction
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <TransactionForm
+                transaction={editingTransaction}
+                onSuccess={handleFormSuccess}
+                onCancel={handleFormCancel}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <ArrowUpRight className="h-5 w-5 text-green-600" />
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Income
+                  </p>
+                  <p className="text-2xl font-bold text-green-600">
+                    +${totalIncome.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <ArrowDownLeft className="h-5 w-5 text-red-600" />
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Expenses
+                  </p>
+                  <p className="text-2xl font-bold text-red-600">
+                    -${totalExpenses.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <div
+                  className={cn(
+                    "h-5 w-5 rounded-full",
+                    totalIncome - totalExpenses >= 0
+                      ? "bg-green-600"
+                      : "bg-red-600",
+                  )}
+                />
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Net Amount
+                  </p>
+                  <p
+                    className={cn(
+                      "text-2xl font-bold",
+                      totalIncome - totalExpenses >= 0
+                        ? "text-green-600"
+                        : "text-red-600",
+                    )}
+                  >
+                    {totalIncome - totalExpenses >= 0 ? "+" : ""}$
+                    {(totalIncome - totalExpenses).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Filters */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Filters</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search transactions..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <Select
+                value={typeFilter}
+                onValueChange={(value: "all" | "income" | "expense") =>
+                  setTypeFilter(value)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All types" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All types</SelectItem>
+                  <SelectItem value="income">Income</SelectItem>
+                  <SelectItem value="expense">Expense</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All categories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      <div className="flex items-center space-x-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        <span>{category.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm("");
+                  setTypeFilter("all");
+                  setCategoryFilter("all");
+                }}
+              >
+                <Filter className="h-4 w-4 mr-2" />
+                Clear Filters
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Transactions Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              All Transactions ({filteredTransactions.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {filteredTransactions.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500 dark:text-gray-400">
+                  {transactions.length === 0
+                    ? "No transactions yet. Start by adding your first transaction!"
+                    : "No transactions match your filters."}
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="w-[50px]"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredTransactions.map((transaction) => {
+                      const category = getCategoryById(transaction.categoryId);
+                      return (
+                        <TableRow key={transaction.id}>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center space-x-2">
+                              <div
+                                className={cn(
+                                  "w-8 h-8 rounded-full flex items-center justify-center",
+                                  transaction.type === "income"
+                                    ? "bg-green-100 dark:bg-green-900"
+                                    : "bg-red-100 dark:bg-red-900",
+                                )}
+                              >
+                                {transaction.type === "income" ? (
+                                  <ArrowUpRight className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                ) : (
+                                  <ArrowDownLeft className="h-4 w-4 text-red-600 dark:text-red-400" />
+                                )}
+                              </div>
+                              <span>{transaction.title}</span>
+                              {transaction.isRecurring && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Recurring
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="secondary"
+                              style={{
+                                backgroundColor: category?.color + "20",
+                                color: category?.color,
+                              }}
+                            >
+                              {category?.name}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={
+                                transaction.type === "income"
+                                  ? "default"
+                                  : "destructive"
+                              }
+                            >
+                              {transaction.type}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {format(new Date(transaction.date), "MMM dd, yyyy")}
+                          </TableCell>
+                          <TableCell
+                            className={cn(
+                              "text-right font-semibold",
+                              transaction.type === "income"
+                                ? "text-green-600"
+                                : "text-red-600",
+                            )}
+                          >
+                            {transaction.type === "income" ? "+" : "-"}$
+                            {transaction.amount.toLocaleString()}
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => handleEdit(transaction)}
+                                >
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleDelete(transaction.id)}
+                                  className="text-red-600"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </DashboardLayout>
+  );
+};
+
+export default Transactions;
