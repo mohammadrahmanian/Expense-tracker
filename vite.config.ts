@@ -14,4 +14,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    // Suppress React defaultProps warnings in development
+    ...(mode === "development" && {
+      "process.env.NODE_ENV": '"development"',
+    }),
+  },
 }));
