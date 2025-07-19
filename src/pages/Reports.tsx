@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -8,31 +8,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { categoriesService, transactionsService } from "@/services/api";
+import { Category, CategorySpending, MonthlyData, Transaction } from "@/types";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-  Legend,
-} from "recharts";
-import { transactionsService, categoriesService } from "@/services/api";
-import { Transaction, Category, CategorySpending, MonthlyData } from "@/types";
-import {
+  eachMonthOfInterval,
+  endOfMonth,
   format,
   startOfMonth,
-  endOfMonth,
-  eachMonthOfInterval,
   subMonths,
 } from "date-fns";
+import React, { useEffect, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const Reports: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -54,9 +54,9 @@ const Reports: React.FC = () => {
     processChartData();
   }, [transactions, categories, timeRange]);
 
-  const loadData = () => {
-    const allTransactions = transactionsService.getAll();
-    const allCategories = categoriesService.getAll();
+  const loadData = async () => {
+    const allTransactions = await transactionsService.getAll();
+    const allCategories = await categoriesService.getAll();
     setTransactions(allTransactions);
     setCategories(allCategories);
   };

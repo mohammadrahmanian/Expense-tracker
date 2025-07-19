@@ -1,27 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 import {
-  TrendingUp,
-  TrendingDown,
-  Wallet,
+  categoriesService,
+  transactionsService
+} from "@/services/api";
+import { Category, DashboardStats, Transaction } from "@/types";
+import { format } from "date-fns";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
   PiggyBank,
   Plus,
-  ArrowUpRight,
-  ArrowDownLeft,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
 } from "lucide-react";
-import {
-  dashboardService,
-  transactionsService,
-  categoriesService,
-} from "@/services/api";
-import { DashboardStats, Transaction, Category } from "@/types";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats>({
@@ -38,17 +37,17 @@ const Dashboard: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    const loadDashboardData = () => {
-      const dashboardStats = dashboardService.getStats();
-      setStats(dashboardStats);
+    const loadDashboardData = async () => {
+      // const dashboardStats = dashboardService.getStats();
+      // setStats(dashboardStats);
 
-      const allTransactions = transactionsService.getAll();
+      const allTransactions = await transactionsService.getAll();
       const recent = allTransactions
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 5);
       setRecentTransactions(recent);
 
-      const allCategories = categoriesService.getAll();
+      const allCategories = await categoriesService.getAll();
       setCategories(allCategories);
     };
 
