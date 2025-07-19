@@ -30,7 +30,7 @@ import { z } from "zod";
 const transactionSchema = z.object({
   title: z.string().min(1, "Title is required"),
   amount: z.number().min(0.01, "Amount must be greater than 0"),
-  type: z.enum(["income", "expense"]),
+  type: z.enum(["INCOME", "EXPENSE"]),
   categoryId: z.string().min(1, "Category is required"),
   date: z.date(),
   isRecurring: z.boolean().default(false),
@@ -77,7 +77,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     defaultValues: {
       title: transaction?.title || "",
       amount: transaction?.amount || 0,
-      type: transaction?.type || "expense",
+      type: transaction?.type || "EXPENSE",
       categoryId: transaction?.categoryId || "",
       date: transaction ? new Date(transaction.date) : new Date(),
       isRecurring: transaction?.isRecurring || false,
@@ -163,7 +163,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               <Label>Type</Label>
               <Select
                 value={watchType}
-                onValueChange={(value: "income" | "expense") => {
+                onValueChange={(value: "INCOME" | "EXPENSE") => {
                   setValue("type", value);
                   setValue("categoryId", ""); // Reset category when type changes
                 }}
@@ -172,8 +172,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="expense">Expense</SelectItem>
-                  <SelectItem value="income">Income</SelectItem>
+                  <SelectItem value="EXPENSE">Expense</SelectItem>
+                  <SelectItem value="INCOME">Income</SelectItem>
                 </SelectContent>
               </Select>
               {errors.type && (
