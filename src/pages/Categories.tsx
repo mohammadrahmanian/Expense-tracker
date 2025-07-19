@@ -164,9 +164,14 @@ const Categories: React.FC = () => {
         await categoriesService.delete(categoryId);
         toast.success("Category deleted successfully!");
         await loadCategories();
-      } catch (error: any) {
-        console.error('Error deleting category:', error);
-        toast.error("Failed to delete category. Please try again.");
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('Error deleting category:', error.message);
+          toast.error(`Failed to delete category: ${error.message}`);
+        } else {
+          console.error('Error deleting category:', error);
+          toast.error("Failed to delete category. Please try again.");
+        }
       }
     }
   };
