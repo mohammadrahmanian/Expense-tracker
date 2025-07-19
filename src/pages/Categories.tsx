@@ -1,9 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -13,29 +23,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Plus, MoreHorizontal, Edit, Trash2, Palette } from "lucide-react";
 import { categoriesService } from "@/services/api";
 import { Category } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Edit, MoreHorizontal, Plus, Trash2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 const categorySchema = z.object({
   name: z.string().min(1, "Category name is required"),
-  type: z.enum(["income", "expense"]),
+  type: z.enum(["INCOME", "EXPENSE"]),
   color: z.string().min(1, "Color is required"),
 });
 
@@ -63,6 +63,7 @@ const predefinedColors = [
 ];
 
 const Categories: React.FC = () => {
+  const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<
@@ -80,7 +81,7 @@ const Categories: React.FC = () => {
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "",
-      type: "expense",
+      type: "EXPENSE",
       color: predefinedColors[0],
     },
   });
@@ -99,20 +100,36 @@ const Categories: React.FC = () => {
     }
   }, [editingCategory, setValue]);
 
-  const loadCategories = () => {
-    const allCategories = categoriesService.getAll();
-    setCategories(allCategories);
+  const loadCategories = async () => {
+    try {
+      const allCategories = await categoriesService.getAll();
+      setCategories(allCategories);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error loading categories:', error.message);
+        toast.error(`Failed to load categories: ${error.message}`);
+      } else {
+        console.error('Error loading categories:', error);
+        toast.error('Failed to load categories. Please try again.');
+      }
+      setCategories([]);
+    }
   };
 
   const onSubmit = async (data: CategoryFormData) => {
+    if (!user) {
+      toast.error("You must be logged in to create categories.");
+      return;
+    }
+
     try {
       if (editingCategory) {
-        categoriesService.update(editingCategory.id, data);
+        await categoriesService.update(editingCategory.id, data);
         toast.success("Category updated successfully!");
       } else {
-        categoriesService.create({
+        await categoriesService.create({
           ...data,
-          userId: "1", // In a real app, this would come from auth context
+          userId: user.id,
         });
         toast.success("Category created successfully!");
       }
@@ -120,9 +137,15 @@ const Categories: React.FC = () => {
       reset();
       setIsFormOpen(false);
       setEditingCategory(undefined);
-      loadCategories();
-    } catch (error) {
-      toast.error("Failed to save category. Please try again.");
+      await loadCategories();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error saving category:', error.message);
+        toast.error("Failed to save category. Please try again.");
+      } else {
+        console.error('Unexpected error saving category:', error);
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     }
   };
 
@@ -131,18 +154,24 @@ const Categories: React.FC = () => {
     setIsFormOpen(true);
   };
 
-  const handleDelete = (categoryId: string) => {
+  const handleDelete = async (categoryId: string) => {
     if (
       confirm(
         "Are you sure you want to delete this category? This action cannot be undone.",
       )
     ) {
       try {
-        categoriesService.delete(categoryId);
+        await categoriesService.delete(categoryId);
         toast.success("Category deleted successfully!");
-        loadCategories();
-      } catch (error) {
-        toast.error("Failed to delete category. Please try again.");
+        await loadCategories();
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('Error deleting category:', error.message);
+          toast.error(`Failed to delete category: ${error.message}`);
+        } else {
+          console.error('Error deleting category:', error);
+          toast.error("Failed to delete category. Please try again.");
+        }
       }
     }
   };
@@ -153,8 +182,8 @@ const Categories: React.FC = () => {
     setEditingCategory(undefined);
   };
 
-  const incomeCategories = categories.filter((cat) => cat.type === "income");
-  const expenseCategories = categories.filter((cat) => cat.type === "expense");
+  const incomeCategories = categories.filter((cat) => cat.type === "INCOME");
+  const expenseCategories = categories.filter((cat) => cat.type === "EXPENSE");
 
   return (
     <DashboardLayout>
@@ -202,7 +231,7 @@ const Categories: React.FC = () => {
                   <Label>Type</Label>
                   <Select
                     value={watch("type")}
-                    onValueChange={(value: "income" | "expense") =>
+                    onValueChange={(value: "INCOME" | "EXPENSE") =>
                       setValue("type", value)
                     }
                   >
@@ -212,8 +241,8 @@ const Categories: React.FC = () => {
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="expense">Expense</SelectItem>
-                      <SelectItem value="income">Income</SelectItem>
+                      <SelectItem value="EXPENSE">Expense</SelectItem>
+                      <SelectItem value="INCOME">Income</SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.type && (

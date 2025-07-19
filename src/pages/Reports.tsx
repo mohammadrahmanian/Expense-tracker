@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -8,31 +8,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { categoriesService, transactionsService } from "@/services/api";
+import { Category, CategorySpending, MonthlyData, Transaction } from "@/types";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-  Legend,
-} from "recharts";
-import { transactionsService, categoriesService } from "@/services/api";
-import { Transaction, Category, CategorySpending, MonthlyData } from "@/types";
-import {
+  eachMonthOfInterval,
+  endOfMonth,
   format,
   startOfMonth,
-  endOfMonth,
-  eachMonthOfInterval,
   subMonths,
 } from "date-fns";
+import React, { useEffect, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const Reports: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -54,9 +54,9 @@ const Reports: React.FC = () => {
     processChartData();
   }, [transactions, categories, timeRange]);
 
-  const loadData = () => {
-    const allTransactions = transactionsService.getAll();
-    const allCategories = categoriesService.getAll();
+  const loadData = async () => {
+    const allTransactions = await transactionsService.getAll();
+    const allCategories = await categoriesService.getAll();
     setTransactions(allTransactions);
     setCategories(allCategories);
   };
@@ -75,11 +75,11 @@ const Reports: React.FC = () => {
       });
 
       const income = monthTransactions
-        .filter((t) => t.type === "income")
+        .filter((t) => t.type === "INCOME")
         .reduce((sum, t) => sum + t.amount, 0);
 
       const expenses = monthTransactions
-        .filter((t) => t.type === "expense")
+        .filter((t) => t.type === "EXPENSE")
         .reduce((sum, t) => sum + t.amount, 0);
 
       return {
@@ -94,12 +94,12 @@ const Reports: React.FC = () => {
 
     // Process category spending (expenses only)
     const expenseCategories = categories.filter(
-      (cat) => cat.type === "expense",
+      (cat) => cat.type === "EXPENSE",
     );
     const expenseSpending = expenseCategories
       .map((category) => {
         const amount = transactions
-          .filter((t) => t.type === "expense" && t.categoryId === category.id)
+          .filter((t) => t.type === "EXPENSE" && t.categoryId === category.id)
           .reduce((sum, t) => sum + t.amount, 0);
 
         return {
@@ -124,11 +124,11 @@ const Reports: React.FC = () => {
     setCategorySpending(spendingWithPercentages);
 
     // Process income by category
-    const incomeCategories = categories.filter((cat) => cat.type === "income");
+    const incomeCategories = categories.filter((cat) => cat.type === "INCOME");
     const incomeByCategory = incomeCategories
       .map((category) => {
         const amount = transactions
-          .filter((t) => t.type === "income" && t.categoryId === category.id)
+          .filter((t) => t.type === "INCOME" && t.categoryId === category.id)
           .reduce((sum, t) => sum + t.amount, 0);
 
         return {
@@ -161,11 +161,11 @@ const Reports: React.FC = () => {
   };
 
   const totalIncome = transactions
-    .filter((t) => t.type === "income")
+    .filter((t) => t.type === "INCOME")
     .reduce((sum, t) => sum + t.amount, 0);
 
   const totalExpenses = transactions
-    .filter((t) => t.type === "expense")
+    .filter((t) => t.type === "EXPENSE")
     .reduce((sum, t) => sum + t.amount, 0);
 
   const currentBalance = totalIncome - totalExpenses;

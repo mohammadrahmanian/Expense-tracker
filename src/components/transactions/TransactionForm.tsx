@@ -1,10 +1,13 @@
-import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -13,24 +16,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { transactionsService, categoriesService } from "@/services/api";
-import { Transaction, Category } from "@/types";
+import { categoriesService, transactionsService } from "@/services/api";
+import { Category, Transaction } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 const transactionSchema = z.object({
   title: z.string().min(1, "Title is required"),
   amount: z.number().min(0.01, "Amount must be greater than 0"),
-  type: z.enum(["income", "expense"]),
+  type: z.enum(["INCOME", "EXPENSE"]),
   categoryId: z.string().min(1, "Category is required"),
   date: z.date(),
   isRecurring: z.boolean().default(false),
@@ -52,7 +52,17 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   onSuccess,
   onCancel,
 }) => {
-  const categories = categoriesService.getAll();
+  const [categories, setCategories] = React.useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const allCategories = await categoriesService.getAll();
+      setCategories(allCategories);
+    };
+
+    fetchCategories();
+  }, []);
+
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
   const {
@@ -67,7 +77,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     defaultValues: {
       title: transaction?.title || "",
       amount: transaction?.amount || 0,
-      type: transaction?.type || "expense",
+      type: transaction?.type || "EXPENSE",
       categoryId: transaction?.categoryId || "",
       date: transaction ? new Date(transaction.date) : new Date(),
       isRecurring: transaction?.isRecurring || false,
@@ -84,15 +94,21 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   const onSubmit = async (data: TransactionFormData) => {
     try {
       const transactionData = {
-        ...data,
         userId: "1", // In a real app, this would come from auth context
+        title: data.title,
+        amount: data.amount,
+        type: data.type,
+        date: data.date,
+        categoryId: data.categoryId,
+        isRecurring: data.isRecurring,
+        recurringFrequency: data.recurringFrequency,
       };
 
       if (transaction) {
-        transactionsService.update(transaction.id, transactionData);
+        await transactionsService.update(transaction.id, transactionData);
         toast.success("Transaction updated successfully!");
       } else {
-        transactionsService.create(transactionData);
+        await transactionsService.create(transactionData);
         toast.success("Transaction added successfully!");
       }
 
@@ -147,7 +163,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               <Label>Type</Label>
               <Select
                 value={watchType}
-                onValueChange={(value: "income" | "expense") => {
+                onValueChange={(value: "INCOME" | "EXPENSE") => {
                   setValue("type", value);
                   setValue("categoryId", ""); // Reset category when type changes
                 }}
@@ -156,8 +172,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="expense">Expense</SelectItem>
-                  <SelectItem value="income">Income</SelectItem>
+                  <SelectItem value="EXPENSE">Expense</SelectItem>
+                  <SelectItem value="INCOME">Income</SelectItem>
                 </SelectContent>
               </Select>
               {errors.type && (

@@ -9,7 +9,7 @@ export interface Category {
   id: string;
   name: string;
   color: string;
-  type: "income" | "expense";
+  type: "INCOME" | "EXPENSE";
   userId: string;
 }
 
@@ -17,7 +17,7 @@ export interface Transaction {
   id: string;
   title: string;
   amount: number;
-  type: "income" | "expense";
+  type: "INCOME" | "EXPENSE";
   date: Date;
   categoryId: string;
   category?: Category;

@@ -1,7 +1,15 @@
-import React, { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { TransactionForm } from "@/components/transactions/TransactionForm";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -10,9 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -21,26 +26,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import { categoriesService, transactionsService } from "@/services/api";
+import { Category, Transaction } from "@/types";
+import { format } from "date-fns";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Plus,
-  Search,
+  ArrowDownLeft,
+  ArrowUpRight,
+  Edit,
   Filter,
   MoreHorizontal,
-  Edit,
+  Plus,
+  Search,
   Trash2,
-  ArrowUpRight,
-  ArrowDownLeft,
 } from "lucide-react";
-import { transactionsService, categoriesService } from "@/services/api";
-import { Transaction, Category } from "@/types";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const Transactions: React.FC = () => {
@@ -67,9 +67,9 @@ const Transactions: React.FC = () => {
     filterTransactions();
   }, [transactions, searchTerm, typeFilter, categoryFilter]);
 
-  const loadData = () => {
-    const allTransactions = transactionsService.getAll();
-    const allCategories = categoriesService.getAll();
+  const loadData = async () => {
+    const allTransactions = await transactionsService.getAll();
+    const allCategories = await categoriesService.getAll();
     setTransactions(allTransactions);
     setCategories(allCategories);
   };
