@@ -138,9 +138,14 @@ const Categories: React.FC = () => {
       setIsFormOpen(false);
       setEditingCategory(undefined);
       await loadCategories();
-    } catch (error: any) {
-      console.error('Error saving category:', error);
-      toast.error("Failed to save category. Please try again.");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error saving category:', error.message);
+        toast.error("Failed to save category. Please try again.");
+      } else {
+        console.error('Unexpected error saving category:', error);
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     }
   };
 
