@@ -104,9 +104,14 @@ const Categories: React.FC = () => {
     try {
       const allCategories = await categoriesService.getAll();
       setCategories(allCategories);
-    } catch (error: any) {
-      console.error('Error loading categories:', error);
-      toast.error('Failed to load categories. Please try again.');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error loading categories:', error.message);
+        toast.error(`Failed to load categories: ${error.message}`);
+      } else {
+        console.error('Error loading categories:', error);
+        toast.error('Failed to load categories. Please try again.');
+      }
       setCategories([]);
     }
   };
