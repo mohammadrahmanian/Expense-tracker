@@ -6,7 +6,8 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import {
   categoriesService,
-  transactionsService
+  dashboardService,
+  transactionsService,
 } from "@/services/api";
 import { Category, DashboardStats, Transaction } from "@/types";
 import { format } from "date-fns";
@@ -17,10 +18,11 @@ import {
   Plus,
   TrendingDown,
   TrendingUp,
-  Wallet,
+  Wallet
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats>({
@@ -29,26 +31,40 @@ const Dashboard: React.FC = () => {
     currentBalance: 0,
     monthlyIncome: 0,
     monthlyExpenses: 0,
-    monthlySavings: 0,
+    monthlySaving: 0,
   });
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>(
     [],
   );
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadDashboardData = async () => {
-      // const dashboardStats = dashboardService.getStats();
-      // setStats(dashboardStats);
+      try {
+        setIsLoading(true);
 
-      const allTransactions = await transactionsService.getAll();
-      const recent = allTransactions
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 5);
-      setRecentTransactions(recent);
+        // Load dashboard stats from API
+        const dashboardStats = await dashboardService.getStats();
+        setStats(dashboardStats);
 
-      const allCategories = await categoriesService.getAll();
-      setCategories(allCategories);
+        // Load recent transactions
+        const allTransactions = await transactionsService.getAll();
+        const recent = allTransactions
+          .sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+          )
+          .slice(0, 5);
+        setRecentTransactions(recent);
+
+        // Load categories
+        const allCategories = await categoriesService.getAll();
+        setCategories(allCategories);
+      } catch (error) {
+        toast.error("Failed to load dashboard data. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     loadDashboardData();
@@ -60,7 +76,7 @@ const Dashboard: React.FC = () => {
 
   const savingsRate =
     stats.monthlyIncome > 0
-      ? (stats.monthlySavings / stats.monthlyIncome) * 100
+      ? (stats.monthlySaving / stats.monthlyIncome) * 100
       : 0;
 
   return (
@@ -112,7 +128,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                +${stats.monthlyIncome.toLocaleString()}
+                +${stats.monthlyIncome}
               </div>
               <p className="text-xs text-muted-foreground">
                 This month's earnings
@@ -129,7 +145,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                -${stats.monthlyExpenses.toLocaleString()}
+                -${stats.monthlyExpenses}
               </div>
               <p className="text-xs text-muted-foreground">
                 This month's spending
@@ -146,7 +162,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
-                ${stats.monthlySavings.toLocaleString()}
+                ${stats.monthlySaving}
               </div>
               <p className="text-xs text-muted-foreground">
                 {savingsRate.toFixed(1)}% savings rate
@@ -165,8 +181,7 @@ const Dashboard: React.FC = () => {
               <div className="flex justify-between text-sm">
                 <span>Monthly Savings</span>
                 <span>
-                  ${stats.monthlySavings.toLocaleString()} of $
-                  {stats.monthlyIncome.toLocaleString()}
+                  ${stats.monthlySaving} of ${stats.monthlyIncome}
                 </span>
               </div>
               <Progress
@@ -215,12 +230,12 @@ const Dashboard: React.FC = () => {
                         <div
                           className={cn(
                             "w-10 h-10 rounded-full flex items-center justify-center",
-                            transaction.type === "income"
+                            transaction.type === "INCOME"
                               ? "bg-green-100 dark:bg-green-900"
                               : "bg-red-100 dark:bg-red-900",
                           )}
                         >
-                          {transaction.type === "income" ? (
+                          {transaction.type === "INCOME" ? (
                             <ArrowUpRight className="h-5 w-5 text-green-600 dark:text-green-400" />
                           ) : (
                             <ArrowDownLeft className="h-5 w-5 text-red-600 dark:text-red-400" />
@@ -247,12 +262,12 @@ const Dashboard: React.FC = () => {
                       <div
                         className={cn(
                           "font-semibold",
-                          transaction.type === "income"
+                          transaction.type === "INCOME"
                             ? "text-green-600"
                             : "text-red-600",
                         )}
                       >
-                        {transaction.type === "income" ? "+" : "-"}$
+                        {transaction.type === "INCOME" ? "+" : "-"}$
                         {transaction.amount.toLocaleString()}
                       </div>
                     </div>

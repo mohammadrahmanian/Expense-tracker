@@ -149,7 +149,9 @@ export const categoriesService = {
     }
   },
 
-  create: async (category: Omit<Category, "id">): Promise<Category> => {
+  create: async (
+    category: Omit<Category, "id" | "createdAt" | "updatedAt" | "userId">,
+  ): Promise<Category> => {
     try {
       const response = await apiClient.post<Category>("/categories", category);
       return response.data;
@@ -259,7 +261,10 @@ export const authService = {
     password: string,
   ): Promise<{ token: string; user: any }> => {
     try {
-      const response = await apiClient.post("/users/login", { email, password });
+      const response = await apiClient.post("/users/login", {
+        email,
+        password,
+      });
       if (response.data.token) {
         localStorage.setItem("authToken", response.data.token);
       }

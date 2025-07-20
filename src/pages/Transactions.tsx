@@ -35,6 +35,7 @@ import {
   ArrowUpRight,
   Edit,
   Filter,
+  Loader2,
   MoreHorizontal,
   Plus,
   Search,
@@ -50,11 +51,12 @@ const Transactions: React.FC = () => {
     Transaction[]
   >([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState<"all" | "income" | "expense">(
+  const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">(
     "all",
   );
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<
     Transaction | undefined
   >();
@@ -68,10 +70,17 @@ const Transactions: React.FC = () => {
   }, [transactions, searchTerm, typeFilter, categoryFilter]);
 
   const loadData = async () => {
-    const allTransactions = await transactionsService.getAll();
-    const allCategories = await categoriesService.getAll();
-    setTransactions(allTransactions);
-    setCategories(allCategories);
+    try {
+      setIsLoading(true);
+      const allTransactions = await transactionsService.getAll();
+      const allCategories = await categoriesService.getAll();
+      setTransactions(allTransactions);
+      setCategories(allCategories);
+    } catch (error) {
+      toast.error("Failed to load data. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const filterTransactions = () => {
@@ -112,11 +121,18 @@ const Transactions: React.FC = () => {
     setIsFormOpen(true);
   };
 
-  const handleDelete = (transactionId: string) => {
+  const handleDelete = async (transactionId: string) => {
     if (confirm("Are you sure you want to delete this transaction?")) {
-      transactionsService.delete(transactionId);
-      loadData();
-      toast.success("Transaction deleted successfully!");
+      try {
+        setIsLoading(true);
+        await transactionsService.delete(transactionId);
+        await loadData();
+        toast.success("Transaction deleted successfully!");
+      } catch (error) {
+        toast.error("Failed to delete transaction. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -132,11 +148,11 @@ const Transactions: React.FC = () => {
   };
 
   const totalIncome = filteredTransactions
-    .filter((t) => t.type === "income")
+    .filter((t) => t.type === "INCOME")
     .reduce((sum, t) => sum + t.amount, 0);
 
   const totalExpenses = filteredTransactions
-    .filter((t) => t.type === "expense")
+    .filter((t) => t.type === "EXPENSE")
     .reduce((sum, t) => sum + t.amount, 0);
 
   return (
@@ -154,7 +170,10 @@ const Transactions: React.FC = () => {
           </div>
           <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => setEditingTransaction(undefined)}>
+              <Button 
+                onClick={() => setEditingTransaction(undefined)}
+                disabled={isLoading}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Transaction
               </Button>
@@ -251,7 +270,7 @@ const Transactions: React.FC = () => {
               </div>
               <Select
                 value={typeFilter}
-                onValueChange={(value: "all" | "income" | "expense") =>
+                onValueChange={(value: "all" | "INCOME" | "EXPENSE") =>
                   setTypeFilter(value)
                 }
               >
@@ -260,8 +279,8 @@ const Transactions: React.FC = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All types</SelectItem>
-                  <SelectItem value="income">Income</SelectItem>
-                  <SelectItem value="expense">Expense</SelectItem>
+                  <SelectItem value="INCOME">Income</SelectItem>
+                  <SelectItem value="EXPENSE">Expense</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
@@ -306,7 +325,12 @@ const Transactions: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {filteredTransactions.length === 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin" />
+                <span className="ml-2">Loading transactions...</span>
+              </div>
+            ) : filteredTransactions.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
                   {transactions.length === 0
@@ -337,12 +361,12 @@ const Transactions: React.FC = () => {
                               <div
                                 className={cn(
                                   "w-8 h-8 rounded-full flex items-center justify-center",
-                                  transaction.type === "income"
+                                  transaction.type === "INCOME"
                                     ? "bg-green-100 dark:bg-green-900"
                                     : "bg-red-100 dark:bg-red-900",
                                 )}
                               >
-                                {transaction.type === "income" ? (
+                                {transaction.type === "INCOME" ? (
                                   <ArrowUpRight className="h-4 w-4 text-green-600 dark:text-green-400" />
                                 ) : (
                                   <ArrowDownLeft className="h-4 w-4 text-red-600 dark:text-red-400" />
@@ -370,7 +394,7 @@ const Transactions: React.FC = () => {
                           <TableCell>
                             <Badge
                               variant={
-                                transaction.type === "income"
+                                transaction.type === "INCOME"
                                   ? "default"
                                   : "destructive"
                               }
@@ -384,12 +408,12 @@ const Transactions: React.FC = () => {
                           <TableCell
                             className={cn(
                               "text-right font-semibold",
-                              transaction.type === "income"
+                              transaction.type === "INCOME"
                                 ? "text-green-600"
                                 : "text-red-600",
                             )}
                           >
-                            {transaction.type === "income" ? "+" : "-"}$
+                            {transaction.type === "INCOME" ? "+" : "-"}$
                             {transaction.amount.toLocaleString()}
                           </TableCell>
                           <TableCell>
@@ -402,6 +426,7 @@ const Transactions: React.FC = () => {
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem
                                   onClick={() => handleEdit(transaction)}
+                                  disabled={isLoading}
                                 >
                                   <Edit className="mr-2 h-4 w-4" />
                                   Edit
@@ -409,6 +434,7 @@ const Transactions: React.FC = () => {
                                 <DropdownMenuItem
                                   onClick={() => handleDelete(transaction.id)}
                                   className="text-red-600"
+                                  disabled={isLoading}
                                 >
                                   <Trash2 className="mr-2 h-4 w-4" />
                                   Delete

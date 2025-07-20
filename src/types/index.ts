@@ -51,7 +51,7 @@ export interface DashboardStats {
   currentBalance: number;
   monthlyIncome: number;
   monthlyExpenses: number;
-  monthlySavings: number;
+  monthlySaving: number;
 }
 
 export interface CategorySpending {
