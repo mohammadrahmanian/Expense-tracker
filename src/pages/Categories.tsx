@@ -23,9 +23,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuth } from "@/contexts/AuthContext";
 import { categoriesService } from "@/services/api";
 import { Category } from "@/types";
-import { useAuth } from "@/contexts/AuthContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -106,11 +106,9 @@ const Categories: React.FC = () => {
       setCategories(allCategories);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('Error loading categories:', error.message);
         toast.error(`Failed to load categories: ${error.message}`);
       } else {
-        console.error('Error loading categories:', error);
-        toast.error('Failed to load categories. Please try again.');
+        toast.error("Failed to load categories. Please try again.");
       }
       setCategories([]);
     }
@@ -128,8 +126,9 @@ const Categories: React.FC = () => {
         toast.success("Category updated successfully!");
       } else {
         await categoriesService.create({
-          ...data,
-          userId: user.id,
+          name: data.name,
+          type: data.type,
+          color: data.color,
         });
         toast.success("Category created successfully!");
       }
@@ -140,10 +139,8 @@ const Categories: React.FC = () => {
       await loadCategories();
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('Error saving category:', error.message);
         toast.error("Failed to save category. Please try again.");
       } else {
-        console.error('Unexpected error saving category:', error);
         toast.error("An unexpected error occurred. Please try again.");
       }
     }
@@ -166,10 +163,8 @@ const Categories: React.FC = () => {
         await loadCategories();
       } catch (error: unknown) {
         if (error instanceof Error) {
-          console.error('Error deleting category:', error.message);
           toast.error(`Failed to delete category: ${error.message}`);
         } else {
-          console.error('Error deleting category:', error);
           toast.error("Failed to delete category. Please try again.");
         }
       }
