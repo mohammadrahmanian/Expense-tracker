@@ -21,7 +21,7 @@ import { categoriesService, transactionsService } from "@/services/api";
 import { Category, Transaction } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -53,11 +53,20 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   onCancel,
 }) => {
   const [categories, setCategories] = React.useState<Category[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const allCategories = await categoriesService.getAll();
-      setCategories(allCategories);
+      try {
+        setIsLoading(true);
+        const allCategories = await categoriesService.getAll();
+        setCategories(allCategories);
+      } catch (error) {
+        toast.error("Failed to load categories. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchCategories();
@@ -93,12 +102,19 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
   const onSubmit = async (data: TransactionFormData) => {
     try {
+      setIsSubmitting(true);
+
+      // Convert date to UTC to avoid timezone issues on the backend
+      const utcDate = new Date(
+        data.date.getTime() - data.date.getTimezoneOffset() * 60000,
+      );
+
       const transactionData = {
         userId: "1", // In a real app, this would come from auth context
         title: data.title,
         amount: data.amount,
         type: data.type,
-        date: data.date,
+        date: utcDate,
         categoryId: data.categoryId,
         isRecurring: data.isRecurring,
         recurringFrequency: data.recurringFrequency,
@@ -115,7 +131,13 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       reset();
       onSuccess();
     } catch (error) {
-      toast.error("Failed to save transaction. Please try again.");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to save transaction. Please try again.";
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -288,8 +310,13 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit">
-              {transaction ? "Update" : "Add"} Transaction
+            <Button type="submit" disabled={isSubmitting || isLoading}>
+              {isSubmitting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {isSubmitting
+                ? `${transaction ? "Updating" : "Adding"}...`
+                : `${transaction ? "Update" : "Add"} Transaction`}
             </Button>
           </div>
         </form>
