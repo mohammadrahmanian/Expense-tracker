@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { categoriesService, transactionsService } from "@/services/api";
 import { Category, CategorySpending, MonthlyData, Transaction } from "@/types";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import {
   eachMonthOfInterval,
   endOfMonth,
@@ -35,6 +36,7 @@ import {
 } from "recharts";
 
 const Reports: React.FC = () => {
+  const { formatAmount } = useCurrency();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [timeRange, setTimeRange] = useState<"3m" | "6m" | "12m">("6m");
@@ -207,7 +209,7 @@ const Reports: React.FC = () => {
                   Total Income
                 </p>
                 <p className="text-3xl font-bold text-green-600">
-                  ${totalIncome.toLocaleString()}
+                  {formatAmount(totalIncome)}
                 </p>
               </div>
             </CardContent>
@@ -219,7 +221,7 @@ const Reports: React.FC = () => {
                   Total Expenses
                 </p>
                 <p className="text-3xl font-bold text-red-600">
-                  ${totalExpenses.toLocaleString()}
+                  {formatAmount(totalExpenses)}
                 </p>
               </div>
             </CardContent>
@@ -233,7 +235,7 @@ const Reports: React.FC = () => {
                 <p
                   className={`text-3xl font-bold ${currentBalance >= 0 ? "text-green-600" : "text-red-600"}`}
                 >
-                  ${currentBalance.toLocaleString()}
+                  {formatAmount(currentBalance)}
                 </p>
               </div>
             </CardContent>
@@ -254,7 +256,7 @@ const Reports: React.FC = () => {
                   <YAxis />
                   <Tooltip
                     formatter={(value: number) => [
-                      `$${value.toLocaleString()}`,
+                      formatAmount(value),
                       "",
                     ]}
                     labelStyle={{ color: "black" }}
@@ -307,7 +309,7 @@ const Reports: React.FC = () => {
                   <YAxis />
                   <Tooltip
                     formatter={(value: number) => [
-                      `$${value.toLocaleString()}`,
+                      formatAmount(value),
                       "",
                     ]}
                     labelStyle={{ color: "black" }}
@@ -353,7 +355,7 @@ const Reports: React.FC = () => {
                       </Pie>
                       <Tooltip
                         formatter={(value: number) => [
-                          `$${value.toLocaleString()}`,
+                          formatAmount(value),
                           "Amount",
                         ]}
                         labelStyle={{ color: "black" }}
@@ -378,7 +380,7 @@ const Reports: React.FC = () => {
                             {item.percentage.toFixed(1)}%
                           </Badge>
                           <span className="text-sm font-medium">
-                            ${item.amount.toLocaleString()}
+                            {formatAmount(item.amount)}
                           </span>
                         </div>
                       </div>
@@ -420,7 +422,7 @@ const Reports: React.FC = () => {
                       </Pie>
                       <Tooltip
                         formatter={(value: number) => [
-                          `$${value.toLocaleString()}`,
+                          formatAmount(value),
                           "Amount",
                         ]}
                         labelStyle={{ color: "black" }}
@@ -445,7 +447,7 @@ const Reports: React.FC = () => {
                             {item.percentage.toFixed(1)}%
                           </Badge>
                           <span className="text-sm font-medium">
-                            ${item.amount.toLocaleString()}
+                            {formatAmount(item.amount)}
                           </span>
                         </div>
                       </div>

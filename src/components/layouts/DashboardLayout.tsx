@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CurrencySwitcher } from "@/components/ui/currency-switcher";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard,
@@ -94,6 +95,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <div className="flex justify-between items-center py-4">
               <div className="flex-1" />
               <div className="flex items-center space-x-4">
+                <CurrencySwitcher />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
