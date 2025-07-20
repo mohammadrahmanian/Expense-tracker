@@ -5,7 +5,6 @@ export type Currency = 'USD' | 'EUR';
 interface CurrencyContextType {
   currency: Currency;
   setCurrency: (currency: Currency) => void;
-  currencySymbol: string;
   formatAmount: (amount: number) => string;
 }
 
@@ -26,25 +25,35 @@ interface CurrencyProviderProps {
 export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) => {
   const [currency, setCurrency] = useState<Currency>(() => {
     // Get currency from localStorage or default to USD
-    const savedCurrency = localStorage.getItem('currency') as Currency;
-    return savedCurrency || 'USD';
+    try {
+      const savedCurrency = localStorage.getItem('currency') as Currency;
+      return savedCurrency || 'USD';
+    } catch (error) {
+      // Fallback to USD if localStorage is unavailable (e.g., private browsing)
+      return 'USD';
+    }
   });
 
-  const currencySymbol = currency === 'USD' ? '$' : '€';
-
   const formatAmount = (amount: number): string => {
-    return `${currencySymbol}${amount.toLocaleString()}`;
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
   };
 
   const handleSetCurrency = (newCurrency: Currency) => {
     setCurrency(newCurrency);
-    localStorage.setItem('currency', newCurrency);
+    try {
+      localStorage.setItem('currency', newCurrency);
+    } catch (error) {
+      // Silently fail if localStorage is unavailable (e.g., private browsing)
+      // The currency state is still updated in memory
+    }
   };
 
   const value = {
     currency,
     setCurrency: handleSetCurrency,
-    currencySymbol,
     formatAmount,
   };
 

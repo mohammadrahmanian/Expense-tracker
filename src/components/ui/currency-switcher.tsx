@@ -10,7 +10,7 @@ import { useCurrency, Currency } from '@/contexts/CurrencyContext';
 import { ChevronDown } from 'lucide-react';
 
 export const CurrencySwitcher: React.FC = () => {
-  const { currency, setCurrency, currencySymbol } = useCurrency();
+  const { currency, setCurrency } = useCurrency();
 
   const currencies: { code: Currency; symbol: string; name: string }[] = [
     { code: 'USD', symbol: '$', name: 'US Dollar' },
