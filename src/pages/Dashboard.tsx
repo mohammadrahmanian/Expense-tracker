@@ -10,6 +10,7 @@ import {
   transactionsService,
 } from "@/services/api";
 import { Category, DashboardStats, Transaction } from "@/types";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { format } from "date-fns";
 import {
   ArrowDownLeft,
@@ -25,6 +26,7 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 const Dashboard: React.FC = () => {
+  const { formatAmount } = useCurrency();
   const [stats, setStats] = useState<DashboardStats>({
     totalIncome: 0,
     totalExpenses: 0,
@@ -111,7 +113,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ${stats.currentBalance.toLocaleString()}
+                {formatAmount(stats.currentBalance || 0)}
               </div>
               <p className="text-xs text-muted-foreground">
                 Total income minus expenses
@@ -128,7 +130,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                +${stats.monthlyIncome}
+                +{formatAmount(stats.monthlyIncome || 0)}
               </div>
               <p className="text-xs text-muted-foreground">
                 This month's earnings
@@ -145,7 +147,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                -${stats.monthlyExpenses}
+                -{formatAmount(stats.monthlyExpenses || 0)}
               </div>
               <p className="text-xs text-muted-foreground">
                 This month's spending
@@ -162,7 +164,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
-                ${stats.monthlySaving}
+                {formatAmount(stats.monthlySaving || 0)}
               </div>
               <p className="text-xs text-muted-foreground">
                 {savingsRate.toFixed(1)}% savings rate
@@ -181,7 +183,7 @@ const Dashboard: React.FC = () => {
               <div className="flex justify-between text-sm">
                 <span>Monthly Savings</span>
                 <span>
-                  ${stats.monthlySaving} of ${stats.monthlyIncome}
+                  {formatAmount(stats.monthlySaving || 0)} of {formatAmount(stats.monthlyIncome || 0)}
                 </span>
               </div>
               <Progress
@@ -267,8 +269,7 @@ const Dashboard: React.FC = () => {
                             : "text-red-600",
                         )}
                       >
-                        {transaction.type === "INCOME" ? "+" : "-"}$
-                        {transaction.amount.toLocaleString()}
+                        {transaction.type === "INCOME" ? "+" : "-"}{formatAmount(transaction.amount)}
                       </div>
                     </div>
                   );

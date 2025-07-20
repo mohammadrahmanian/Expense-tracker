@@ -19,6 +19,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { categoriesService, transactionsService } from "@/services/api";
 import { Category, Transaction } from "@/types";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
@@ -52,6 +53,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   onSuccess,
   onCancel,
 }) => {
+  const { currencySymbol } = useCurrency();
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -114,7 +116,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         title: data.title,
         amount: data.amount,
         type: data.type,
-        date: utcDate,
+        date: utcDate.toISOString(),
         categoryId: data.categoryId,
         isRecurring: data.isRecurring,
         recurringFrequency: data.recurringFrequency,
@@ -165,7 +167,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount ($)</Label>
+              <Label htmlFor="amount">Amount ({currencySymbol})</Label>
               <Input
                 id="amount"
                 type="number"

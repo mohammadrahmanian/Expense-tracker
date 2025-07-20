@@ -43,8 +43,10 @@ import {
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const Transactions: React.FC = () => {
+  const { formatAmount } = useCurrency();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<
@@ -199,7 +201,7 @@ const Transactions: React.FC = () => {
                     Total Income
                   </p>
                   <p className="text-2xl font-bold text-green-600">
-                    +${totalIncome.toLocaleString()}
+                    +{formatAmount(totalIncome)}
                   </p>
                 </div>
               </div>
@@ -214,7 +216,7 @@ const Transactions: React.FC = () => {
                     Total Expenses
                   </p>
                   <p className="text-2xl font-bold text-red-600">
-                    -${totalExpenses.toLocaleString()}
+                    -{formatAmount(totalExpenses)}
                   </p>
                 </div>
               </div>
@@ -243,8 +245,7 @@ const Transactions: React.FC = () => {
                         : "text-red-600",
                     )}
                   >
-                    {totalIncome - totalExpenses >= 0 ? "+" : ""}$
-                    {(totalIncome - totalExpenses).toLocaleString()}
+                    {totalIncome - totalExpenses >= 0 ? "+" : "-"}{formatAmount(Math.abs(totalIncome - totalExpenses))}
                   </p>
                 </div>
               </div>
@@ -413,8 +414,7 @@ const Transactions: React.FC = () => {
                                 : "text-red-600",
                             )}
                           >
-                            {transaction.type === "INCOME" ? "+" : "-"}$
-                            {transaction.amount.toLocaleString()}
+                            {transaction.type === "INCOME" ? "+" : "-"}{formatAmount(transaction.amount)}
                           </TableCell>
                           <TableCell>
                             <DropdownMenu>
