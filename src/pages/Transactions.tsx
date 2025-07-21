@@ -3,7 +3,11 @@ import { TransactionForm } from "@/components/transactions/TransactionForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { 
+  ResponsiveDialog as Dialog, 
+  ResponsiveDialogContent as DialogContent, 
+  ResponsiveDialogTrigger as DialogTrigger 
+} from "@/components/ui/responsive-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -180,7 +184,7 @@ const Transactions: React.FC = () => {
                 Add Transaction
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-2xl">
               <TransactionForm
                 transaction={editingTransaction}
                 onSuccess={handleFormSuccess}
