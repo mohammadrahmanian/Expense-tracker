@@ -59,6 +59,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
       setCategories(allCategories.filter(cat => cat.type === 'EXPENSE'));
     } catch (error) {
       console.error('Failed to load categories:', error);
+      toast.error('Failed to load categories. Please try again.');
     }
   };
 
