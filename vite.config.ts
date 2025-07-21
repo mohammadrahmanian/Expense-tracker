@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  envPrefix: 'VITE_', // This is the default, but being explicit
   define: {
     // Suppress React defaultProps warnings in development
     ...(mode === "development" && {
