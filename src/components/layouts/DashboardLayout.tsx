@@ -1,7 +1,6 @@
-import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { CurrencySwitcher } from "@/components/ui/currency-switcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,19 +8,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CurrencySwitcher } from "@/components/ui/currency-switcher";
+import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
-  Receipt,
-  PieChart,
-  Settings,
   LogOut,
   Menu,
+  PieChart,
+  Receipt,
+  Settings,
   X,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -138,6 +138,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
         </main>
+
+        <FloatingActionButton />
       </div>
     </div>
   );
