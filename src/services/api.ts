@@ -2,8 +2,13 @@ import { Budget, Category, DashboardStats, Transaction } from "@/types";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 // API Configuration
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+if (!API_BASE_URL) {
+  throw new Error(
+    "API_BASE_URL is not defined. Please set it in your environment variables.",
+  );
+}
 
 // Create axios instance with base configuration
 const apiClient: AxiosInstance = axios.create({
@@ -78,7 +83,7 @@ export const transactionsService = {
   },
 
   create: async (
-    transaction: Omit<Transaction, "id" | "createdAt" | "updatedAt">,
+    transaction: Omit<Transaction, "id" | "createdAt" | "updatedAt" | "userId">,
   ): Promise<Transaction> => {
     try {
       const response = await apiClient.post<Transaction>(
