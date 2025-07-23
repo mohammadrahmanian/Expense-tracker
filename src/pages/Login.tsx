@@ -89,16 +89,6 @@ const Login: React.FC = () => {
           </p>
         </div>
       </form>
-
-      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-        <p className="text-sm text-blue-700 dark:text-blue-300 text-center">
-          <strong>Demo credentials:</strong>
-          <br />
-          Email: demo@example.com
-          <br />
-          Password: demo123
-        </p>
-      </div>
     </AuthLayout>
   );
 };
