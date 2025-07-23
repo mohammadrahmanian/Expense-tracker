@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { User, Lock, Upload } from "lucide-react";
@@ -86,13 +87,14 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Manage your account settings and preferences
-        </p>
-      </div>
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            Manage your account settings and preferences
+          </p>
+        </div>
 
       {/* User Information */}
       <Card>
@@ -255,7 +257,8 @@ const Profile: React.FC = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 };
 
