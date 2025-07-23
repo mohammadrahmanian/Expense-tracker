@@ -18,6 +18,7 @@ import {
   PieChart,
   Receipt,
   Settings,
+  User,
   X,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -32,6 +33,7 @@ const navigation = [
   { name: "Transactions", href: "/transactions", icon: Receipt },
   { name: "Reports", href: "/reports", icon: PieChart },
   { name: "Categories", href: "/categories", icon: Settings },
+  { name: "Profile", href: "/profile", icon: User },
 ];
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
