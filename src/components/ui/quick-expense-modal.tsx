@@ -136,7 +136,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl sm:max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Quick Add Expense</DialogTitle>
           <DialogDescription>
@@ -144,9 +144,9 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Category Selection */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <Label>Category</Label>
             <div className="grid grid-cols-3 gap-2">
               {quickCategories.map((cat) => {
@@ -258,7 +258,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-2">
             <Button
               type="button"
               variant="outline"
