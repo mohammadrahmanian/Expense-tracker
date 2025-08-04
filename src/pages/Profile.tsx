@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,8 +14,14 @@ import { User, Lock, Upload } from "lucide-react";
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string().min(6, "Please confirm your password"),
+  newPassword: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/\d/, "Password must contain at least one number")
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character"),
+  confirmPassword: z.string().min(8, "Please confirm your password"),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -28,6 +34,7 @@ const Profile: React.FC = () => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const csvInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
     register: registerPassword,
@@ -53,15 +60,84 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
-        toast.error("Please select a valid CSV file");
-        return;
+  const validateCsvContent = async (file: File): Promise<boolean> => {
+    try {
+      // Read the first 1KB of the file for validation
+      const slice = file.slice(0, 1024);
+      const text = await slice.text();
+      
+      // Check if the content is empty or too short
+      if (text.trim().length === 0) {
+        return false;
       }
-      setSelectedFile(file);
+      
+      // Split into lines and check for basic CSV structure
+      const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
+      
+      if (lines.length === 0) {
+        return false;
+      }
+      
+      // Check if at least the first line contains commas (CSV delimiter)
+      const firstLine = lines[0];
+      if (!firstLine.includes(',')) {
+        return false;
+      }
+      
+      // Validate that it looks like a proper CSV header
+      // Should contain typical CSV characters and not be binary data
+      const validCsvPattern = /^[\w\s,"'-]+$/;
+      if (!validCsvPattern.test(firstLine)) {
+        return false;
+      }
+      
+      // Check for potential CSV headers (common transaction fields)
+      const lowerFirstLine = firstLine.toLowerCase();
+      const hasCommonHeaders = /\b(date|amount|description|category|type)\b/.test(lowerFirstLine);
+      
+      // If we have multiple lines, validate the second line as well
+      if (lines.length > 1) {
+        const secondLine = lines[1];
+        // Second line should also contain commas and valid CSV characters
+        if (!secondLine.includes(',') || !validCsvPattern.test(secondLine)) {
+          return false;
+        }
+      }
+      
+      return hasCommonHeaders;
+    } catch (error) {
+      console.error('Error validating CSV content:', error);
+      return false;
     }
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    // Basic file type and extension validation
+    if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
+      toast.error("Please select a valid CSV file");
+      return;
+    }
+
+    // Check file size (limit to 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size too large. Please select a file smaller than 10MB");
+      return;
+    }
+
+    // Perform content-based validation
+    const isValidCsv = await validateCsvContent(file);
+    if (!isValidCsv) {
+      toast.error("Invalid CSV content. Please ensure the file contains valid CSV data with headers like 'date', 'amount', 'description', or 'category'");
+      return;
+    }
+
+    setSelectedFile(file);
+    toast.success("CSV file validated successfully!");
   };
 
   const handleCsvImport = async () => {
@@ -77,8 +153,10 @@ const Profile: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
       toast.success(`Successfully imported transactions from ${selectedFile.name}`);
       setSelectedFile(null);
-      // Reset file input
-      (document.getElementById("csv-file") as HTMLInputElement).value = "";
+      // Reset file input using ref
+      if (csvInputRef.current) {
+        csvInputRef.current.value = "";
+      }
     } catch (error) {
       toast.error("Failed to import CSV file. Please check the format and try again.");
     } finally {
@@ -219,6 +297,7 @@ const Profile: React.FC = () => {
               id="csv-file"
               type="file"
               accept=".csv"
+              ref={csvInputRef}
               onChange={handleFileSelect}
               className="cursor-pointer"
             />
