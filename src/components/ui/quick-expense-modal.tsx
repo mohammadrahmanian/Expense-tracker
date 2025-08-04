@@ -43,6 +43,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState<Date>(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [transactionName, setTransactionName] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -83,28 +84,50 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
       return;
     }
 
-    const category = findCategoryByName(selectedCategory);
-    if (!category) {
-      toast.error('Selected category not found');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      await transactionsService.create({
-        title: `${selectedCategory} expense`,
-        amount: numericAmount,
-        type: 'EXPENSE',
-        categoryId: category.id,
-        date,
-        isRecurring: false,
-      });
+      let category = findCategoryByName(selectedCategory);
 
-      toast.success('Expense added successfully!');
-      handleClose();
-    } catch (error) {
-      toast.error('Failed to add expense. Please try again.');
+      // If category doesn't exist, create it
+      if (!category) {
+        try {
+          const newCategory = await categoriesService.create({
+            name: selectedCategory,
+            type: 'EXPENSE',
+            color: quickCategories.find(cat => cat.name === selectedCategory)?.color || '#6366f1',
+          });
+          category = newCategory;
+
+          // Refresh categories list
+          await loadCategories();
+
+          toast.success(`Created "${selectedCategory}" category`);
+        } catch (catError) {
+          console.error('Error creating category:', catError);
+          toast.error('Failed to create category. Please try again.');
+          return;  // Abort if category creation fails
+        }
+      }
+
+      const title = transactionName.trim() || `${selectedCategory} expense`;
+
+      try {
+        await transactionsService.create({
+          title,
+          amount: numericAmount,
+          type: 'EXPENSE',
+          categoryId: category.id,
+          date,
+          isRecurring: false,
+        });
+
+        toast.success('Expense added successfully!');
+        handleClose();
+      } catch (transError) {
+        console.error('Error creating transaction:', transError);
+        toast.error('Failed to add expense. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -113,6 +136,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
   const handleClose = () => {
     setAmount('');
     setSelectedCategory('');
+    setTransactionName('');
     setDate(new Date());
     setIsCalendarOpen(false);
     onClose();
@@ -120,7 +144,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl sm:max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Quick Add Expense</DialogTitle>
           <DialogDescription>
@@ -128,9 +152,9 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Category Selection */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <Label>Category</Label>
             <div className="grid grid-cols-3 gap-2">
               {quickCategories.map((cat) => {
@@ -145,20 +169,45 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
                     variant={isSelected ? "default" : "outline"}
                     className={cn(
                       "h-16 flex flex-col items-center justify-center gap-1",
-                      isSelected && "bg-blue-600 hover:bg-blue-700"
+                      isSelected && "bg-blue-600 hover:bg-blue-700",
+                      !category && "opacity-75"
                     )}
                     onClick={() => setSelectedCategory(cat.name)}
-                    disabled={!category}
                   >
                     <Icon className="h-5 w-5" />
                     <span className="text-xs">{cat.name}</span>
+                    {!category && (
+                      <span className="text-[10px] text-red-500">Missing</span>
+                    )}
                   </Button>
                 );
               })}
             </div>
             {selectedCategory && !findCategoryByName(selectedCategory) && (
-              <p className="text-sm text-red-600">
-                {selectedCategory} category not found. Please create it first in Categories page.
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-sm text-blue-800">
+                  ℹ️ The "{selectedCategory}" category will be created automatically when you add this expense.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Transaction Name Input (Optional) */}
+          <div className="space-y-2">
+            <Label htmlFor="transactionName">
+              Transaction Name 
+              <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+            </Label>
+            <Input
+              id="transactionName"
+              type="text"
+              placeholder={selectedCategory ? `${selectedCategory} expense` : "Enter transaction name..."}
+              value={transactionName}
+              onChange={(e) => setTransactionName(e.target.value)}
+            />
+            {selectedCategory && !transactionName.trim() && (
+              <p className="text-xs text-muted-foreground">
+                Will use "{selectedCategory} expense" as default
               </p>
             )}
           </div>
@@ -217,7 +266,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-2">
             <Button
               type="button"
               variant="outline"
