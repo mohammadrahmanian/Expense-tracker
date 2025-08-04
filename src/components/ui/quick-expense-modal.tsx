@@ -43,6 +43,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState<Date>(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [transactionName, setTransactionName] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -92,8 +93,10 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
     setIsSubmitting(true);
 
     try {
+      const title = transactionName.trim() || `${selectedCategory} expense`;
+      
       await transactionsService.create({
-        title: `${selectedCategory} expense`,
+        title,
         amount: numericAmount,
         type: 'EXPENSE',
         categoryId: category.id,
@@ -113,6 +116,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
   const handleClose = () => {
     setAmount('');
     setSelectedCategory('');
+    setTransactionName('');
     setDate(new Date());
     setIsCalendarOpen(false);
     onClose();
@@ -159,6 +163,26 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
             {selectedCategory && !findCategoryByName(selectedCategory) && (
               <p className="text-sm text-red-600">
                 {selectedCategory} category not found. Please create it first in Categories page.
+              </p>
+            )}
+          </div>
+
+          {/* Transaction Name Input (Optional) */}
+          <div className="space-y-2">
+            <Label htmlFor="transactionName">
+              Transaction Name 
+              <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+            </Label>
+            <Input
+              id="transactionName"
+              type="text"
+              placeholder={selectedCategory ? `${selectedCategory} expense` : "Enter transaction name..."}
+              value={transactionName}
+              onChange={(e) => setTransactionName(e.target.value)}
+            />
+            {selectedCategory && !transactionName.trim() && (
+              <p className="text-xs text-muted-foreground">
+                Will use "{selectedCategory} expense" as default
               </p>
             )}
           </div>
