@@ -84,15 +84,26 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
       return;
     }
 
-    const category = findCategoryByName(selectedCategory);
-    if (!category) {
-      toast.error('Selected category not found');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
+      let category = findCategoryByName(selectedCategory);
+      
+      // If category doesn't exist, create it
+      if (!category) {
+        const newCategory = await categoriesService.create({
+          name: selectedCategory,
+          type: 'EXPENSE',
+          color: quickCategories.find(cat => cat.name === selectedCategory)?.color || '#6366f1',
+        });
+        category = newCategory;
+        
+        // Refresh categories list
+        await loadCategories();
+        
+        toast.success(`Created "${selectedCategory}" category`);
+      }
+
       const title = transactionName.trim() || `${selectedCategory} expense`;
       
       await transactionsService.create({
@@ -107,6 +118,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
       toast.success('Expense added successfully!');
       handleClose();
     } catch (error) {
+      console.error('Error creating expense:', error);
       toast.error('Failed to add expense. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -149,21 +161,26 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
                     variant={isSelected ? "default" : "outline"}
                     className={cn(
                       "h-16 flex flex-col items-center justify-center gap-1",
-                      isSelected && "bg-blue-600 hover:bg-blue-700"
+                      isSelected && "bg-blue-600 hover:bg-blue-700",
+                      !category && "opacity-75"
                     )}
                     onClick={() => setSelectedCategory(cat.name)}
-                    disabled={!category}
                   >
                     <Icon className="h-5 w-5" />
                     <span className="text-xs">{cat.name}</span>
+                    {!category && (
+                      <span className="text-[10px] text-red-500">Missing</span>
+                    )}
                   </Button>
                 );
               })}
             </div>
             {selectedCategory && !findCategoryByName(selectedCategory) && (
-              <p className="text-sm text-red-600">
-                {selectedCategory} category not found. Please create it first in Categories page.
-              </p>
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-sm text-blue-800">
+                  ℹ️ The "{selectedCategory}" category will be created automatically when you add this expense.
+                </p>
+              </div>
             )}
           </div>
 
