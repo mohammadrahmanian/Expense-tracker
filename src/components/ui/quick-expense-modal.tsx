@@ -88,38 +88,46 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
 
     try {
       let category = findCategoryByName(selectedCategory);
-      
+
       // If category doesn't exist, create it
       if (!category) {
-        const newCategory = await categoriesService.create({
-          name: selectedCategory,
-          type: 'EXPENSE',
-          color: quickCategories.find(cat => cat.name === selectedCategory)?.color || '#6366f1',
-        });
-        category = newCategory;
-        
-        // Refresh categories list
-        await loadCategories();
-        
-        toast.success(`Created "${selectedCategory}" category`);
+        try {
+          const newCategory = await categoriesService.create({
+            name: selectedCategory,
+            type: 'EXPENSE',
+            color: quickCategories.find(cat => cat.name === selectedCategory)?.color || '#6366f1',
+          });
+          category = newCategory;
+
+          // Refresh categories list
+          await loadCategories();
+
+          toast.success(`Created "${selectedCategory}" category`);
+        } catch (catError) {
+          console.error('Error creating category:', catError);
+          toast.error('Failed to create category. Please try again.');
+          return;  // Abort if category creation fails
+        }
       }
 
       const title = transactionName.trim() || `${selectedCategory} expense`;
-      
-      await transactionsService.create({
-        title,
-        amount: numericAmount,
-        type: 'EXPENSE',
-        categoryId: category.id,
-        date,
-        isRecurring: false,
-      });
 
-      toast.success('Expense added successfully!');
-      handleClose();
-    } catch (error) {
-      console.error('Error creating expense:', error);
-      toast.error('Failed to add expense. Please try again.');
+      try {
+        await transactionsService.create({
+          title,
+          amount: numericAmount,
+          type: 'EXPENSE',
+          categoryId: category.id,
+          date,
+          isRecurring: false,
+        });
+
+        toast.success('Expense added successfully!');
+        handleClose();
+      } catch (transError) {
+        console.error('Error creating transaction:', transError);
+        toast.error('Failed to add expense. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
