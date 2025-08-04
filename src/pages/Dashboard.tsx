@@ -11,6 +11,7 @@ import {
 } from "@/services/api";
 import { Category, DashboardStats, Transaction } from "@/types";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useDataRefresh } from "@/contexts/DataRefreshContext";
 import { format } from "date-fns";
 import {
   ArrowDownLeft,
@@ -27,6 +28,7 @@ import { toast } from "sonner";
 
 const Dashboard: React.FC = () => {
   const { formatAmount } = useCurrency();
+  const { refreshTrigger } = useDataRefresh();
   const [stats, setStats] = useState<DashboardStats>({
     totalIncome: 0,
     totalExpenses: 0,
@@ -70,7 +72,7 @@ const Dashboard: React.FC = () => {
     };
 
     loadDashboardData();
-  }, []);
+  }, [refreshTrigger]); // Re-run when refreshTrigger changes
 
   const getCategoryById = (categoryId: string) => {
     return categories.find((cat) => cat.id === categoryId);

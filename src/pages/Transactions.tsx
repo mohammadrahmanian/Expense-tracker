@@ -48,9 +48,11 @@ import {
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useDataRefresh } from "@/contexts/DataRefreshContext";
 
 const Transactions: React.FC = () => {
   const { formatAmount } = useCurrency();
+  const { refreshTrigger } = useDataRefresh();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<
@@ -69,7 +71,7 @@ const Transactions: React.FC = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [refreshTrigger]); // Re-run when refreshTrigger changes
 
   useEffect(() => {
     filterTransactions();
