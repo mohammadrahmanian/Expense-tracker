@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  ResponsiveDialogFooter as DialogFooter,
+  ResponsiveDialogHeader as DialogHeader,
+  ResponsiveDialogTitle as DialogTitle
+} from "@/components/ui/responsive-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -30,7 +34,6 @@ import { z } from "zod";
 
 const transactionSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  amount: z.number().min(0.01, "Amount must be greater than 0"),
   type: z.enum(["INCOME", "EXPENSE"]),
   categoryId: z.string().min(1, "Category is required"),
   date: z.date(),
@@ -53,10 +56,13 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   onSuccess,
   onCancel,
 }) => {
-  const { currencySymbol } = useCurrency();
+  const { currency } = useCurrency();
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [amount, setAmount] = React.useState<string>(
+    transaction?.amount?.toString() || ""
+  );
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -74,7 +80,27 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     fetchCategories();
   }, []);
 
+  // Update amount state when transaction changes (for editing)
+  useEffect(() => {
+    if (transaction?.amount) {
+      setAmount(transaction.amount.toString());
+    }
+  }, [transaction]);
+
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow digits, one comma or period, and leading/trailing whitespace
+    if (/^[\d,.\s]*$/.test(value)) {
+      setAmount(value);
+    }
+  };
+
+  const normalizeAmount = (value: string): string => {
+    // Replace comma with period for decimal separator
+    return value.replace(',', '.');
+  };
 
   const {
     register,
@@ -87,7 +113,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       title: transaction?.title || "",
-      amount: transaction?.amount || 0,
       type: transaction?.type || "EXPENSE",
       categoryId: transaction?.categoryId || "",
       date: transaction ? new Date(transaction.date) : new Date(),
@@ -106,6 +131,21 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     try {
       setIsSubmitting(true);
 
+      // Validate amount manually
+      if (!amount) {
+        toast.error('Please enter an amount');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const normalizedAmount = normalizeAmount(amount.trim());
+      const numericAmount = parseFloat(normalizedAmount);
+      if (isNaN(numericAmount) || numericAmount <= 0) {
+        toast.error('Please enter a valid amount');
+        setIsSubmitting(false);
+        return;
+      }
+
       // Convert date to UTC to avoid timezone issues on the backend
       const utcDate = new Date(
         data.date.getTime() - data.date.getTimezoneOffset() * 60000,
@@ -114,9 +154,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       const transactionData = {
         userId: "1", // In a real app, this would come from auth context
         title: data.title,
-        amount: data.amount,
+        amount: numericAmount,
         type: data.type,
-        date: utcDate.toISOString(),
+        date: utcDate,
         categoryId: data.categoryId,
         isRecurring: data.isRecurring,
         recurringFrequency: data.recurringFrequency,
@@ -131,6 +171,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       }
 
       reset();
+      setAmount("");
       onSuccess();
     } catch (error) {
       const errorMessage =
@@ -144,14 +185,15 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
+    <>
+      <DialogHeader>
+        <DialogTitle>
           {transaction ? "Edit Transaction" : "Add New Transaction"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        </DialogTitle>
+      </DialogHeader>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
+        <div className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="title">Title</Label>
@@ -167,18 +209,15 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount ({currencySymbol})</Label>
+              <Label htmlFor="amount">Amount ({currency === 'USD' ? '$' : '€'})</Label>
               <Input
                 id="amount"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                {...register("amount", { valueAsNumber: true })}
-                className={errors.amount ? "border-red-500" : ""}
+                type="text"
+                placeholder="0.00 or 0,00"
+                value={amount}
+                onChange={handleAmountChange}
+                required
               />
-              {errors.amount && (
-                <p className="text-sm text-red-500">{errors.amount.message}</p>
-              )}
             </div>
           </div>
 
@@ -307,22 +346,33 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               </div>
             )}
           </div>
+        </div>
 
-          <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting || isLoading}>
-              {isSubmitting && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {isSubmitting
-                ? `${transaction ? "Updating" : "Adding"}...`
-                : `${transaction ? "Update" : "Add"} Transaction`}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+        {/* Sticky Footer */}
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="flex-1"
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="flex-1"
+            disabled={isSubmitting || isLoading}
+          >
+            {isSubmitting && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            {isSubmitting
+              ? `${transaction ? "Updating" : "Adding"}...`
+              : `${transaction ? "Update" : "Add"} Transaction`}
+          </Button>
+        </DialogFooter>
+      </form>
+    </>
   );
 };

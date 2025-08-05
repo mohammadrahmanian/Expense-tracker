@@ -56,7 +56,7 @@ const ResponsiveDialogContent = React.forwardRef<
       <div className="mx-auto w-12 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-2 mb-4 sm:hidden" />
       
       {/* Scrollable content area */}
-      <div className="flex-1 overflow-y-auto px-6 pb-2 sm:pt-6">
+      <div className="flex-1 overflow-y-auto px-6 sm:pt-6">
         {children}
       </div>
       
