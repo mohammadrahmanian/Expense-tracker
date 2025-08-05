@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ResponsiveDialog as Dialog,
   ResponsiveDialogContent as DialogContent,
+  ResponsiveDialogFooter as DialogFooter,
   ResponsiveDialogHeader as DialogHeader,
   ResponsiveDialogTitle as DialogTitle,
   ResponsiveDialogTrigger as DialogTrigger,
@@ -206,96 +207,100 @@ const Categories: React.FC = () => {
                   {editingCategory ? "Edit Category" : "Create New Category"}
                 </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Category Name</Label>
-                  <Input
-                    id="name"
-                    placeholder="e.g., Food & Dining"
-                    {...register("name")}
-                    className={errors.name ? "border-red-500" : ""}
-                  />
-                  {errors.name && (
-                    <p className="text-sm text-red-500">
-                      {errors.name.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Type</Label>
-                  <Select
-                    value={watch("type")}
-                    onValueChange={(value: "INCOME" | "EXPENSE") =>
-                      setValue("type", value)
-                    }
-                  >
-                    <SelectTrigger
-                      className={errors.type ? "border-red-500" : ""}
-                    >
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="EXPENSE">Expense</SelectItem>
-                      <SelectItem value="INCOME">Income</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.type && (
-                    <p className="text-sm text-red-500">
-                      {errors.type.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Color</Label>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <div
-                        className="w-8 h-8 rounded-full border-2 border-gray-300"
-                        style={{ backgroundColor: watchColor }}
-                      />
-                      <Input
-                        type="color"
-                        value={watchColor}
-                        onChange={(e) => setValue("color", e.target.value)}
-                        className="w-16 h-8 p-0 border-0"
-                      />
-                      <span className="text-sm text-gray-500">
-                        {watchColor}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-6 gap-2">
-                      {predefinedColors.map((color) => (
-                        <button
-                          key={color}
-                          type="button"
-                          className="w-8 h-8 rounded-full border-2 border-gray-300 hover:scale-110 transition-transform"
-                          style={{ backgroundColor: color }}
-                          onClick={() => setValue("color", color)}
-                        />
-                      ))}
-                    </div>
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Category Name</Label>
+                    <Input
+                      id="name"
+                      placeholder="e.g., Food & Dining"
+                      {...register("name")}
+                      className={errors.name ? "border-red-500" : ""}
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-red-500">
+                        {errors.name.message}
+                      </p>
+                    )}
                   </div>
-                  {errors.color && (
-                    <p className="text-sm text-red-500">
-                      {errors.color.message}
-                    </p>
-                  )}
+
+                  <div className="space-y-2">
+                    <Label>Type</Label>
+                    <Select
+                      value={watch("type")}
+                      onValueChange={(value: "INCOME" | "EXPENSE") =>
+                        setValue("type", value)
+                      }
+                    >
+                      <SelectTrigger
+                        className={errors.type ? "border-red-500" : ""}
+                      >
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="EXPENSE">Expense</SelectItem>
+                        <SelectItem value="INCOME">Income</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.type && (
+                      <p className="text-sm text-red-500">
+                        {errors.type.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Color</Label>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <div
+                          className="w-8 h-8 rounded-full border-2 border-gray-300"
+                          style={{ backgroundColor: watchColor }}
+                        />
+                        <Input
+                          type="color"
+                          value={watchColor}
+                          onChange={(e) => setValue("color", e.target.value)}
+                          className="w-16 h-8 p-0 border-0"
+                        />
+                        <span className="text-sm text-gray-500">
+                          {watchColor}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-6 gap-2">
+                        {predefinedColors.map((color) => (
+                          <button
+                            key={color}
+                            type="button"
+                            className="w-8 h-8 rounded-full border-2 border-gray-300 hover:scale-110 transition-transform"
+                            style={{ backgroundColor: color }}
+                            onClick={() => setValue("color", color)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    {errors.color && (
+                      <p className="text-sm text-red-500">
+                        {errors.color.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex justify-end space-x-2 pt-4">
+                {/* Sticky Footer */}
+                <DialogFooter>
                   <Button
                     type="button"
                     variant="outline"
                     onClick={handleFormCancel}
+                    className="flex-1"
                   >
                     Cancel
                   </Button>
-                  <Button type="submit">
+                  <Button type="submit" className="flex-1">
                     {editingCategory ? "Update" : "Create"} Category
                   </Button>
-                </div>
+                </DialogFooter>
               </form>
             </DialogContent>
           </Dialog>

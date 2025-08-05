@@ -33,7 +33,7 @@ const ResponsiveDialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         // Base styles
-        "fixed z-50 grid w-full gap-4 border bg-background p-6 shadow-lg duration-200",
+        "fixed z-50 flex flex-col w-full border bg-background shadow-lg duration-200",
         // Desktop: centered modal
         "sm:left-[50%] sm:top-[50%] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg",
         // Desktop animations
@@ -46,19 +46,22 @@ const ResponsiveDialogContent = React.forwardRef<
         // Mobile animations
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom",
-        // Mobile specific max height and scrolling
-        "max-h-[85vh] overflow-y-auto",
+        // Mobile specific max height
+        "max-h-[85vh]",
         className,
       )}
       {...props}
     >
       {/* Mobile drag indicator */}
-      <div className="mx-auto w-12 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mb-2 sm:hidden" />
+      <div className="mx-auto w-12 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-2 mb-4 sm:hidden" />
       
-      {children}
+      {/* Scrollable content area */}
+      <div className="flex-1 overflow-y-auto px-6 sm:pt-6">
+        {children}
+      </div>
       
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-        <X className="h-4 w-4" />
+      <DialogPrimitive.Close className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 bg-background/80 backdrop-blur-sm transition-all hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none sm:right-4 sm:top-4">
+        <X className="h-5 w-5" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
@@ -86,7 +89,7 @@ const ResponsiveDialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 pt-4 gap-2 sm:gap-0",
+      "sticky bottom-0 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2 sm:gap-0 px-6 py-4 bg-background border-t border-border/40 backdrop-blur-sm",
       className,
     )}
     {...props}
