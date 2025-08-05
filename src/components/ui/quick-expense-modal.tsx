@@ -18,6 +18,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { createAmountChangeHandler, normalizeAmount } from '@/lib/amount-utils';
 import { useDataRefresh } from '@/contexts/DataRefreshContext';
 import { transactionsService, categoriesService } from '@/services/api';
 import { Category } from '@/types';
@@ -73,18 +74,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
     );
   };
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Allow digits, one comma or period, and leading/trailing whitespace
-    if (/^[\d,.\s]*$/.test(value)) {
-      setAmount(value);
-    }
-  };
-
-  const normalizeAmount = (value: string): string => {
-    // Replace comma with period for decimal separator
-    return value.replace(',', '.');
-  };
+  const handleAmountChange = createAmountChangeHandler(setAmount);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

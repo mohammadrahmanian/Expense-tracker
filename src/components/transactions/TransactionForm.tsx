@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { createAmountChangeHandler, normalizeAmount } from "@/lib/amount-utils";
 import { categoriesService, transactionsService } from "@/services/api";
 import { Category, Transaction } from "@/types";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -89,18 +90,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Allow digits, whitespace, and at most one comma or period as decimal separator
-    if (/^\s*\d*[,.]?\d*\s*$/.test(value)) {
-      setAmount(value);
-    }
-  };
-
-  const normalizeAmount = (value: string): string => {
-    // Replace comma with period for decimal separator
-    return value.replace(',', '.');
-  };
+  const handleAmountChange = createAmountChangeHandler(setAmount);
 
   const {
     register,
