@@ -91,8 +91,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Allow digits, one comma or period, and leading/trailing whitespace
-    if (/^[\d,.\s]*$/.test(value)) {
+    // Allow digits, whitespace, and at most one comma or period as decimal separator
+    if (/^\s*\d*[,.]?\d*\s*$/.test(value)) {
       setAmount(value);
     }
   };
