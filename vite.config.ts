@@ -21,4 +21,19 @@ export default defineConfig(({ mode }) => ({
       "process.env.NODE_ENV": '"development"',
     }),
   },
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        sw: path.resolve(__dirname, 'public/sw.js'),
+      },
+      output: {
+        entryFileNames: (chunkInfo) => {
+          return chunkInfo.name === 'sw' ? 'sw.js' : 'assets/[name]-[hash].js';
+        },
+      },
+    },
+  },
+  // Ensure service worker and manifest are copied to dist
+  publicDir: 'public',
 }));
