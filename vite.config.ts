@@ -13,7 +13,14 @@ export default defineConfig(({ mode }) => ({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true
+      },
+      includeAssets: ['favicon.ico', 'icons/*.png', 'splash/*.png'],
       workbox: {
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\/api\/.*/i,
@@ -39,6 +46,8 @@ export default defineConfig(({ mode }) => ({
             },
           },
         ],
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
       },
       manifest: {
         name: 'Expensio - Personal Expense Tracker',
@@ -123,6 +132,22 @@ export default defineConfig(({ mode }) => ({
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
+          }
+        ],
+        screenshots: [
+          {
+            src: '/splash/iPhone_16_Pro_Max_portrait.png',
+            sizes: '1320x2868',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'iPhone 16 Pro Max'
+          },
+          {
+            src: '/splash/13__iPad_Pro_M4_portrait.png',
+            sizes: '2064x2752',
+            type: 'image/png', 
+            form_factor: 'wide',
+            label: 'iPad Pro 13"'
           }
         ]
       }
