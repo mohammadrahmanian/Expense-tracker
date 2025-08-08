@@ -16,11 +16,12 @@ export default defineConfig(({ mode }) => ({
       devOptions: {
         enabled: true
       },
-      includeAssets: ['favicon.ico', 'icons/*.png', 'splash/*.png'],
+      includeAssets: ['favicon.ico', 'icons/*.png'],
       workbox: {
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,
+        globIgnores: ['**/splash/**'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\/api\/.*/i,
@@ -120,18 +121,6 @@ export default defineConfig(({ mode }) => ({
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any'
-          },
-          {
-            src: '/icons/icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'maskable'
-          },
-          {
-            src: '/icons/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable'
           }
         ],
         screenshots: [
