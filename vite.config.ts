@@ -46,121 +46,81 @@ export default defineConfig(({ mode }) => ({
         description: 'Track your personal expenses and manage your budget effectively',
         theme_color: '#000000',
         background_color: '#ffffff',
-        display: 'standalone',
+        display: 'fullscreen',
         orientation: 'portrait-primary',
         scope: '/',
         start_url: '/',
         categories: ['finance', 'productivity', 'utilities'],
         icons: [
-          // Android icons
           {
-            src: '/icons/android-icon-36x36.png',
-            sizes: '36x36',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/icons/android-icon-48x48.png',
+            src: '/icons/icon-48x48.png',
             sizes: '48x48',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/icons/android-icon-72x72.png',
+            src: '/icons/icon-72x72.png',
             sizes: '72x72',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/icons/android-icon-96x96.png',
+            src: '/icons/icon-96x96.png',
             sizes: '96x96',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/icons/android-icon-144x144.png',
+            src: '/icons/icon-128x128.png',
+            sizes: '128x128',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon-144x144.png',
             sizes: '144x144',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/icons/android-icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          // Apple icons
-          {
-            src: '/icons/apple-icon-57x57.png',
-            sizes: '57x57',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/icons/apple-icon-60x60.png',
-            sizes: '60x60',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/icons/apple-icon-72x72.png',
-            sizes: '72x72',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/icons/apple-icon-76x76.png',
-            sizes: '76x76',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/icons/apple-icon-114x114.png',
-            sizes: '114x114',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/icons/apple-icon-120x120.png',
-            sizes: '120x120',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/icons/apple-icon-144x144.png',
-            sizes: '144x144',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/icons/apple-icon-152x152.png',
+            src: '/icons/icon-152x152.png',
             sizes: '152x152',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/icons/apple-icon-180x180.png',
-            sizes: '180x180',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          // General purpose icons
-          {
-            src: '/icons/apple-icon.png',
+            src: '/icons/icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any'
           },
-          // Maskable icons for iOS
           {
-            src: '/icons/android-icon-192x192.png',
+            src: '/icons/icon-256x256.png',
+            sizes: '256x256',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon-384x384.png',
+            sizes: '384x384',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'maskable'
           },
           {
-            src: '/icons/apple-icon-144x144.png',
-            sizes: '144x144',
+            src: '/icons/icon-512x512.png',
+            sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
           }
