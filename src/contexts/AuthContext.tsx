@@ -18,7 +18,8 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInitializingAuth, setIsInitializingAuth] = useState(true);
 
   useEffect(() => {
     // Check if user is logged in on app start
@@ -34,7 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           localStorage.removeItem("user");
         }
       }
-      setIsLoading(false);
+      setIsInitializingAuth(false);
     };
 
     checkAuthStatus();
@@ -87,7 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, isLoading, isInitializingAuth }}>
       {children}
     </AuthContext.Provider>
   );

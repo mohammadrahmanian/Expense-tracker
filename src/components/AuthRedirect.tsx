@@ -13,10 +13,10 @@ export const AuthRedirect: React.FC<AuthRedirectProps> = ({
   redirectTo = "/dashboard",
   requireAuth = false,
 }) => {
-  const { user, isLoading } = useAuth();
+  const { user, isInitializingAuth } = useAuth();
 
   // Show loading spinner while checking authentication status
-  if (isLoading) {
+  if (isInitializingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
