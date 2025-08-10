@@ -43,6 +43,7 @@ export interface AuthContextType {
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
+  isInitializingAuth: boolean;
 }
 
 export interface DashboardStats {

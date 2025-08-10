@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthLayout } from "@/components/layouts/AuthLayout";
+import { AuthRedirect } from "@/components/AuthRedirect";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -47,86 +48,88 @@ const Register: React.FC = () => {
   };
 
   return (
-    <AuthLayout
-      title="Create account"
-      subtitle="Sign up to start tracking your expenses"
-    >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Full Name</Label>
-          <Input
-            id="name"
-            type="text"
-            placeholder="Enter your full name"
-            {...register("name")}
-            className={errors.name ? "border-red-500" : ""}
-          />
-          {errors.name && (
-            <p className="text-sm text-red-500">{errors.name.message}</p>
-          )}
-        </div>
+    <AuthRedirect>
+      <AuthLayout
+        title="Create account"
+        subtitle="Sign up to start tracking your expenses"
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Full Name</Label>
+            <Input
+              id="name"
+              type="text"
+              placeholder="Enter your full name"
+              {...register("name")}
+              className={errors.name ? "border-red-500" : ""}
+            />
+            {errors.name && (
+              <p className="text-sm text-red-500">{errors.name.message}</p>
+            )}
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="Enter your email"
-            {...register("email")}
-            className={errors.email ? "border-red-500" : ""}
-          />
-          {errors.email && (
-            <p className="text-sm text-red-500">{errors.email.message}</p>
-          )}
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              {...register("email")}
+              className={errors.email ? "border-red-500" : ""}
+            />
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email.message}</p>
+            )}
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Create a password"
-            {...register("password")}
-            className={errors.password ? "border-red-500" : ""}
-          />
-          {errors.password && (
-            <p className="text-sm text-red-500">{errors.password.message}</p>
-          )}
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Create a password"
+              {...register("password")}
+              className={errors.password ? "border-red-500" : ""}
+            />
+            {errors.password && (
+              <p className="text-sm text-red-500">{errors.password.message}</p>
+            )}
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <Input
-            id="confirmPassword"
-            type="password"
-            placeholder="Confirm your password"
-            {...register("confirmPassword")}
-            className={errors.confirmPassword ? "border-red-500" : ""}
-          />
-          {errors.confirmPassword && (
-            <p className="text-sm text-red-500">
-              {errors.confirmPassword.message}
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              {...register("confirmPassword")}
+              className={errors.confirmPassword ? "border-red-500" : ""}
+            />
+            {errors.confirmPassword && (
+              <p className="text-sm text-red-500">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Creating account..." : "Create account"}
+          </Button>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              >
+                Sign in
+              </Link>
             </p>
-          )}
-        </div>
-
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Creating account..." : "Create account"}
-        </Button>
-
-        <div className="text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Already have an account?{" "}
-            <Link
-              to="/login"
-              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
-            >
-              Sign in
-            </Link>
-          </p>
-        </div>
-      </form>
-    </AuthLayout>
+          </div>
+        </form>
+      </AuthLayout>
+    </AuthRedirect>
   );
 };
 
