@@ -1,6 +1,13 @@
 import { Budget, Category, DashboardStats, Transaction } from "@/types";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 
+// Navigation singleton for use outside React components
+let navigationCallback: ((path: string) => void) | null = null;
+
+export const setNavigationCallback = (callback: (path: string) => void) => {
+  navigationCallback = callback;
+};
+
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -41,7 +48,15 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       // Handle unauthorized access
       localStorage.removeItem("authToken");
-      window.location.href = "/login";
+      // Only redirect if not already on auth pages
+      if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+        if (navigationCallback) {
+          navigationCallback("/login");
+        } else {
+          // Fallback to window.location if navigation callback is not set
+          window.location.href = "/login";
+        }
+      }
     }
     return Promise.reject(error);
   },

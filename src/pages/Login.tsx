@@ -37,6 +37,7 @@ const Login: React.FC = () => {
       navigate("/dashboard");
     } catch (error) {
       toast.error("Invalid credentials. Please try again.");
+      return;
     }
   };
 
