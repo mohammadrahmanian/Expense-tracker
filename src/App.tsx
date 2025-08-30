@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
 import Reports from "./pages/Reports";
 import Transactions from "./pages/Transactions";
+import Profile from "./pages/Profile";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -73,6 +74,14 @@ const App = () => (
                   element={
                     <ProtectedRoute>
                       <Reports />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
                     </ProtectedRoute>
                   }
                 />
