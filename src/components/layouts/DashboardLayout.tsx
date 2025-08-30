@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
+import { BottomTabBar } from "@/components/ui/bottom-tab-bar";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import {
@@ -18,6 +19,7 @@ import {
   PieChart,
   Receipt,
   Settings,
+  User,
   X,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -32,6 +34,7 @@ const navigation = [
   { name: "Transactions", href: "/transactions", icon: Receipt },
   { name: "Reports", href: "/reports", icon: PieChart },
   { name: "Categories", href: "/categories", icon: Settings },
+  { name: "Profile", href: "/profile", icon: User },
 ];
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -148,6 +151,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </main>
 
         <FloatingActionButton />
+        <BottomTabBar />
       </div>
     </div>
   );
