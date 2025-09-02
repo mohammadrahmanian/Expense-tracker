@@ -9,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
-import { BottomTabBar } from "@/components/ui/bottom-tab-bar";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import {
@@ -113,7 +112,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </main>
 
         <FloatingActionButton />
-        <BottomTabBar />
       </div>
     </div>
   );

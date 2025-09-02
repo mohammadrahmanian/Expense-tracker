@@ -2,13 +2,13 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export type Currency = 'USD' | 'EUR';
 
-interface CurrencyContextType {
+export interface CurrencyContextType {
   currency: Currency;
   setCurrency: (currency: Currency) => void;
   formatAmount: (amount: number) => string;
 }
 
-const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
+export const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export const useCurrency = () => {
   const context = useContext(CurrencyContext);
