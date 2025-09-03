@@ -143,7 +143,7 @@ describe('BottomTabBar', () => {
       renderWithRouter(<BottomTabBar />, { initialEntries: ['/dashboard'] });
 
       const dashboardLink = screen.getByRole('link', { name: /navigate to dashboard/i });
-      expect(dashboardLink).toHaveClass('focus:outline-none', 'focus:ring-2', 'focus:ring-inset', 'focus:ring-indigo-500');
+      expect(dashboardLink).toHaveClass('focus-visible:outline-2', 'focus-visible:outline-indigo-500', 'focus-visible:ring-2', 'focus-visible:ring-indigo-500', 'focus-visible:ring-inset');
     });
   });
 
