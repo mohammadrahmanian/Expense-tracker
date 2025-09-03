@@ -154,4 +154,10 @@ export default defineConfig(({ mode }) => ({
       "process.env.NODE_ENV": '"development"',
     }),
   },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
+    css: true,
+  },
 }));
