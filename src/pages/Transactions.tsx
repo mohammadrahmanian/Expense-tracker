@@ -2,6 +2,7 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { TransactionForm } from "@/components/transactions/TransactionForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   ResponsiveDialog as Dialog, 
@@ -15,6 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -37,6 +43,7 @@ import { format } from "date-fns";
 import {
   ArrowDownLeft,
   ArrowUpRight,
+  Calendar as CalendarIcon,
   Edit,
   Filter,
   Loader2,
@@ -63,6 +70,8 @@ const Transactions: React.FC = () => {
     "all",
   );
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [startDate, setStartDate] = useState<Date | undefined>();
+  const [endDate, setEndDate] = useState<Date | undefined>();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<
@@ -75,7 +84,7 @@ const Transactions: React.FC = () => {
 
   useEffect(() => {
     filterTransactions();
-  }, [transactions, searchTerm, typeFilter, categoryFilter]);
+  }, [transactions, searchTerm, typeFilter, categoryFilter, startDate, endDate]);
 
   const loadData = async () => {
     try {
@@ -110,6 +119,27 @@ const Transactions: React.FC = () => {
       filtered = filtered.filter(
         (transaction) => transaction.categoryId === categoryFilter,
       );
+    }
+
+    // Date range filtering
+    if (startDate) {
+      filtered = filtered.filter((transaction) => {
+        const transactionDate = new Date(transaction.date);
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        transactionDate.setHours(0, 0, 0, 0);
+        return transactionDate >= start;
+      });
+    }
+
+    if (endDate) {
+      filtered = filtered.filter((transaction) => {
+        const transactionDate = new Date(transaction.date);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        transactionDate.setHours(23, 59, 59, 999);
+        return transactionDate <= end;
+      });
     }
 
     // Sort by date (newest first)
@@ -265,7 +295,7 @@ const Transactions: React.FC = () => {
             <CardTitle>Filters</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-6">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -309,12 +339,58 @@ const Transactions: React.FC = () => {
                   ))}
                 </SelectContent>
               </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "MMM dd, yyyy") : "Start date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, "MMM dd, yyyy") : "End date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
               <Button
                 variant="outline"
                 onClick={() => {
                   setSearchTerm("");
                   setTypeFilter("all");
                   setCategoryFilter("all");
+                  setStartDate(undefined);
+                  setEndDate(undefined);
                 }}
               >
                 <Filter className="h-4 w-4 mr-2" />

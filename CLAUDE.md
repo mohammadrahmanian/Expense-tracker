@@ -107,3 +107,6 @@ app/
 ```
 
 This structure provides a clean separation of concerns between UI components, routes, and application logic.
+- When I ask you to make adjustments on the DAshboard, review the file at "src/pages/Dashboard.tsx" first
+- When I ask you to make adjustments on the Transactions page, review the file at "src/pages/Transactions.tsx" first
+- When I ask you to make adjustments on the Reports page, review the file at "src/pages/Reports.tsx" first
