@@ -1,27 +1,18 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { CurrencySwitcher } from "@/components/ui/currency-switcher";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
-import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/contexts/SidebarContext";
 import {
+  ChevronLeft,
+  ChevronRight,
   LayoutDashboard,
-  LogOut,
-  Menu,
   PieChart,
   Receipt,
   Settings,
-  X,
+  User,
 } from "lucide-react";
-import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -32,107 +23,114 @@ const navigation = [
   { name: "Transactions", href: "/transactions", icon: Receipt },
   { name: "Reports", href: "/reports", icon: PieChart },
   { name: "Categories", href: "/categories", icon: Settings },
+  { name: "Profile", href: "/profile", icon: User },
 ];
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
 }) => {
-  const { user, logout } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Initialize from localStorage, default to false if not found
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("sidebar-collapsed");
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  // Persist sidebar state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("sidebar-collapsed", JSON.stringify(sidebarCollapsed));
+  }, [sidebarCollapsed]);
+
+  // Get page title based on current route
+  const getPageTitle = () => {
+    const currentPage = navigation.find(nav => nav.href === location.pathname);
+    return currentPage?.name || "Dashboard";
+  };
+
+  const getPageDescription = () => {
+    const descriptions: Record<string, string> = {
+      "/dashboard": "Overview of your financial activity",
+      "/transactions": "Manage your income and expenses", 
+      "/reports": "Analyze your spending patterns",
+      "/categories": "Organize your expense categories",
+      "/profile": "Manage your account settings"
+    };
+    return descriptions[location.pathname] || "Welcome back to your dashboard";
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Mobile sidebar */}
+      {/* Mobile sidebar - Hidden for bottom tab bar implementation */}
+
+      {/* Desktop sidebar */}
       <div
         className={cn(
-          "fixed inset-0 z-40 lg:hidden transition-opacity duration-300 ease-in-out",
-          sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none",
+          "hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 transition-all duration-300 ease-in-out z-20",
+          sidebarCollapsed ? "lg:w-20" : "lg:w-72",
         )}
       >
         <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity duration-300 ease-in-out"
-          onClick={() => setSidebarOpen(false)}
-        />
-        <div className={cn(
-          "relative flex flex-col max-w-xs w-full h-full bg-white dark:bg-gray-800 transform transition-transform duration-300 ease-in-out",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        )}>
-          <Sidebar 
-            closeButton={
-              <button
-                className="flex items-center justify-center h-8 w-8 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <X className="h-6 w-6" />
-              </button>
-            }
+          className={cn(
+            "h-full transition-all duration-300",
+            sidebarCollapsed ? "px-2 py-4" : "p-4",
+          )}
+        >
+          <Sidebar
+            collapsed={sidebarCollapsed}
+            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           />
         </div>
       </div>
 
-      {/* Desktop sidebar */}
-      <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
-        <Sidebar />
-      </div>
-
       {/* Main content */}
-      <div className="lg:pl-64 flex flex-col flex-1">
+      <div
+        className={cn(
+          "flex flex-col flex-1 transition-all duration-300 ease-in-out",
+          sidebarCollapsed ? "lg:pl-20" : "lg:pl-72",
+        )}
+      >
         {/* Top navigation */}
-        <header className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <header className="sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-4">
-              {/* Mobile menu button - only visible on mobile */}
-              <div className="lg:hidden">
-                <button
-                  className="h-8 w-8 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-                  onClick={() => setSidebarOpen(true)}
-                >
-                  <Menu className="h-6 w-6" />
-                </button>
+              {/* Left side - Page title and description */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-4">
+                  <div className="flex-1 min-w-0">
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white truncate">
+                      {getPageTitle()}
+                    </h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">
+                      {getPageDescription()}
+                    </p>
+                  </div>
+                </div>
               </div>
-              
-              {/* Desktop spacer */}
-              <div className="hidden lg:block flex-1" />
-              
+
+
               {/* Right side items */}
               <div className="flex items-center space-x-4">
+
+                {/* Currency switcher */}
                 <CurrencySwitcher />
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="relative h-8 w-8 rounded-full"
-                    >
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>
-                          {user?.name?.charAt(0).toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <div className="flex flex-col space-y-1 p-2">
-                      <p className="text-sm font-medium leading-none">
-                        {user?.name}
-                      </p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user?.email}
-                      </p>
-                    </div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+
+                {/* User profile */}
+                <div className="flex items-center space-x-3">
+                  <div className="hidden md:block text-right">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      John Doe
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      john@example.com
+                    </p>
+                  </div>
+                  <button className="relative h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-200">
+                    <span className="text-white text-sm font-medium">JD</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -140,7 +138,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
         {/* Page content */}
         <main className="flex-1">
-          <div className="py-6 pb-20 sm:pb-6">
+          <div className="py-6 pb-20 lg:pb-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               {children}
             </div>
@@ -153,46 +151,156 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   );
 };
 
-const Sidebar = ({ closeButton }: { closeButton?: React.ReactNode }) => {
+const Sidebar = ({
+  closeButton,
+  collapsed = false,
+  onToggle,
+}: {
+  closeButton?: React.ReactNode;
+  collapsed?: boolean;
+  onToggle?: () => void;
+}) => {
   const location = useLocation();
+  const { activeIndex, setActiveIndex, backgroundStyle, setBackgroundStyle, navRefs, navContainerRef } = useSidebar();
+
+  // Find active tab index
+  useEffect(() => {
+    const currentIndex = navigation.findIndex(nav => nav.href === location.pathname);
+    if (currentIndex !== -1) {
+      setActiveIndex(currentIndex);
+    }
+  }, [location.pathname]);
+
+  // Calculate background position
+  useEffect(() => {
+    const updateBackgroundPosition = () => {
+      const activeNav = navRefs.current[activeIndex];
+      const container = navContainerRef.current;
+      
+      if (activeNav && container) {
+        const containerRect = container.getBoundingClientRect();
+        const navRect = activeNav.getBoundingClientRect();
+        
+        setBackgroundStyle({
+          top: navRect.top - containerRect.top,
+          height: navRect.height,
+        });
+      }
+    };
+
+    const timeoutId = setTimeout(updateBackgroundPosition, 50);
+    return () => clearTimeout(timeoutId);
+  }, [activeIndex, collapsed]);
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-gray-800">
-      <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-        <div className="flex items-center justify-between flex-shrink-0 px-4">
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">$</span>
-            </div>
-            <span className="ml-2 text-xl font-semibold text-gray-900 dark:text-white">
-              Expensio
-            </span>
-          </div>
+    <div className="flex-1 flex flex-col h-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/50 overflow-hidden">
+      <div
+        className={cn(
+          "flex-1 flex flex-col overflow-y-auto transition-all duration-300",
+          collapsed ? "px-2 py-6" : "p-6",
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center relative transition-all duration-300",
+            collapsed ? "justify-center mb-6" : "justify-between mb-6",
+          )}
+        >
+          {collapsed ? (
+            /* Expand button replaces logo when collapsed */
+            <button
+              onClick={onToggle}
+              className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-200 group"
+              aria-label="Expand sidebar"
+            >
+              <ChevronRight className="h-4 w-4 text-white" />
+            </button>
+          ) : (
+            /* Normal logo and collapse button when expanded */
+            <>
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                  <span className="text-white font-bold text-lg">$</span>
+                </div>
+                <div className="ml-3 transition-opacity duration-300">
+                  <h1 className="text-lg font-bold text-gray-900 dark:text-white">
+                    Expensio
+                  </h1>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 -mt-1">
+                    Dashboard
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={onToggle}
+                className="p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 group"
+                aria-label="Collapse sidebar"
+              >
+                <ChevronLeft className="h-4 w-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
+              </button>
+            </>
+          )}
+
           {closeButton}
         </div>
-        <nav className="mt-5 flex-1 px-2 space-y-1">
-          {navigation.map((item) => {
+        <nav ref={navContainerRef} className={cn("flex-1 relative", "space-y-2")}>
+          {/* Sliding background */}
+          <div
+            className="absolute left-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-md transition-all duration-300 ease-out z-0"
+            style={{
+              top: `${backgroundStyle.top}px`,
+              height: `${backgroundStyle.height}px`,
+              width: collapsed ? '48px' : '100%',
+              marginLeft: collapsed ? 'auto' : '0',
+              marginRight: collapsed ? 'auto' : '0',
+            }}
+          />
+          
+          {navigation.map((item, index) => {
             const isActive = location.pathname === item.href;
             return (
               <Link
                 key={item.name}
+                ref={(el) => (navRefs.current[index] = el)}
                 to={item.href}
                 className={cn(
+                  "group flex items-center text-sm font-medium rounded-xl relative overflow-hidden z-10",
+                  "transition-all duration-300 ease-in-out",
+                  "w-full px-3 py-3",
                   isActive
-                    ? "bg-indigo-100 text-indigo-900 dark:bg-indigo-900 dark:text-indigo-200"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white",
-                  "group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors",
+                    ? "text-white"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-white",
                 )}
+                title={collapsed ? item.name : undefined}
               >
                 <item.icon
                   className={cn(
+                    "flex-shrink-0 h-5 w-5 transition-all duration-300 ease-in-out",
+                    collapsed ? "mr-0" : "mr-3",
                     isActive
-                      ? "text-indigo-500 dark:text-indigo-300"
-                      : "text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300",
-                    "mr-3 flex-shrink-0 h-6 w-6",
+                      ? "text-white"
+                      : "text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300",
                   )}
                 />
-                {item.name}
+                <span
+                  className={cn(
+                    "font-medium transition-all duration-300 ease-in-out whitespace-nowrap",
+                    collapsed
+                      ? "opacity-0 w-0 overflow-hidden"
+                      : "opacity-100 w-auto",
+                  )}
+                >
+                  {item.name}
+                </span>
+                {isActive && (
+                  <div
+                    className={cn(
+                      "absolute right-3 w-1.5 h-1.5 bg-white/30 rounded-full transition-all duration-300 ease-in-out",
+                      collapsed ? "opacity-0" : "opacity-100",
+                    )}
+                  />
+                )}
               </Link>
             );
           })}

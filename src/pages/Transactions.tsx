@@ -167,15 +167,7 @@ const Transactions: React.FC = () => {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Transactions
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Manage your income and expense transactions.
-            </p>
-          </div>
+        <div className="flex justify-end items-center">
           <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
               <Button 
