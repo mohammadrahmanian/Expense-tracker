@@ -2,7 +2,7 @@ import { authService } from "@/services/api";
 import { AuthContextType, User } from "@/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

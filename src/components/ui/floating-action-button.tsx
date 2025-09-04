@@ -12,7 +12,7 @@ export const FloatingActionButton: React.FC = () => {
       <Button
         onClick={() => setIsModalOpen(true)}
         className={cn(
-          "fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg",
+          "!fixed !bottom-20 !right-6 lg:!bottom-6 h-14 w-14 rounded-full shadow-lg",
           "bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700",
           "z-50 transition-all duration-200 ease-in-out",
           "hover:scale-110 active:scale-95"

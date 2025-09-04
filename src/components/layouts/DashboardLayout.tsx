@@ -1,18 +1,27 @@
 import { CurrencySwitcher } from "@/components/ui/currency-switcher";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useSidebarContext } from "@/contexts/SidebarContext";
 import {
   ChevronLeft,
   ChevronRight,
   LayoutDashboard,
+  LogOut,
   PieChart,
   Receipt,
   Settings,
   User,
 } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -29,7 +38,9 @@ const navigation = [
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
 }) => {
+  const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     // Initialize from localStorage, default to false if not found
     if (typeof window !== "undefined") {
@@ -96,8 +107,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <header className="sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-4">
-              {/* Left side - Page title and description */}
-              <div className="flex-1 min-w-0">
+              {/* Mobile menu button - Hidden for bottom tab bar implementation */}
+              
+              {/* Left side - Page title and description on desktop */}
+              <div className="hidden lg:flex flex-1 min-w-0">
                 <div className="flex items-center space-x-4">
                   <div className="flex-1 min-w-0">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white truncate">
@@ -109,8 +122,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   </div>
                 </div>
               </div>
-
-
+              
+              {/* Mobile spacer */}
+              <div className="lg:hidden flex-1" />
               {/* Right side items */}
               <div className="flex items-center space-x-4">
 
@@ -118,19 +132,56 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 <CurrencySwitcher />
 
                 {/* User profile */}
-                <div className="flex items-center space-x-3">
-                  <div className="hidden md:block text-right">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      John Doe
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      john@example.com
-                    </p>
-                  </div>
-                  <button className="relative h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-200">
-                    <span className="text-white text-sm font-medium">JD</span>
-                  </button>
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <div className="flex items-center space-x-3 cursor-pointer group">
+                      <div className="hidden md:block text-right">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user?.name || 'User'}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {user?.email || 'user@example.com'}
+                        </p>
+                      </div>
+                      <button className="relative h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-200">
+                        <span className="text-white text-sm font-medium">
+                          {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                        </span>
+                      </button>
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="px-2 py-1.5">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {user?.name || 'User'}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {user?.email || 'user@example.com'}
+                      </p>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" className="flex items-center">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/settings" className="flex items-center">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={logout}
+                      className="flex items-center text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
