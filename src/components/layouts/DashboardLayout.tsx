@@ -1,7 +1,7 @@
 import { CurrencySwitcher } from "@/components/ui/currency-switcher";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { cn } from "@/lib/utils";
-import { useSidebar } from "@/contexts/SidebarContext";
+import { useSidebarContext } from "@/contexts/SidebarContext";
 import {
   ChevronLeft,
   ChevronRight,
@@ -78,7 +78,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             sidebarCollapsed ? "px-2 py-4" : "p-4",
           )}
         >
-          <Sidebar
+          <DashboardSidebar
             collapsed={sidebarCollapsed}
             onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           />
@@ -151,7 +151,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   );
 };
 
-const Sidebar = ({
+const DashboardSidebar = ({
   closeButton,
   collapsed = false,
   onToggle,
@@ -161,7 +161,7 @@ const Sidebar = ({
   onToggle?: () => void;
 }) => {
   const location = useLocation();
-  const { activeIndex, setActiveIndex, backgroundStyle, setBackgroundStyle, navRefs, navContainerRef } = useSidebar();
+  const { activeIndex, setActiveIndex, backgroundStyle, setBackgroundStyle, navRefs, navContainerRef } = useSidebarContext();
 
   // Find active tab index
   useEffect(() => {

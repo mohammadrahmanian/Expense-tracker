@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useRef, ReactNode } from 'react';
 
-interface SidebarContextType {
+interface NavigationSidebarContextType {
   activeIndex: number;
   setActiveIndex: (index: number) => void;
   backgroundStyle: { top: number; height: number };
@@ -9,24 +9,24 @@ interface SidebarContextType {
   navContainerRef: React.MutableRefObject<HTMLElement | null>;
 }
 
-const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
+const NavigationSidebarContext = createContext<NavigationSidebarContextType | undefined>(undefined);
 
-export const useSidebar = () => {
-  const context = useContext(SidebarContext);
+export const useSidebarContext = () => {
+  const context = useContext(NavigationSidebarContext);
   if (!context) {
-    throw new Error('useSidebar must be used within SidebarProvider');
+    throw new Error('useSidebarContext must be used within SidebarContextProvider');
   }
   return context;
 };
 
-export const SidebarProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const SidebarContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [backgroundStyle, setBackgroundStyle] = useState({ top: 0, height: 0 });
   const navRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const navContainerRef = useRef<HTMLElement | null>(null);
 
   return (
-    <SidebarContext.Provider
+    <NavigationSidebarContext.Provider
       value={{
         activeIndex,
         setActiveIndex,
@@ -37,6 +37,6 @@ export const SidebarProvider: React.FC<{ children: ReactNode }> = ({ children })
       }}
     >
       {children}
-    </SidebarContext.Provider>
+    </NavigationSidebarContext.Provider>
   );
 };
