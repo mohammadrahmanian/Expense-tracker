@@ -54,7 +54,7 @@ export const BottomTabBar: React.FC = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"
+      className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-bottom"
       role="navigation"
       aria-label="Bottom navigation"
       style={{
@@ -71,20 +71,20 @@ export const BottomTabBar: React.FC = () => {
               key={tab.name}
               to={tab.href}
               className={cn(
-                "group relative flex items-center justify-center transition-all duration-300 ease-in-out",
+                "group relative flex items-center justify-center min-h-[44px] transition-all duration-200 ease-in-out",
                 "focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset",
                 isActive
                   ? "flex-[2] px-4 py-2 mx-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md rounded-xl"
-                  : "flex-1 p-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white rounded-md",
+                  : "flex-1 p-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-white rounded-md",
               )}
               aria-label={tab.ariaLabel}
               aria-current={isActive ? "page" : undefined}
             >
               <Icon
                 className={cn(
-                  "h-6 w-6 transition-colors flex-shrink-0",
+                  "h-6 w-6 transition-colors transition-transform duration-150 flex-shrink-0",
                   isActive
-                    ? "text-white mr-2"
+                    ? "text-white mr-2 scale-110"
                     : "text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300",
                 )}
               />
