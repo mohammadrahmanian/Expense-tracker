@@ -104,7 +104,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         )}
       >
         {/* Top navigation */}
-        <header className="sticky top-0 z-10">
+        <header 
+          className="sticky top-0 z-10"
+          style={{
+            paddingTop: 'env(safe-area-inset-top)',
+          }}
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-4">
               {/* Mobile menu button - Hidden for bottom tab bar implementation */}
