@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { DataRefreshProvider } from "@/contexts/DataRefreshContext";
+import { SidebarContextProvider } from "@/contexts/SidebarContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import Categories from "./pages/Categories";
@@ -48,12 +49,13 @@ const App = () => (
     <AuthProvider>
       <CurrencyProvider>
         <DataRefreshProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <NavigationSetup />
-              <Routes>
+          <SidebarContextProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <NavigationSetup />
+                <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -103,10 +105,11 @@ const App = () => (
               <ConditionalBottomTabBar />
             </BrowserRouter>
           </TooltipProvider>
-        </DataRefreshProvider>
-      </CurrencyProvider>
-    </AuthProvider>
-  </QueryClientProvider>
+        </SidebarContextProvider>
+      </DataRefreshProvider>
+    </CurrencyProvider>
+  </AuthProvider>
+</QueryClientProvider>
 );
 
 export default App;

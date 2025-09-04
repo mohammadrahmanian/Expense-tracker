@@ -185,15 +185,7 @@ const Categories: React.FC = () => {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Categories
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Organize your transactions with custom categories.
-            </p>
-          </div>
+        <div className="flex justify-end items-center">
           <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
               <Button onClick={() => setEditingCategory(undefined)}>
