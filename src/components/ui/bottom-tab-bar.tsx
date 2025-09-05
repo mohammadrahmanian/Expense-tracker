@@ -1,11 +1,8 @@
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
-  PieChart,
-  Receipt,
-  Settings,
   User,
 } from "lucide-react";
+import { Icon } from '@iconify/react';
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -20,32 +17,26 @@ const tabs: TabItem[] = [
   {
     name: "Dashboard",
     href: "/dashboard",
-    icon: LayoutDashboard,
+    icon: () => <Icon icon="hugeicons:dashboard-square-03" className="h-6 w-6" />,
     ariaLabel: "Navigate to Dashboard",
   },
   {
     name: "Transactions",
     href: "/transactions",
-    icon: Receipt,
+    icon: () => <Icon icon="hugeicons:money-add-01" className="h-6 w-6" />,
     ariaLabel: "Navigate to Transactions",
   },
   {
     name: "Categories",
     href: "/categories",
-    icon: Settings,
+    icon: () => <Icon icon="hugeicons:folder-02" className="h-6 w-6" />,
     ariaLabel: "Navigate to Categories",
   },
   {
     name: "Reports",
     href: "/reports",
-    icon: PieChart,
+    icon: () => <Icon icon="hugeicons:chart-02" className="h-6 w-6" />,
     ariaLabel: "Navigate to Reports",
-  },
-  {
-    name: "Profile",
-    href: "/profile",
-    icon: User,
-    ariaLabel: "Navigate to Profile",
   },
 ];
 
@@ -54,14 +45,16 @@ export const BottomTabBar: React.FC = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-bottom"
+      className="fixed bottom-0 left-0 right-0 z-30 lg:hidden safe-area-bottom"
       role="navigation"
       aria-label="Bottom navigation"
       style={{
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >
-      <div className="relative flex h-16 px-4 py-2">
+      <div className="mx-4 mb-2">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+          <div className="flex justify-between items-center">
         {tabs.map((tab, index) => {
           const isActive = location.pathname === tab.href;
           const Icon = tab.icon;
@@ -71,42 +64,44 @@ export const BottomTabBar: React.FC = () => {
               key={tab.name}
               to={tab.href}
               className={cn(
-                "group relative flex items-center justify-center min-h-[44px] transition-all duration-200 ease-in-out",
+                "group relative flex flex-col items-center justify-center min-h-[44px] transition-all duration-200 ease-in-out p-2 rounded-lg",
                 "focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset",
                 isActive
-                  ? "flex-[2] px-4 py-2 mx-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md rounded-xl"
-                  : "flex-1 p-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-white rounded-md",
+                  ? "text-indigo-600 dark:text-indigo-400"
+                  : "text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300",
               )}
               aria-label={tab.ariaLabel}
               aria-current={isActive ? "page" : undefined}
             >
-              <Icon
+              <div
                 className={cn(
-                  "h-6 w-6 transition-colors transition-transform duration-150 flex-shrink-0",
+                  "transition-colors flex-shrink-0 mb-1",
                   isActive
-                    ? "text-white mr-2 scale-110"
-                    : "text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300",
+                    ? "text-indigo-600 dark:text-indigo-400"
+                    : "text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300",
                 )}
-              />
+              >
+                {typeof Icon === 'function' && Icon.name === undefined ? <Icon /> : <Icon className="h-6 w-6" />}
+              </div>
               <span
                 className={cn(
-                  "text-sm font-medium transition-all duration-300 ease-in-out",
+                  "text-xs font-medium transition-colors",
                   isActive
-                    ? "opacity-100 translate-x-0 max-w-none"
-                    : "opacity-0 translate-x-2 max-w-0 overflow-hidden",
+                    ? "text-indigo-600 dark:text-indigo-400"
+                    : "text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300",
                 )}
-                style={{
-                  transitionProperty: "opacity, transform, max-width",
-                  transitionDuration: "400ms",
-                  transitionTimingFunction:
-                    "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                }}
               >
                 {tab.name}
               </span>
             </Link>
           );
         })}
+          </div>
+        </div>
+        {/* Home indicator */}
+        <div className="flex justify-center mt-2">
+          <div className="w-32 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+        </div>
       </div>
     </nav>
   );
