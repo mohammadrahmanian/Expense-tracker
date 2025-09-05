@@ -1,5 +1,4 @@
 import { CurrencySwitcher } from "@/components/ui/currency-switcher";
-import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,32 +6,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FloatingActionButton } from "@/components/ui/floating-action-button";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import { useSidebarContext } from "@/contexts/SidebarContext";
+import { Icon } from '@iconify/react';
 import {
   ChevronLeft,
   ChevronRight,
-  LayoutDashboard,
   LogOut,
-  PieChart,
-  Receipt,
   Settings,
   User,
 } from "lucide-react";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Transactions", href: "/transactions", icon: Receipt },
-  { name: "Reports", href: "/reports", icon: PieChart },
-  { name: "Categories", href: "/categories", icon: Settings },
-  { name: "Profile", href: "/profile", icon: User },
+  { name: "Dashboard", href: "/dashboard", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:dashboard-square-03" className={cn("h-5 w-5", className)} /> },
+  { name: "Transactions", href: "/transactions", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:money-add-01" className={cn("h-5 w-5", className)} /> },
+  { name: "Reports", href: "/reports", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:chart-02" className={cn("h-5 w-5", className)} /> },
+  { name: "Categories", href: "/categories", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:folder-02" className={cn("h-5 w-5", className)} /> },
 ];
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -110,8 +106,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             paddingTop: 'env(safe-area-inset-top)',
           }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-4">
+          <div className="mx-4 mt-2 lg:mt-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+              <div className="flex justify-between items-center">
               {/* Mobile menu button - Hidden for bottom tab bar implementation */}
               
               {/* Left side - Page title and description on desktop */}
@@ -188,13 +185,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
+              </div>
             </div>
           </div>
         </header>
 
         {/* Page content */}
         <main className="flex-1">
-          <div className="py-6 pb-20 lg:pb-6">
+          <div className="py-6 pb-32 lg:pb-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               {children}
             </div>
@@ -217,39 +215,9 @@ const DashboardSidebar = ({
   onToggle?: () => void;
 }) => {
   const location = useLocation();
-  const { activeIndex, setActiveIndex, backgroundStyle, setBackgroundStyle, navRefs, navContainerRef } = useSidebarContext();
-
-  // Find active tab index
-  useEffect(() => {
-    const currentIndex = navigation.findIndex(nav => nav.href === location.pathname);
-    if (currentIndex !== -1) {
-      setActiveIndex(currentIndex);
-    }
-  }, [location.pathname]);
-
-  // Calculate background position
-  useEffect(() => {
-    const updateBackgroundPosition = () => {
-      const activeNav = navRefs.current[activeIndex];
-      const container = navContainerRef.current;
-      
-      if (activeNav && container) {
-        const containerRect = container.getBoundingClientRect();
-        const navRect = activeNav.getBoundingClientRect();
-        
-        setBackgroundStyle({
-          top: navRect.top - containerRect.top,
-          height: navRect.height,
-        });
-      }
-    };
-
-    const timeoutId = setTimeout(updateBackgroundPosition, 50);
-    return () => clearTimeout(timeoutId);
-  }, [activeIndex, collapsed]);
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/50 overflow-hidden">
+    <div className="flex-1 flex flex-col h-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div
         className={cn(
           "flex-1 flex flex-col overflow-y-auto transition-all duration-300",
@@ -300,42 +268,28 @@ const DashboardSidebar = ({
 
           {closeButton}
         </div>
-        <nav ref={navContainerRef} className={cn("flex-1 relative", "space-y-2")}>
-          {/* Sliding background */}
-          <div
-            className="absolute left-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-md transition-all duration-300 ease-out z-0"
-            style={{
-              top: `${backgroundStyle.top}px`,
-              height: `${backgroundStyle.height}px`,
-              width: collapsed ? '48px' : '100%',
-              marginLeft: collapsed ? 'auto' : '0',
-              marginRight: collapsed ? 'auto' : '0',
-            }}
-          />
-          
+        <nav className={cn("flex-1", "space-y-1")}>          
           {navigation.map((item, index) => {
             const isActive = location.pathname === item.href;
             return (
               <Link
                 key={item.name}
-                ref={(el) => (navRefs.current[index] = el)}
                 to={item.href}
                 className={cn(
-                  "group flex items-center text-sm font-medium rounded-xl relative overflow-hidden z-10",
-                  "transition-all duration-300 ease-in-out",
+                  "group flex items-center text-sm font-medium rounded-xl transition-all duration-300 ease-in-out",
                   "w-full px-3 py-3",
                   isActive
-                    ? "text-white"
+                    ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-white",
                 )}
                 title={collapsed ? item.name : undefined}
               >
                 <item.icon
                   className={cn(
-                    "flex-shrink-0 h-5 w-5 transition-all duration-300 ease-in-out",
+                    "flex-shrink-0 transition-colors duration-200",
                     collapsed ? "mr-0" : "mr-3",
                     isActive
-                      ? "text-white"
+                      ? "text-indigo-600 dark:text-indigo-400"
                       : "text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300",
                   )}
                 />
@@ -349,14 +303,6 @@ const DashboardSidebar = ({
                 >
                   {item.name}
                 </span>
-                {isActive && (
-                  <div
-                    className={cn(
-                      "absolute right-3 w-1.5 h-1.5 bg-white/30 rounded-full transition-all duration-300 ease-in-out",
-                      collapsed ? "opacity-0" : "opacity-100",
-                    )}
-                  />
-                )}
               </Link>
             );
           })}
