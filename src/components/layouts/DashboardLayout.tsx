@@ -25,10 +25,10 @@ interface DashboardLayoutProps {
 }
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: () => <Icon icon="hugeicons:dashboard-square-03" className="h-5 w-5" /> },
-  { name: "Transactions", href: "/transactions", icon: () => <Icon icon="hugeicons:money-add-01" className="h-5 w-5" /> },
-  { name: "Reports", href: "/reports", icon: () => <Icon icon="hugeicons:chart-02" className="h-5 w-5" /> },
-  { name: "Categories", href: "/categories", icon: () => <Icon icon="hugeicons:folder-02" className="h-5 w-5" /> },
+  { name: "Dashboard", href: "/dashboard", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:dashboard-square-03" className={cn("h-5 w-5", className)} /> },
+  { name: "Transactions", href: "/transactions", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:money-add-01" className={cn("h-5 w-5", className)} /> },
+  { name: "Reports", href: "/reports", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:chart-02" className={cn("h-5 w-5", className)} /> },
+  { name: "Categories", href: "/categories", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:folder-02" className={cn("h-5 w-5", className)} /> },
 ];
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -284,7 +284,7 @@ const DashboardSidebar = ({
                 )}
                 title={collapsed ? item.name : undefined}
               >
-                <div
+                <item.icon
                   className={cn(
                     "flex-shrink-0 transition-colors duration-200",
                     collapsed ? "mr-0" : "mr-3",
@@ -292,9 +292,7 @@ const DashboardSidebar = ({
                       ? "text-indigo-600 dark:text-indigo-400"
                       : "text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300",
                   )}
-                >
-                  {typeof item.icon === 'function' && item.icon.name === undefined ? <item.icon /> : <item.icon className="h-5 w-5" />}
-                </div>
+                />
                 <span
                   className={cn(
                     "font-medium transition-all duration-300 ease-in-out whitespace-nowrap",

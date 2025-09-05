@@ -13,29 +13,46 @@ interface TabItem {
   ariaLabel: string;
 }
 
+// Icon components
+const DashboardTabIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <Icon icon="hugeicons:dashboard-square-03" className={cn("h-6 w-6", className)} />
+);
+
+const TransactionsTabIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <Icon icon="hugeicons:money-add-01" className={cn("h-6 w-6", className)} />
+);
+
+const CategoriesTabIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <Icon icon="hugeicons:folder-02" className={cn("h-6 w-6", className)} />
+);
+
+const ReportsTabIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <Icon icon="hugeicons:chart-02" className={cn("h-6 w-6", className)} />
+);
+
 const tabs: TabItem[] = [
   {
     name: "Dashboard",
     href: "/dashboard",
-    icon: () => <Icon icon="hugeicons:dashboard-square-03" className="h-6 w-6" />,
+    icon: DashboardTabIcon,
     ariaLabel: "Navigate to Dashboard",
   },
   {
     name: "Transactions",
     href: "/transactions",
-    icon: () => <Icon icon="hugeicons:money-add-01" className="h-6 w-6" />,
+    icon: TransactionsTabIcon,
     ariaLabel: "Navigate to Transactions",
   },
   {
     name: "Categories",
     href: "/categories",
-    icon: () => <Icon icon="hugeicons:folder-02" className="h-6 w-6" />,
+    icon: CategoriesTabIcon,
     ariaLabel: "Navigate to Categories",
   },
   {
     name: "Reports",
     href: "/reports",
-    icon: () => <Icon icon="hugeicons:chart-02" className="h-6 w-6" />,
+    icon: ReportsTabIcon,
     ariaLabel: "Navigate to Reports",
   },
 ];
@@ -57,7 +74,7 @@ export const BottomTabBar: React.FC = () => {
           <div className="flex justify-between items-center">
         {tabs.map((tab, index) => {
           const isActive = location.pathname === tab.href;
-          const Icon = tab.icon;
+          const TabIcon = tab.icon;
 
           return (
             <Link
@@ -73,16 +90,14 @@ export const BottomTabBar: React.FC = () => {
               aria-label={tab.ariaLabel}
               aria-current={isActive ? "page" : undefined}
             >
-              <div
+              <TabIcon
                 className={cn(
                   "transition-colors flex-shrink-0 mb-1",
                   isActive
                     ? "text-indigo-600 dark:text-indigo-400"
                     : "text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300",
                 )}
-              >
-                {typeof Icon === 'function' && Icon.name === undefined ? <Icon /> : <Icon className="h-6 w-6" />}
-              </div>
+              />
               <span
                 className={cn(
                   "text-xs font-medium transition-colors",
