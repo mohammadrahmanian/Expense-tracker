@@ -111,22 +111,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <div className="flex justify-between items-center">
               {/* Mobile menu button - Hidden for bottom tab bar implementation */}
               
-              {/* Left side - Page title and description on desktop */}
-              <div className="hidden lg:flex flex-1 min-w-0">
+              {/* Left side - Page title and description */}
+              <div className="flex flex-1 min-w-0">
                 <div className="flex items-center space-x-4">
                   <div className="flex-1 min-w-0">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white truncate">
+                    <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white truncate">
                       {getPageTitle()}
                     </h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">
+                    <p className="hidden lg:block text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">
                       {getPageDescription()}
                     </p>
                   </div>
                 </div>
               </div>
-              
-              {/* Mobile spacer */}
-              <div className="lg:hidden flex-1" />
               {/* Right side items */}
               <div className="flex items-center space-x-4">
 
