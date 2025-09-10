@@ -69,7 +69,7 @@ export const BottomTabBar: React.FC = () => {
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >
-      <div className="mx-4 mb-2">
+      <div className="mx-2 mb-2">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
           <div className="flex justify-between items-center">
         {tabs.map((tab, index) => {
@@ -112,10 +112,6 @@ export const BottomTabBar: React.FC = () => {
           );
         })}
           </div>
-        </div>
-        {/* Home indicator */}
-        <div className="flex justify-center mt-2">
-          <div className="w-32 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
         </div>
       </div>
     </nav>
