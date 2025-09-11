@@ -3,13 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { HighchartsContainer } from "@/components/ui/highcharts-chart";
 import { cn } from "@/lib/utils";
 import {
   categoriesService,
   dashboardService,
   transactionsService,
 } from "@/services/api";
-import { Category, DashboardStats, Transaction } from "@/types";
+import { Category, CategorySpending, DashboardStats, Transaction } from "@/types";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useDataRefresh } from "@/contexts/DataRefreshContext";
 import { format } from "date-fns";
@@ -41,6 +42,7 @@ const Dashboard: React.FC = () => {
     [],
   );
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryExpenses, setCategoryExpenses] = useState<CategorySpending[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -64,6 +66,15 @@ const Dashboard: React.FC = () => {
         // Load categories
         const allCategories = await categoriesService.getAll();
         setCategories(allCategories);
+
+        // Load category expenses for bubble chart
+        try {
+          const expenses = await dashboardService.getCategoryExpenses();
+          setCategoryExpenses(expenses || []);
+        } catch (error) {
+          console.error('Failed to load category expenses:', error);
+          setCategoryExpenses([]);
+        }
       } catch (error) {
         toast.error("Failed to load dashboard data. Please try again.");
       } finally {
@@ -86,16 +97,6 @@ const Dashboard: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex justify-end items-center">
-          <Link to="/transactions">
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Transaction
-            </Button>
-          </Link>
-        </div>
-
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
@@ -167,31 +168,127 @@ const Dashboard: React.FC = () => {
           </Card>
         </div>
 
-        {/* Savings Progress */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Savings Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between text-sm">
-                <span>Monthly Savings</span>
-                <span>
-                  {formatAmount(stats.monthlySaving || 0)} of {formatAmount(stats.monthlyIncome || 0)}
-                </span>
+        {/* Savings Progress and Expense by Category - Side by Side */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Savings Progress */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Savings Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm">
+                  <span>Monthly Savings</span>
+                  <span>
+                    {formatAmount(stats.monthlySaving || 0)} of {formatAmount(stats.monthlyIncome || 0)}
+                  </span>
+                </div>
+                <Progress
+                  value={Math.max(0, Math.min(100, savingsRate))}
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">
+                  {savingsRate >= 20
+                    ? "Great job! You're saving well."
+                    : "Consider increasing your savings rate to 20% or more."}
+                </p>
               </div>
-              <Progress
-                value={Math.max(0, Math.min(100, savingsRate))}
-                className="w-full"
-              />
-              <p className="text-xs text-muted-foreground">
-                {savingsRate >= 20
-                  ? "Great job! You're saving well."
-                  : "Consider increasing your savings rate to 20% or more."}
+            </CardContent>
+          </Card>
+
+          {/* Expense by Category */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Expense by Category</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Current month: {formatAmount(stats.monthlyExpenses || 0)}
               </p>
-            </div>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-sm text-muted-foreground">Loading chart...</div>
+                </div>
+              ) : categoryExpenses.length > 0 ? (
+                <div className="space-y-4">
+                  <HighchartsContainer
+                    className="w-full h-[320px]"
+                    options={{
+                      chart: {
+                        type: 'pie',
+                        marginBottom: 30,
+                        spacingBottom: 10,
+                        marginTop: 20,
+                        spacingTop: 10,
+                      },
+                      title: {
+                        text: undefined,
+                      },
+                      series: [{
+                        name: 'Expenses',
+                        type: 'pie',
+                        data: categoryExpenses.map((item) => ({
+                          name: item.categoryName,
+                          y: item.amount,
+                          color: item.color,
+                        })),
+                        innerSize: '40%',
+                        dataLabels: {
+                          enabled: false,
+                        },
+                      }],
+                      tooltip: {
+                        formatter: function() {
+                          return `<b>${this.point.name}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
+                        },
+                      },
+                      legend: {
+                        enabled: false,
+                      },
+                      plotOptions: {
+                        pie: {
+                          allowPointSelect: true,
+                          cursor: 'pointer',
+                          borderWidth: 0,
+                        },
+                      },
+                    }}
+                  />
+                  <div className="space-y-2">
+                    {categoryExpenses.slice(0, 5).map((item) => (
+                      <div
+                        key={item.categoryId}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <div
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: item.color }}
+                          />
+                          <span className="text-sm">{item.categoryName}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="secondary">
+                            {item.percentage.toFixed(1)}%
+                          </Badge>
+                          <span className="text-sm font-medium">
+                            {formatAmount(item.amount)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+                  <div className="text-4xl mb-2">📊</div>
+                  <p className="text-sm font-medium">No expense data for this month</p>
+                  <p className="text-xs text-muted-foreground mt-1">Start adding transactions to see your spending breakdown</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Recent Transactions */}
         <Card>

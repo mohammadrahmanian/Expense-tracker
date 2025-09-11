@@ -2,6 +2,9 @@
 
 The Fusion Starter is a modern, production-ready template for building full-stack React applications using react-router-dom in SPA mode.
 
+## Agent Workflow
+When you get a user prompt that is for adding a feature, fixing a bug, or adding tests, start by planning the prompt first. Review the needed files, understand them completely, once your are happy with your understandings, write the plan in a `plan.md` file without touching any code. Break the plan into small steps that are reasonable to be broken into. Once you planned the change, review your plan to make sure there are no vague points and assumptions. If you are not certain instead of making up, ask questions from the user. Once you write down the plan, wait and ask for the user feedback on the plan.
+
 ## Core Framework & Technologies
 
 - **React 18**
