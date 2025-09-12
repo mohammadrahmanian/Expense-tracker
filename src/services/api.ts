@@ -282,16 +282,16 @@ export const dashboardService = {
       ]);
 
       const now = new Date();
-      const currentMonth = now.getMonth();
-      const currentYear = now.getFullYear();
+      const currentMonth = now.getUTCMonth();
+      const currentYear = now.getUTCFullYear();
 
       // Filter transactions for current month and expenses only
       const currentMonthExpenses = transactions.filter((transaction) => {
         const transactionDate = new Date(transaction.date);
         return (
           transaction.type === "EXPENSE" &&
-          transactionDate.getMonth() === currentMonth &&
-          transactionDate.getFullYear() === currentYear
+          transactionDate.getUTCMonth() === currentMonth &&
+          transactionDate.getUTCFullYear() === currentYear
         );
       });
 
