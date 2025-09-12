@@ -1,6 +1,7 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { HighchartsContainer } from "@/components/ui/highcharts-chart";
 import {
   Select,
   SelectContent,
@@ -8,9 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { categoriesService, transactionsService } from "@/services/api";
 import { Category, CategorySpending, MonthlyData, Transaction } from "@/types";
-import { useCurrency } from "@/contexts/CurrencyContext";
 import {
   eachMonthOfInterval,
   endOfMonth,
@@ -19,21 +20,6 @@ import {
   subMonths,
 } from "date-fns";
 import React, { useEffect, useState } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Legend,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 
 const Reports: React.FC = () => {
   const { formatAmount } = useCurrency();
@@ -241,42 +227,72 @@ const Reports: React.FC = () => {
           </CardHeader>
           <CardContent>
             {monthlyData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip
-                    formatter={(value: number) => [
-                      formatAmount(value),
-                      "",
-                    ]}
-                    labelStyle={{ color: "black" }}
-                  />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="income"
-                    stroke="#00B894"
-                    strokeWidth={3}
-                    name="Income"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="expenses"
-                    stroke="#FF6B6B"
-                    strokeWidth={3}
-                    name="Expenses"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="savings"
-                    stroke="#6C5CE7"
-                    strokeWidth={3}
-                    name="Savings"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <HighchartsContainer
+                className="w-full h-[420px]"
+                options={{
+                  chart: {
+                    type: "spline",
+                  },
+                  title: {
+                    text: undefined,
+                  },
+                  xAxis: {
+                    categories: monthlyData.map((d) => d.month),
+                  },
+                  yAxis: {
+                    title: {
+                      text: "Amount",
+                    },
+                  },
+                  series: [
+                    {
+                      name: "Income",
+                      type: "spline",
+                      data: monthlyData.map((d) => d.income),
+                      color: "#00B894",
+                      lineWidth: 3,
+                    },
+                    {
+                      name: "Expenses",
+                      type: "spline",
+                      data: monthlyData.map((d) => d.expenses),
+                      color: "#FF6B6B",
+                      lineWidth: 3,
+                    },
+                    {
+                      name: "Savings",
+                      type: "spline",
+                      data: monthlyData.map((d) => d.savings),
+                      color: "#6C5CE7",
+                      lineWidth: 3,
+                    },
+                  ],
+                  tooltip: {
+                    formatter: function () {
+                      return `<b>${this.series.name}</b><br/>${formatAmount(this.y || 0)}`;
+                    },
+                  },
+                  legend: {
+                    enabled: true,
+                  },
+                  plotOptions: {
+                    spline: {
+                      lineWidth: 3,
+                      marker: {
+                        enabled: true,
+                        radius: 4,
+                        lineWidth: 2,
+                        lineColor: "#FFFFFF",
+                      },
+                      states: {
+                        hover: {
+                          lineWidth: 4,
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
@@ -294,23 +310,52 @@ const Reports: React.FC = () => {
           </CardHeader>
           <CardContent>
             {monthlyData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip
-                    formatter={(value: number) => [
-                      formatAmount(value),
-                      "",
-                    ]}
-                    labelStyle={{ color: "black" }}
-                  />
-                  <Legend />
-                  <Bar dataKey="income" fill="#00B894" name="Income" />
-                  <Bar dataKey="expenses" fill="#FF6B6B" name="Expenses" />
-                </BarChart>
-              </ResponsiveContainer>
+              <HighchartsContainer
+                className="w-full h-[420px]"
+                options={{
+                  chart: {
+                    type: "column",
+                  },
+                  title: {
+                    text: undefined,
+                  },
+                  xAxis: {
+                    categories: monthlyData.map((d) => d.month),
+                  },
+                  yAxis: {
+                    title: {
+                      text: "Amount",
+                    },
+                  },
+                  series: [
+                    {
+                      name: "Income",
+                      type: "column",
+                      data: monthlyData.map((d) => d.income),
+                      color: "#00B894",
+                    },
+                    {
+                      name: "Expenses",
+                      type: "column",
+                      data: monthlyData.map((d) => d.expenses),
+                      color: "#FF6B6B",
+                    },
+                  ],
+                  tooltip: {
+                    formatter: function () {
+                      return `<b>${this.series.name}</b><br/>${formatAmount(this.y || 0)}`;
+                    },
+                  },
+                  legend: {
+                    enabled: true,
+                  },
+                  plotOptions: {
+                    column: {
+                      borderWidth: 0,
+                    },
+                  },
+                }}
+              />
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
@@ -330,30 +375,47 @@ const Reports: React.FC = () => {
             <CardContent>
               {categorySpending.length > 0 ? (
                 <div className="space-y-4">
-                  <ResponsiveContainer width="100%" height={200}>
-                    <PieChart>
-                      <Pie
-                        data={categorySpending}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={40}
-                        outerRadius={80}
-                        paddingAngle={5}
-                        dataKey="amount"
-                      >
-                        {categorySpending.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value: number) => [
-                          formatAmount(value),
-                          "Amount",
-                        ]}
-                        labelStyle={{ color: "black" }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <HighchartsContainer
+                    className="w-full h-[320px]"
+                    options={{
+                      chart: {
+                        type: "pie",
+                      },
+                      title: {
+                        text: undefined,
+                      },
+                      series: [
+                        {
+                          name: "Expenses",
+                          type: "pie",
+                          data: categorySpending.map((item) => ({
+                            name: item.categoryName,
+                            y: item.amount,
+                            color: item.color,
+                          })),
+                          innerSize: "40%",
+                          dataLabels: {
+                            enabled: false,
+                          },
+                        },
+                      ],
+                      tooltip: {
+                        formatter: function () {
+                          return `<b>${this.point.name}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
+                        },
+                      },
+                      legend: {
+                        enabled: false,
+                      },
+                      plotOptions: {
+                        pie: {
+                          allowPointSelect: true,
+                          cursor: "pointer",
+                          borderWidth: 0,
+                        },
+                      },
+                    }}
+                  />
                   <div className="space-y-2">
                     {categorySpending.map((item) => (
                       <div
@@ -397,30 +459,47 @@ const Reports: React.FC = () => {
             <CardContent>
               {incomeByCategory.length > 0 ? (
                 <div className="space-y-4">
-                  <ResponsiveContainer width="100%" height={200}>
-                    <PieChart>
-                      <Pie
-                        data={incomeByCategory}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={40}
-                        outerRadius={80}
-                        paddingAngle={5}
-                        dataKey="amount"
-                      >
-                        {incomeByCategory.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value: number) => [
-                          formatAmount(value),
-                          "Amount",
-                        ]}
-                        labelStyle={{ color: "black" }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <HighchartsContainer
+                    className="w-full h-[320px]"
+                    options={{
+                      chart: {
+                        type: "pie",
+                      },
+                      title: {
+                        text: undefined,
+                      },
+                      series: [
+                        {
+                          name: "Income",
+                          type: "pie",
+                          data: incomeByCategory.map((item) => ({
+                            name: item.categoryName,
+                            y: item.amount,
+                            color: item.color,
+                          })),
+                          innerSize: "40%",
+                          dataLabels: {
+                            enabled: false,
+                          },
+                        },
+                      ],
+                      tooltip: {
+                        formatter: function () {
+                          return `<b>${this.point.name}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
+                        },
+                      },
+                      legend: {
+                        enabled: false,
+                      },
+                      plotOptions: {
+                        pie: {
+                          allowPointSelect: true,
+                          cursor: "pointer",
+                          borderWidth: 0,
+                        },
+                      },
+                    }}
+                  />
                   <div className="space-y-2">
                     {incomeByCategory.map((item) => (
                       <div
