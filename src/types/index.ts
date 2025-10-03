@@ -23,7 +23,7 @@ export interface Transaction {
   category?: Category;
   userId: string;
   isRecurring?: boolean;
-  recurringFrequency?: "daily" | "weekly" | "monthly" | "yearly";
+  recurrenceFrequency?: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -68,4 +68,20 @@ export interface MonthlyData {
   income: number;
   expenses: number;
   savings: number;
+}
+
+export interface RecurringTransaction {
+  id: string;
+  title: string;
+  amount: number;
+  type: "INCOME" | "EXPENSE";
+  date: string;
+  startDate: string;
+  endDate?: string;
+  isActive: boolean;
+  description?: string;
+  nextOccurrence: string;
+  categoryId: string;
+  category?: Category;
+  recurrenceFrequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 }

@@ -19,6 +19,7 @@ import Register from "./pages/Register";
 import Reports from "./pages/Reports";
 import Transactions from "./pages/Transactions";
 import Profile from "./pages/Profile";
+import RecurringTransactions from "./pages/RecurringTransactions";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -37,7 +38,7 @@ const ConditionalBottomTabBar = () => {
   const location = useLocation();
   
   // Dashboard routes that should show the bottom tab bar
-  const dashboardRoutes = ['/dashboard', '/transactions', '/categories', '/reports', '/profile'];
+  const dashboardRoutes = ['/dashboard', '/transactions', '/recurring-transactions', '/categories', '/reports', '/profile'];
   
   const shouldShowTabBar = dashboardRoutes.includes(location.pathname);
   
@@ -80,6 +81,14 @@ const App = () => (
                   element={
                     <ProtectedRoute>
                       <Categories />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/recurring-transactions"
+                  element={
+                    <ProtectedRoute>
+                      <RecurringTransactions />
                     </ProtectedRoute>
                   }
                 />

@@ -27,6 +27,7 @@ interface DashboardLayoutProps {
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:dashboard-square-03" className={cn("h-5 w-5", className)} /> },
   { name: "Transactions", href: "/transactions", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:money-add-01" className={cn("h-5 w-5", className)} /> },
+  { name: "Recurring", href: "/recurring-transactions", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:repeat" className={cn("h-5 w-5", className)} /> },
   { name: "Reports", href: "/reports", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:chart-02" className={cn("h-5 w-5", className)} /> },
   { name: "Categories", href: "/categories", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:folder-02" className={cn("h-5 w-5", className)} /> },
 ];
@@ -60,7 +61,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const getPageDescription = () => {
     const descriptions: Record<string, string> = {
       "/dashboard": "Overview of your financial activity",
-      "/transactions": "Manage your income and expenses", 
+      "/transactions": "Manage your income and expenses",
+      "/recurring-transactions": "Manage your recurring income and expenses",
       "/reports": "Analyze your spending patterns",
       "/categories": "Organize your expense categories",
       "/profile": "Manage your account settings"
