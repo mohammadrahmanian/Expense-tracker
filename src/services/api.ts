@@ -1,4 +1,4 @@
-import { Budget, Category, DashboardStats, Transaction } from "@/types";
+import { Budget, Category, DashboardStats, RecurringTransaction, Transaction } from "@/types";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 // Navigation singleton for use outside React components
@@ -410,6 +410,63 @@ export const authService = {
     try {
       const response = await apiClient.get("/users/me");
       return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+};
+
+// Recurring Transactions Service
+export const recurringTransactionsService = {
+  getAll: async (): Promise<RecurringTransaction[]> => {
+    try {
+      const response = await apiClient.get<{ recurringTransactions: RecurringTransaction[] }>(
+        "/recurring-transactions"
+      );
+      return response.data.recurringTransactions;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  create: async (
+    data: Omit<RecurringTransaction, "id" | "nextOccurrence">
+  ): Promise<Transaction> => {
+    try {
+      const payload = {
+        ...data,
+        isRecurring: true,
+        recurrenceFrequency: data.recurrenceFrequency,
+      };
+      const response = await apiClient.post<Transaction>("/transactions", payload);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  update: async (
+    id: string,
+    data: Partial<RecurringTransaction>
+  ): Promise<void> => {
+    try {
+      await apiClient.put(`/recurring-transactions/${id}`, data);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  delete: async (id: string): Promise<void> => {
+    try {
+      await apiClient.delete(`/recurring-transactions/${id}`);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  toggleStatus: async (id: string, active: boolean): Promise<void> => {
+    try {
+      await apiClient.post(`/recurring-transactions/${id}/toggle`, { active });
     } catch (error) {
       handleApiError(error);
     }

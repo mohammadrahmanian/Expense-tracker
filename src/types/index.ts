@@ -69,3 +69,19 @@ export interface MonthlyData {
   expenses: number;
   savings: number;
 }
+
+export interface RecurringTransaction {
+  id: string;
+  title: string;
+  amount: number;
+  type: "INCOME" | "EXPENSE";
+  date: string;
+  startDate: string;
+  endDate?: string;
+  isActive: boolean;
+  description?: string;
+  nextOccurrence: string;
+  categoryId: string;
+  category?: Category;
+  recurrenceFrequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+}
