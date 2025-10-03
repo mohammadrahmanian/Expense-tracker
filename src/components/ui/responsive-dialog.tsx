@@ -1,7 +1,7 @@
-import * as React from "react";
+import { cn } from "@/lib/utils";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import * as React from "react";
 
 const ResponsiveDialog = DialogPrimitive.Root;
 const ResponsiveDialogTrigger = DialogPrimitive.Trigger;
@@ -46,7 +46,7 @@ const ResponsiveDialogContent = React.forwardRef<
         // Mobile animations
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom",
-        // Mobile specific max height (keep only for mobile)
+        // Mobile max height only
         "max-h-[80vh] sm:max-h-fit",
         className,
       )}
@@ -56,7 +56,7 @@ const ResponsiveDialogContent = React.forwardRef<
       <div className="mx-auto w-12 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-2 mb-4 sm:hidden" />
       
       {/* Scrollable content area */}
-      <div className="flex-1 overflow-y-auto px-6 sm:pt-6">
+      <div className="flex-auto min-h-0 overflow-y-auto px-6 sm:pt-6 sm:max-h-[90vh]">
         {children}
       </div>
       
@@ -125,14 +125,5 @@ const ResponsiveDialogDescription = React.forwardRef<
 ResponsiveDialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export {
-  ResponsiveDialog,
-  ResponsiveDialogPortal,
-  ResponsiveDialogOverlay,
-  ResponsiveDialogClose,
-  ResponsiveDialogTrigger,
-  ResponsiveDialogContent,
-  ResponsiveDialogHeader,
-  ResponsiveDialogFooter,
-  ResponsiveDialogTitle,
-  ResponsiveDialogDescription,
+  ResponsiveDialog, ResponsiveDialogClose, ResponsiveDialogContent, ResponsiveDialogDescription, ResponsiveDialogFooter, ResponsiveDialogHeader, ResponsiveDialogOverlay, ResponsiveDialogPortal, ResponsiveDialogTitle, ResponsiveDialogTrigger
 };

@@ -16,6 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+} from "@/components/ui/responsive-dialog";
 import { cn } from "@/lib/utils";
 import { categoriesService, recurringTransactionsService } from "@/services/api";
 import { Category, RecurringTransaction } from "@/types";
@@ -46,6 +50,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { RecurringTransactionForm } from "@/components/recurring/RecurringTransactionForm";
+import { RecurringTransactionCreateForm } from "@/components/recurring/RecurringTransactionCreateForm";
 
 const RecurringTransactions: React.FC = () => {
   const { formatAmount } = useCurrency();
@@ -61,6 +67,8 @@ const RecurringTransactions: React.FC = () => {
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [toggleDialogOpen, setToggleDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<RecurringTransaction | null>(null);
 
   useEffect(() => {
@@ -222,7 +230,7 @@ const RecurringTransactions: React.FC = () => {
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                   ACTIVE RECURRING TRANSACTIONS ({activeTransactions.length})
                 </h2>
-                <Button size="sm" className="gap-2">
+                <Button size="sm" className="gap-2" onClick={() => setCreateDialogOpen(true)}>
                   <Plus className="h-4 w-4" />
                   Add New
                 </Button>
@@ -254,8 +262,8 @@ const RecurringTransactions: React.FC = () => {
                         setToggleDialogOpen(true);
                       }}
                       onEdit={() => {
-                        // TODO: Implement edit functionality
-                        toast.info("Edit functionality coming soon");
+                        setSelectedTransaction(transaction);
+                        setEditDialogOpen(true);
                       }}
                       isDeleting={deletingId === transaction.id}
                       isToggling={togglingId === transaction.id}
@@ -288,8 +296,8 @@ const RecurringTransactions: React.FC = () => {
                         setToggleDialogOpen(true);
                       }}
                       onEdit={() => {
-                        // TODO: Implement edit functionality
-                        toast.info("Edit functionality coming soon");
+                        setSelectedTransaction(transaction);
+                        setEditDialogOpen(true);
                       }}
                       isDeleting={deletingId === transaction.id}
                       isToggling={togglingId === transaction.id}
@@ -342,6 +350,43 @@ const RecurringTransactions: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Edit Recurring Transaction Dialog */}
+      <ResponsiveDialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <ResponsiveDialogContent>
+          {selectedTransaction && (
+            <RecurringTransactionForm
+              transaction={selectedTransaction}
+              onSuccess={() => {
+                setEditDialogOpen(false);
+                setSelectedTransaction(null);
+                loadData();
+                triggerRefresh();
+              }}
+              onCancel={() => {
+                setEditDialogOpen(false);
+                setSelectedTransaction(null);
+              }}
+            />
+          )}
+        </ResponsiveDialogContent>
+      </ResponsiveDialog>
+
+      {/* Create Recurring Transaction Dialog */}
+      <ResponsiveDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+        <ResponsiveDialogContent>
+          <RecurringTransactionCreateForm
+            onSuccess={() => {
+              setCreateDialogOpen(false);
+              loadData();
+              triggerRefresh();
+            }}
+            onCancel={() => {
+              setCreateDialogOpen(false);
+            }}
+          />
+        </ResponsiveDialogContent>
+      </ResponsiveDialog>
     </DashboardLayout>
   );
 };
