@@ -35,7 +35,7 @@ const ResponsiveDialogContent = React.forwardRef<
         // Base styles
         "fixed z-50 flex flex-col w-full border bg-background shadow-lg duration-200",
         // Desktop: centered modal
-        "sm:left-[50%] sm:top-[50%] sm:max-w-lg sm:max-h-[80vh] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl",
+        "sm:left-[50%] sm:top-[50%] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl",
         // Desktop animations
         "sm:data-[state=open]:animate-in sm:data-[state=closed]:animate-out sm:data-[state=closed]:fade-out-0 sm:data-[state=open]:fade-in-0",
         "sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
@@ -46,8 +46,8 @@ const ResponsiveDialogContent = React.forwardRef<
         // Mobile animations
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom",
-        // Mobile specific max height
-        "max-h-[80vh]",
+        // Mobile specific max height (keep only for mobile)
+        "max-h-[80vh] sm:max-h-fit",
         className,
       )}
       {...props}

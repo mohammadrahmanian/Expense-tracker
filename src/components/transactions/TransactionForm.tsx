@@ -39,8 +39,8 @@ const transactionSchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   date: z.date(),
   isRecurring: z.boolean().default(false),
-  recurringFrequency: z
-    .enum(["daily", "weekly", "monthly", "yearly"])
+  recurrenceFrequency: z
+    .enum(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"])
     .optional(),
 });
 
@@ -107,7 +107,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       categoryId: transaction?.categoryId || "",
       date: transaction ? new Date(transaction.date) : new Date(),
       isRecurring: transaction?.isRecurring || false,
-      recurringFrequency: transaction?.recurringFrequency || "monthly",
+      recurrenceFrequency: transaction?.recurrenceFrequency || "MONTHLY",
     },
   });
 
@@ -149,7 +149,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         date: utcDate,
         categoryId: data.categoryId,
         isRecurring: data.isRecurring,
-        recurringFrequency: data.recurringFrequency,
+        recurrenceFrequency: data.recurrenceFrequency,
       };
 
       if (transaction) {
@@ -318,19 +318,19 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               <div className="space-y-2">
                 <Label>Frequency</Label>
                 <Select
-                  value={watch("recurringFrequency")}
+                  value={watch("recurrenceFrequency")}
                   onValueChange={(
-                    value: "daily" | "weekly" | "monthly" | "yearly",
-                  ) => setValue("recurringFrequency", value)}
+                    value: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY",
+                  ) => setValue("recurrenceFrequency", value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select frequency" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="daily">Daily</SelectItem>
-                    <SelectItem value="weekly">Weekly</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="yearly">Yearly</SelectItem>
+                    <SelectItem value="DAILY">Daily</SelectItem>
+                    <SelectItem value="WEEKLY">Weekly</SelectItem>
+                    <SelectItem value="MONTHLY">Monthly</SelectItem>
+                    <SelectItem value="YEARLY">Yearly</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

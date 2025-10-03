@@ -23,7 +23,7 @@ export interface Transaction {
   category?: Category;
   userId: string;
   isRecurring?: boolean;
-  recurringFrequency?: "daily" | "weekly" | "monthly" | "yearly";
+  recurrenceFrequency?: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
   createdAt: Date;
   updatedAt: Date;
 }

@@ -160,8 +160,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col h-full">
-          <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
             {/* Category Selection */}
             <div className="space-y-2">
               <Label>Category</Label>
@@ -170,7 +169,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
                   const Icon = cat.icon;
                   const isSelected = selectedCategory === cat.name;
                   const category = findCategoryByName(cat.name);
-                  
+
                   return (
                     <Button
                       key={cat.name}
@@ -204,7 +203,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
             {/* Transaction Name Input (Optional) */}
             <div className="space-y-2">
               <Label htmlFor="transactionName">
-                Transaction Name 
+                Transaction Name
                 <span className="text-xs text-muted-foreground font-normal">(optional)</span>
               </Label>
               <Input
@@ -271,10 +270,9 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
                 </PopoverContent>
               </Popover>
             </div>
-          </div>
 
-          {/* Action Buttons - Now in sticky footer */}
-          <DialogFooter>
+          {/* Action Buttons */}
+          <DialogFooter className="mt-6">
             <Button
               type="button"
               variant="outline"
