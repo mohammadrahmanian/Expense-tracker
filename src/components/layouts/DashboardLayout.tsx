@@ -1,3 +1,4 @@
+import { BottomTabBar } from "@/components/ui/bottom-tab-bar";
 import { CurrencySwitcher } from "@/components/ui/currency-switcher";
 import {
   DropdownMenu,
@@ -54,8 +55,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   // Get page title based on current route
   const getPageTitle = () => {
-    const currentPage = navigation.find(nav => nav.href === location.pathname);
-    return currentPage?.name || "Dashboard";
+    const titles: Record<string, string> = {
+      "/dashboard": "Dashboard",
+      "/transactions": "Transactions",
+      "/recurring-transactions": "Recurring",
+      "/reports": "Reports",
+      "/categories": "Categories",
+      "/profile": "Profile",
+      "/more": "More"
+    };
+    return titles[location.pathname] || "Dashboard";
   };
 
   const getPageDescription = () => {
@@ -65,7 +74,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       "/recurring-transactions": "Manage your recurring income and expenses",
       "/reports": "Analyze your spending patterns",
       "/categories": "Organize your expense categories",
-      "/profile": "Manage your account settings"
+      "/profile": "Manage your account settings",
+      "/more": "Additional features and settings"
     };
     return descriptions[location.pathname] || "Welcome back to your dashboard";
   };
@@ -113,9 +123,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <div className="flex justify-between items-center">
               {/* Mobile menu button - Hidden for bottom tab bar implementation */}
               
-              {/* Left side - Page title and description */}
-              <div className="flex flex-1 min-w-0">
-                <div className="flex items-center space-x-4">
+              {/* Left side - Back button (mobile only) + Page title and description */}
+              <div className="flex flex-1 min-w-0 items-center">
+                {/* Back button - only on specific pages on mobile */}
+                {(location.pathname === '/categories' || location.pathname === '/recurring-transactions') && (
+                  <Link
+                    to="/more"
+                    className="lg:hidden mr-2 p-1 -ml-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <ChevronLeft className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                  </Link>
+                )}
+
+                <div className="flex items-center space-x-4 flex-1 min-w-0">
                   <div className="flex-1 min-w-0">
                     <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white truncate">
                       {getPageTitle()}
@@ -199,6 +219,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </main>
 
         <FloatingActionButton />
+        <BottomTabBar />
       </div>
     </div>
   );

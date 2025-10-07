@@ -1,7 +1,5 @@
 import { cn } from "@/lib/utils";
-import {
-  User,
-} from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Icon } from '@iconify/react';
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -22,12 +20,12 @@ const TransactionsTabIcon: React.FC<{ className?: string }> = ({ className }) =>
   <Icon icon="hugeicons:money-add-01" className={cn("h-6 w-6", className)} />
 );
 
-const CategoriesTabIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <Icon icon="hugeicons:folder-02" className={cn("h-6 w-6", className)} />
-);
-
 const ReportsTabIcon: React.FC<{ className?: string }> = ({ className }) => (
   <Icon icon="hugeicons:chart-02" className={cn("h-6 w-6", className)} />
+);
+
+const MoreTabIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <MoreHorizontal className={cn("h-6 w-6", className)} />
 );
 
 const tabs: TabItem[] = [
@@ -44,16 +42,16 @@ const tabs: TabItem[] = [
     ariaLabel: "Navigate to Transactions",
   },
   {
-    name: "Categories",
-    href: "/categories",
-    icon: CategoriesTabIcon,
-    ariaLabel: "Navigate to Categories",
-  },
-  {
     name: "Reports",
     href: "/reports",
     icon: ReportsTabIcon,
     ariaLabel: "Navigate to Reports",
+  },
+  {
+    name: "More",
+    href: "/more",
+    icon: MoreTabIcon,
+    ariaLabel: "Navigate to More",
   },
 ];
 

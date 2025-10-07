@@ -14,6 +14,7 @@ import Categories from "./pages/Categories";
 import Dashboard from "./pages/Dashboard";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import More from "./pages/More";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
 import Reports from "./pages/Reports";
@@ -38,8 +39,8 @@ const ConditionalBottomTabBar = () => {
   const location = useLocation();
   
   // Dashboard routes that should show the bottom tab bar
-  const dashboardRoutes = ['/dashboard', '/transactions', '/recurring-transactions', '/categories', '/reports', '/profile'];
-  
+  const dashboardRoutes = ['/dashboard', '/transactions', '/recurring-transactions', '/categories', '/reports', '/profile', '/more'];
+
   const shouldShowTabBar = dashboardRoutes.includes(location.pathname);
   
   return shouldShowTabBar ? <BottomTabBar /> : null;
@@ -105,6 +106,14 @@ const App = () => (
                   element={
                     <ProtectedRoute>
                       <Profile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/more"
+                  element={
+                    <ProtectedRoute>
+                      <More />
                     </ProtectedRoute>
                   }
                 />
