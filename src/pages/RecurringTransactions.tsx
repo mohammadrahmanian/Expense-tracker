@@ -20,6 +20,11 @@ import {
   ResponsiveDialog,
   ResponsiveDialogContent,
 } from "@/components/ui/responsive-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { categoriesService, recurringTransactionsService } from "@/services/api";
 import { Category, RecurringTransaction } from "@/types";
@@ -440,10 +445,27 @@ const RecurringTransactionCard: React.FC<RecurringTransactionCardProps> = ({
             </div>
 
             <div className="flex-1 min-w-0">
+              {/* Title - full width */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <h3 className="font-semibold text-gray-900 dark:text-white truncate mb-1">
+                    {transaction.title}
+                  </h3>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{transaction.title}</p>
+                </TooltipContent>
+              </Tooltip>
+
+              {/* Category */}
+              {category && (
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  {category.name}
+                </p>
+              )}
+
+              {/* Badges row */}
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-                  {transaction.title}
-                </h3>
                 <Badge
                   variant={transaction.type === "INCOME" ? "default" : "destructive"}
                   className="shrink-0"
@@ -462,12 +484,6 @@ const RecurringTransactionCard: React.FC<RecurringTransactionCardProps> = ({
                   {transaction.isActive ? "Active" : "Inactive"}
                 </Badge>
               </div>
-
-              {category && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  {category.name}
-                </p>
-              )}
 
               <p className="text-lg font-bold text-gray-900 dark:text-white mb-1">
                 {formatAmount(transaction.amount)}
