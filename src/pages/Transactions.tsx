@@ -594,7 +594,7 @@ const Transactions: React.FC = () => {
 
             {/* Pagination Controls */}
             {!isLoading && transactions.length > 0 && (
-              <div className="flex items-center justify-between px-2 py-4 border-t">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 py-4 border-t">
                 <div className="text-sm text-muted-foreground">
                   Showing {(currentPage - 1) * pageSize + 1} to{" "}
                   {(currentPage - 1) * pageSize + transactions.length} transactions
