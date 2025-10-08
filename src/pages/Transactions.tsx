@@ -44,6 +44,11 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Calendar as CalendarIcon,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsUpDown,
+  ChevronUp,
   Edit,
   Filter,
   Loader2,
@@ -74,14 +79,24 @@ const Transactions: React.FC = () => {
   const [editingTransaction, setEditingTransaction] = useState<
     Transaction | undefined
   >();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 50;
+  const [sortField, setSortField] = useState<"date" | "amount">("date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const scrollPositionRef = React.useRef<number>(0);
 
   useEffect(() => {
     loadCategories();
   }, []);
 
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, typeFilter, categoryFilter, startDate, endDate]);
+
   useEffect(() => {
     loadData();
-  }, [refreshTrigger, searchTerm, typeFilter, categoryFilter, startDate, endDate]);
+  }, [refreshTrigger, searchTerm, typeFilter, categoryFilter, startDate, endDate, currentPage, sortField, sortOrder]);
 
   const loadCategories = async () => {
     try {
@@ -94,20 +109,27 @@ const Transactions: React.FC = () => {
 
   const loadData = async () => {
     try {
+      // Save scroll position before loading
+      scrollPositionRef.current = window.scrollY;
+
       setIsLoading(true);
 
       // Build filter params for API
       const params: {
-        sort: "date";
-        order: "desc";
+        sort: "date" | "amount";
+        order: "asc" | "desc";
+        limit: number;
+        offset: number;
         type?: "INCOME" | "EXPENSE";
         fromDate?: string;
         toDate?: string;
         categoryId?: string;
         query?: string;
       } = {
-        sort: "date",
-        order: "desc",
+        sort: sortField,
+        order: sortOrder,
+        limit: pageSize,
+        offset: (currentPage - 1) * pageSize,
       };
 
       if (searchTerm) {
@@ -136,6 +158,11 @@ const Transactions: React.FC = () => {
 
       const allTransactions = await transactionsService.getAll(params);
       setTransactions(allTransactions);
+
+      // Restore scroll position after data loads
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scrollPositionRef.current);
+      });
     } catch (error) {
       toast.error("Failed to load transactions. Please try again.");
     } finally {
@@ -176,6 +203,29 @@ const Transactions: React.FC = () => {
   const handleFormCancel = () => {
     setIsFormOpen(false);
     setEditingTransaction(undefined);
+  };
+
+  const handleSort = (field: "date" | "amount") => {
+    if (sortField === field) {
+      // Toggle order if same field
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      // Set new field with default desc order
+      setSortField(field);
+      setSortOrder("desc");
+    }
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
+
+  const getSortIcon = (field: "date" | "amount") => {
+    if (sortField !== field) {
+      return <ChevronsUpDown className="ml-1 h-3.5 w-3.5 text-muted-foreground/60" />;
+    }
+    return sortOrder === "asc" ? (
+      <ChevronUp className="ml-1 h-3.5 w-3.5 text-primary/80" />
+    ) : (
+      <ChevronDown className="ml-1 h-3.5 w-3.5 text-primary/80" />
+    );
   };
 
   const totalIncome = transactions
@@ -376,6 +426,7 @@ const Transactions: React.FC = () => {
                   setCategoryFilter("all");
                   setStartDate(undefined);
                   setEndDate(undefined);
+                  setCurrentPage(1);
                 }}
               >
                 <Filter className="h-4 w-4 mr-2" />
@@ -414,8 +465,32 @@ const Transactions: React.FC = () => {
                       <TableHead>Title</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Type</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead>
+                        <button
+                          type="button"
+                          onClick={() => handleSort("date")}
+                          className={cn(
+                            "inline-flex items-center h-8 px-2 hover:bg-muted/50 rounded-md transition-colors -ml-2",
+                            sortField === "date" && "font-semibold"
+                          )}
+                        >
+                          Date
+                          {getSortIcon("date")}
+                        </button>
+                      </TableHead>
+                      <TableHead className="text-right">
+                        <button
+                          type="button"
+                          onClick={() => handleSort("amount")}
+                          className={cn(
+                            "inline-flex items-center h-8 px-2 hover:bg-muted/50 rounded-md transition-colors float-right",
+                            sortField === "amount" && "font-semibold"
+                          )}
+                        >
+                          Amount
+                          {getSortIcon("amount")}
+                        </button>
+                      </TableHead>
                       <TableHead className="w-[50px]"></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -514,6 +589,39 @@ const Transactions: React.FC = () => {
                     })}
                   </TableBody>
                 </Table>
+              </div>
+            )}
+
+            {/* Pagination Controls */}
+            {!isLoading && transactions.length > 0 && (
+              <div className="flex items-center justify-between px-2 py-4 border-t">
+                <div className="text-sm text-muted-foreground">
+                  Showing {(currentPage - 1) * pageSize + 1} to{" "}
+                  {(currentPage - 1) * pageSize + transactions.length} transactions
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Previous
+                  </Button>
+                  <div className="text-sm font-medium">
+                    Page {currentPage}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                    disabled={transactions.length < pageSize}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
