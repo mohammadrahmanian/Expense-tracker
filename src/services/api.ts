@@ -445,6 +445,29 @@ export const recurringTransactionsService = {
     }
   },
 
+  createRecurring: async (
+    data: {
+      title: string;
+      amount: number;
+      type: "INCOME" | "EXPENSE";
+      categoryId: string;
+      startDate: string;
+      endDate?: string;
+      description?: string;
+      recurrenceFrequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+    }
+  ): Promise<RecurringTransaction> => {
+    try {
+      const response = await apiClient.post<RecurringTransaction>(
+        "/recurring-transactions",
+        data
+      );
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
   update: async (
     id: string,
     data: Partial<RecurringTransaction>

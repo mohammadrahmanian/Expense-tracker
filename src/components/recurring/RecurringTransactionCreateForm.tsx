@@ -139,10 +139,15 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
         return;
       }
 
-      // Convert date to UTC to avoid timezone issues on the backend
-      const utcDate = new Date(
+      // Convert start date to UTC to avoid timezone issues on the backend
+      const utcStartDate = new Date(
         data.startDate.getTime() - data.startDate.getTimezoneOffset() * 60000,
       );
+
+      // Convert end date to UTC if provided
+      const utcEndDate = data.endDate
+        ? new Date(data.endDate.getTime() - data.endDate.getTimezoneOffset() * 60000)
+        : null;
 
       // Build create payload
       const createPayload = {
@@ -150,13 +155,13 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
         amount: numericAmount,
         type: data.type,
         categoryId: data.categoryId,
-        date: utcDate, // API uses 'date' field for startDate
+        startDate: utcStartDate.toISOString(),
+        endDate: utcEndDate?.toISOString(),
         description: data.description || undefined,
-        isRecurring: true,
         recurrenceFrequency: data.recurrenceFrequency,
       };
 
-      await recurringTransactionsService.create(createPayload);
+      await recurringTransactionsService.createRecurring(createPayload);
 
       toast.success("Recurring transaction created successfully!");
       onSuccess();
