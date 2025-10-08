@@ -62,9 +62,6 @@ const Transactions: React.FC = () => {
   const { refreshTrigger } = useDataRefresh();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [filteredTransactions, setFilteredTransactions] = useState<
-    Transaction[]
-  >([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">(
     "all",
@@ -79,75 +76,71 @@ const Transactions: React.FC = () => {
   >();
 
   useEffect(() => {
-    loadData();
-  }, [refreshTrigger]); // Re-run when refreshTrigger changes
+    loadCategories();
+  }, []);
 
   useEffect(() => {
-    filterTransactions();
-  }, [transactions, searchTerm, typeFilter, categoryFilter, startDate, endDate]);
+    loadData();
+  }, [refreshTrigger, searchTerm, typeFilter, categoryFilter, startDate, endDate]);
+
+  const loadCategories = async () => {
+    try {
+      const allCategories = await categoriesService.getAll();
+      setCategories(allCategories);
+    } catch (error) {
+      toast.error("Failed to load categories. Please try again.");
+    }
+  };
 
   const loadData = async () => {
     try {
       setIsLoading(true);
-      const allTransactions = await transactionsService.getAll();
-      const allCategories = await categoriesService.getAll();
+
+      // Build filter params for API
+      const params: {
+        sort: "date";
+        order: "desc";
+        type?: "INCOME" | "EXPENSE";
+        fromDate?: string;
+        toDate?: string;
+        categoryId?: string;
+        query?: string;
+      } = {
+        sort: "date",
+        order: "desc",
+      };
+
+      if (searchTerm) {
+        params.query = searchTerm;
+      }
+
+      if (typeFilter !== "all") {
+        params.type = typeFilter;
+      }
+
+      if (categoryFilter !== "all") {
+        params.categoryId = categoryFilter;
+      }
+
+      if (startDate) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        params.fromDate = start.toISOString();
+      }
+
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        params.toDate = end.toISOString();
+      }
+
+      const allTransactions = await transactionsService.getAll(params);
       setTransactions(allTransactions);
-      setCategories(allCategories);
     } catch (error) {
-      toast.error("Failed to load data. Please try again.");
+      toast.error("Failed to load transactions. Please try again.");
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const filterTransactions = () => {
-    let filtered = transactions;
-
-    if (searchTerm) {
-      filtered = filtered.filter((transaction) =>
-        transaction.title.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-    }
-
-    if (typeFilter !== "all") {
-      filtered = filtered.filter(
-        (transaction) => transaction.type === typeFilter,
-      );
-    }
-
-    if (categoryFilter !== "all") {
-      filtered = filtered.filter(
-        (transaction) => transaction.categoryId === categoryFilter,
-      );
-    }
-
-    // Date range filtering
-    if (startDate) {
-      filtered = filtered.filter((transaction) => {
-        const transactionDate = new Date(transaction.date);
-        const start = new Date(startDate);
-        start.setHours(0, 0, 0, 0);
-        transactionDate.setHours(0, 0, 0, 0);
-        return transactionDate >= start;
-      });
-    }
-
-    if (endDate) {
-      filtered = filtered.filter((transaction) => {
-        const transactionDate = new Date(transaction.date);
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
-        transactionDate.setHours(23, 59, 59, 999);
-        return transactionDate <= end;
-      });
-    }
-
-    // Sort by date (newest first)
-    filtered = filtered.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
-
-    setFilteredTransactions(filtered);
   };
 
   const getCategoryById = (categoryId: string) => {
@@ -185,11 +178,11 @@ const Transactions: React.FC = () => {
     setEditingTransaction(undefined);
   };
 
-  const totalIncome = filteredTransactions
+  const totalIncome = transactions
     .filter((t) => t.type === "INCOME")
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const totalExpenses = filteredTransactions
+  const totalExpenses = transactions
     .filter((t) => t.type === "EXPENSE")
     .reduce((sum, t) => sum + t.amount, 0);
 
@@ -396,7 +389,7 @@ const Transactions: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle>
-              All Transactions ({filteredTransactions.length})
+              All Transactions ({transactions.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -405,12 +398,12 @@ const Transactions: React.FC = () => {
                 <Loader2 className="h-6 w-6 animate-spin" />
                 <span className="ml-2">Loading transactions...</span>
               </div>
-            ) : filteredTransactions.length === 0 ? (
+            ) : transactions.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
-                  {transactions.length === 0
-                    ? "No transactions yet. Start by adding your first transaction!"
-                    : "No transactions match your filters."}
+                  {searchTerm || typeFilter !== "all" || categoryFilter !== "all" || startDate || endDate
+                    ? "No transactions match your filters."
+                    : "No transactions yet. Start by adding your first transaction!"}
                 </p>
               </div>
             ) : (
@@ -427,7 +420,7 @@ const Transactions: React.FC = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredTransactions.map((transaction) => {
+                    {transactions.map((transaction) => {
                       const category = getCategoryById(transaction.categoryId);
                       return (
                         <TableRow key={transaction.id}>
