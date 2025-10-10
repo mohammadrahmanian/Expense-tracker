@@ -84,7 +84,9 @@ const Transactions: React.FC = () => {
   const pageSize = 50;
   const [sortField, setSortField] = useState<"date" | "amount">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const scrollPositionRef = React.useRef<number>(0);
+  const prevPageRef = React.useRef<number>(1);
+  const prevSortFieldRef = React.useRef<"date" | "amount">("date");
+  const prevSortOrderRef = React.useRef<"asc" | "desc">("desc");
 
   useEffect(() => {
     loadCategories();
@@ -110,8 +112,11 @@ const Transactions: React.FC = () => {
 
   const loadData = async () => {
     try {
-      // Save scroll position before loading
-      scrollPositionRef.current = window.scrollY;
+      // Check if pagination or sort changed
+      const pageChanged = prevPageRef.current !== currentPage;
+      const sortChanged =
+        prevSortFieldRef.current !== sortField ||
+        prevSortOrderRef.current !== sortOrder;
 
       setIsLoading(true);
 
@@ -161,10 +166,15 @@ const Transactions: React.FC = () => {
       setTransactions(response.items || []);
       setTotalTransactions(response.total || 0);
 
-      // Restore scroll position after data loads
-      requestAnimationFrame(() => {
-        window.scrollTo(0, scrollPositionRef.current);
-      });
+      // Scroll to top only when pagination or sort changes
+      if (pageChanged || sortChanged) {
+        window.scrollTo(0, 0);
+      }
+
+      // Update refs for next comparison
+      prevPageRef.current = currentPage;
+      prevSortFieldRef.current = sortField;
+      prevSortOrderRef.current = sortOrder;
     } catch (error) {
       toast.error("Failed to load transactions. Please try again.");
     } finally {
@@ -442,7 +452,9 @@ const Transactions: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle>
-              All Transactions ({transactions.length})
+              {totalTransactions > 0
+                ? `All Transactions (${totalTransactions} total, showing ${transactions.length})`
+                : `All Transactions (showing ${transactions.length})`}
             </CardTitle>
           </CardHeader>
           <CardContent>
