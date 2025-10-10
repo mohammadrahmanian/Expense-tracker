@@ -43,7 +43,8 @@ const Reports: React.FC = () => {
   }, [transactions, categories, timeRange]);
 
   const loadData = async () => {
-    const allTransactions = await transactionsService.getAll();
+    const transactionsResponse = await transactionsService.getAll();
+    const allTransactions = transactionsResponse.items;
     const allCategories = await categoriesService.getAll();
     setTransactions(allTransactions);
     setCategories(allCategories);

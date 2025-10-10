@@ -44,6 +44,11 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Calendar as CalendarIcon,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsUpDown,
+  ChevronUp,
   Edit,
   Filter,
   Loader2,
@@ -61,10 +66,8 @@ const Transactions: React.FC = () => {
   const { formatAmount } = useCurrency();
   const { refreshTrigger } = useDataRefresh();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [totalTransactions, setTotalTransactions] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [filteredTransactions, setFilteredTransactions] = useState<
-    Transaction[]
-  >([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">(
     "all",
@@ -77,77 +80,106 @@ const Transactions: React.FC = () => {
   const [editingTransaction, setEditingTransaction] = useState<
     Transaction | undefined
   >();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 50;
+  const [sortField, setSortField] = useState<"date" | "amount">("date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const prevPageRef = React.useRef<number>(1);
+  const prevSortFieldRef = React.useRef<"date" | "amount">("date");
+  const prevSortOrderRef = React.useRef<"asc" | "desc">("desc");
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, typeFilter, categoryFilter, startDate, endDate]);
 
   useEffect(() => {
     loadData();
-  }, [refreshTrigger]); // Re-run when refreshTrigger changes
+  }, [refreshTrigger, searchTerm, typeFilter, categoryFilter, startDate, endDate, currentPage, sortField, sortOrder]);
 
-  useEffect(() => {
-    filterTransactions();
-  }, [transactions, searchTerm, typeFilter, categoryFilter, startDate, endDate]);
-
-  const loadData = async () => {
+  const loadCategories = async () => {
     try {
-      setIsLoading(true);
-      const allTransactions = await transactionsService.getAll();
       const allCategories = await categoriesService.getAll();
-      setTransactions(allTransactions);
       setCategories(allCategories);
     } catch (error) {
-      toast.error("Failed to load data. Please try again.");
-    } finally {
-      setIsLoading(false);
+      toast.error("Failed to load categories. Please try again.");
     }
   };
 
-  const filterTransactions = () => {
-    let filtered = transactions;
+  const loadData = async () => {
+    try {
+      // Check if pagination or sort changed
+      const pageChanged = prevPageRef.current !== currentPage;
+      const sortChanged =
+        prevSortFieldRef.current !== sortField ||
+        prevSortOrderRef.current !== sortOrder;
 
-    if (searchTerm) {
-      filtered = filtered.filter((transaction) =>
-        transaction.title.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-    }
+      setIsLoading(true);
 
-    if (typeFilter !== "all") {
-      filtered = filtered.filter(
-        (transaction) => transaction.type === typeFilter,
-      );
-    }
+      // Build filter params for API
+      const params: {
+        sort: "date" | "amount";
+        order: "asc" | "desc";
+        limit: number;
+        offset: number;
+        type?: "INCOME" | "EXPENSE";
+        fromDate?: string;
+        toDate?: string;
+        categoryId?: string;
+        query?: string;
+      } = {
+        sort: sortField,
+        order: sortOrder,
+        limit: pageSize,
+        offset: (currentPage - 1) * pageSize,
+      };
 
-    if (categoryFilter !== "all") {
-      filtered = filtered.filter(
-        (transaction) => transaction.categoryId === categoryFilter,
-      );
-    }
+      if (searchTerm) {
+        params.query = searchTerm;
+      }
 
-    // Date range filtering
-    if (startDate) {
-      filtered = filtered.filter((transaction) => {
-        const transactionDate = new Date(transaction.date);
+      if (typeFilter !== "all") {
+        params.type = typeFilter;
+      }
+
+      if (categoryFilter !== "all") {
+        params.categoryId = categoryFilter;
+      }
+
+      if (startDate) {
         const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
-        transactionDate.setHours(0, 0, 0, 0);
-        return transactionDate >= start;
-      });
-    }
+        params.fromDate = start.toISOString();
+      }
 
-    if (endDate) {
-      filtered = filtered.filter((transaction) => {
-        const transactionDate = new Date(transaction.date);
+      if (endDate) {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
-        transactionDate.setHours(23, 59, 59, 999);
-        return transactionDate <= end;
-      });
+        params.toDate = end.toISOString();
+      }
+
+      const response = await transactionsService.getAll(params);
+      setTransactions(response.items || []);
+      setTotalTransactions(response.total || 0);
+
+      // Scroll to top only when pagination or sort changes
+      if (pageChanged || sortChanged) {
+        window.scrollTo(0, 0);
+      }
+
+      // Update refs for next comparison
+      prevPageRef.current = currentPage;
+      prevSortFieldRef.current = sortField;
+      prevSortOrderRef.current = sortOrder;
+    } catch (error) {
+      toast.error("Failed to load transactions. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-
-    // Sort by date (newest first)
-    filtered = filtered.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
-
-    setFilteredTransactions(filtered);
   };
 
   const getCategoryById = (categoryId: string) => {
@@ -185,11 +217,34 @@ const Transactions: React.FC = () => {
     setEditingTransaction(undefined);
   };
 
-  const totalIncome = filteredTransactions
+  const handleSort = (field: "date" | "amount") => {
+    if (sortField === field) {
+      // Toggle order if same field
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      // Set new field with default desc order
+      setSortField(field);
+      setSortOrder("desc");
+    }
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
+
+  const getSortIcon = (field: "date" | "amount") => {
+    if (sortField !== field) {
+      return <ChevronsUpDown className="ml-1 h-3.5 w-3.5 text-muted-foreground/60" />;
+    }
+    return sortOrder === "asc" ? (
+      <ChevronUp className="ml-1 h-3.5 w-3.5 text-primary/80" />
+    ) : (
+      <ChevronDown className="ml-1 h-3.5 w-3.5 text-primary/80" />
+    );
+  };
+
+  const totalIncome = transactions
     .filter((t) => t.type === "INCOME")
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const totalExpenses = filteredTransactions
+  const totalExpenses = transactions
     .filter((t) => t.type === "EXPENSE")
     .reduce((sum, t) => sum + t.amount, 0);
 
@@ -383,6 +438,7 @@ const Transactions: React.FC = () => {
                   setCategoryFilter("all");
                   setStartDate(undefined);
                   setEndDate(undefined);
+                  setCurrentPage(1);
                 }}
               >
                 <Filter className="h-4 w-4 mr-2" />
@@ -396,7 +452,9 @@ const Transactions: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle>
-              All Transactions ({filteredTransactions.length})
+              {totalTransactions > 0
+                ? `All Transactions (${totalTransactions} total, showing ${transactions.length})`
+                : `All Transactions (showing ${transactions.length})`}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -405,12 +463,12 @@ const Transactions: React.FC = () => {
                 <Loader2 className="h-6 w-6 animate-spin" />
                 <span className="ml-2">Loading transactions...</span>
               </div>
-            ) : filteredTransactions.length === 0 ? (
+            ) : transactions.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
-                  {transactions.length === 0
-                    ? "No transactions yet. Start by adding your first transaction!"
-                    : "No transactions match your filters."}
+                  {searchTerm || typeFilter !== "all" || categoryFilter !== "all" || startDate || endDate
+                    ? "No transactions match your filters."
+                    : "No transactions yet. Start by adding your first transaction!"}
                 </p>
               </div>
             ) : (
@@ -421,13 +479,37 @@ const Transactions: React.FC = () => {
                       <TableHead>Title</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Type</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead>
+                        <button
+                          type="button"
+                          onClick={() => handleSort("date")}
+                          className={cn(
+                            "inline-flex items-center h-8 px-2 hover:bg-muted/50 rounded-md transition-colors -ml-2",
+                            sortField === "date" && "font-semibold"
+                          )}
+                        >
+                          Date
+                          {getSortIcon("date")}
+                        </button>
+                      </TableHead>
+                      <TableHead className="text-right">
+                        <button
+                          type="button"
+                          onClick={() => handleSort("amount")}
+                          className={cn(
+                            "inline-flex items-center h-8 px-2 hover:bg-muted/50 rounded-md transition-colors float-right",
+                            sortField === "amount" && "font-semibold"
+                          )}
+                        >
+                          Amount
+                          {getSortIcon("amount")}
+                        </button>
+                      </TableHead>
                       <TableHead className="w-[50px]"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredTransactions.map((transaction) => {
+                    {transactions.map((transaction) => {
                       const category = getCategoryById(transaction.categoryId);
                       return (
                         <TableRow key={transaction.id}>
@@ -521,6 +603,39 @@ const Transactions: React.FC = () => {
                     })}
                   </TableBody>
                 </Table>
+              </div>
+            )}
+
+            {/* Pagination Controls */}
+            {!isLoading && transactions.length > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 py-4 border-t">
+                <div className="text-sm text-muted-foreground">
+                  Showing {(currentPage - 1) * pageSize + 1} to{" "}
+                  {(currentPage - 1) * pageSize + transactions.length} of {totalTransactions} transactions
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Previous
+                  </Button>
+                  <div className="text-sm font-medium">
+                    Page {currentPage} of {Math.ceil(totalTransactions / pageSize)}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                    disabled={(currentPage - 1) * pageSize + transactions.length >= totalTransactions}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>

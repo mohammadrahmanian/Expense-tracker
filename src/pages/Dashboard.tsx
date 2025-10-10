@@ -55,7 +55,8 @@ const Dashboard: React.FC = () => {
         setStats(dashboardStats);
 
         // Load recent transactions
-        const allTransactions = await transactionsService.getAll();
+        const transactionsResponse = await transactionsService.getAll();
+        const allTransactions = transactionsResponse.items;
         const recent = allTransactions
           .sort(
             (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),

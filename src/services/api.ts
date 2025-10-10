@@ -79,9 +79,36 @@ const handleApiError = (error: any): never => {
 
 // Transactions Service
 export const transactionsService = {
-  getAll: async (): Promise<Transaction[]> => {
+  getAll: async (params?: {
+    limit?: number;
+    offset?: number;
+    sort?: "date" | "amount";
+    order?: "asc" | "desc";
+    type?: "INCOME" | "EXPENSE";
+    fromDate?: string;
+    toDate?: string;
+    categoryId?: string;
+    query?: string;
+  }): Promise<{ items: Transaction[]; total: number; count: number }> => {
     try {
-      const response = await apiClient.get<Transaction[]>("/transactions");
+      const queryParams = new URLSearchParams();
+
+      if (params) {
+        if (params.limit !== undefined) queryParams.append("limit", params.limit.toString());
+        if (params.offset !== undefined) queryParams.append("offset", params.offset.toString());
+        if (params.sort) queryParams.append("sort", params.sort);
+        if (params.order) queryParams.append("order", params.order);
+        if (params.type) queryParams.append("type", params.type);
+        if (params.fromDate) queryParams.append("fromDate", params.fromDate);
+        if (params.toDate) queryParams.append("toDate", params.toDate);
+        if (params.categoryId) queryParams.append("categoryId", params.categoryId);
+        if (params.query) queryParams.append("query", params.query);
+      }
+
+      const queryString = queryParams.toString();
+      const url = queryString ? `/transactions?${queryString}` : "/transactions";
+
+      const response = await apiClient.get<{ items: Transaction[]; total: number; count: number }>(url);
       return response.data;
     } catch (error) {
       handleApiError(error);
@@ -276,10 +303,12 @@ export const dashboardService = {
   getCategoryExpenses: async (): Promise<CategorySpending[]> => {
     try {
       // Get current month's transactions and categories
-      const [transactions, categories] = await Promise.all([
+      const [transactionsResponse, categories] = await Promise.all([
         transactionsService.getAll(),
         categoriesService.getAll(),
       ]);
+
+      const transactions = transactionsResponse.items;
 
       const now = new Date();
       const currentMonth = now.getUTCMonth();
