@@ -89,7 +89,7 @@ export const transactionsService = {
     toDate?: string;
     categoryId?: string;
     query?: string;
-  }): Promise<Transaction[]> => {
+  }): Promise<{ items: Transaction[]; total: number; count: number }> => {
     try {
       const queryParams = new URLSearchParams();
 
@@ -108,7 +108,7 @@ export const transactionsService = {
       const queryString = queryParams.toString();
       const url = queryString ? `/transactions?${queryString}` : "/transactions";
 
-      const response = await apiClient.get<Transaction[]>(url);
+      const response = await apiClient.get<{ items: Transaction[]; total: number; count: number }>(url);
       return response.data;
     } catch (error) {
       handleApiError(error);
@@ -303,10 +303,12 @@ export const dashboardService = {
   getCategoryExpenses: async (): Promise<CategorySpending[]> => {
     try {
       // Get current month's transactions and categories
-      const [transactions, categories] = await Promise.all([
+      const [transactionsResponse, categories] = await Promise.all([
         transactionsService.getAll(),
         categoriesService.getAll(),
       ]);
+
+      const transactions = transactionsResponse.items;
 
       const now = new Date();
       const currentMonth = now.getUTCMonth();

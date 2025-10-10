@@ -66,6 +66,7 @@ const Transactions: React.FC = () => {
   const { formatAmount } = useCurrency();
   const { refreshTrigger } = useDataRefresh();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [totalTransactions, setTotalTransactions] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">(
@@ -156,8 +157,9 @@ const Transactions: React.FC = () => {
         params.toDate = end.toISOString();
       }
 
-      const allTransactions = await transactionsService.getAll(params);
-      setTransactions(allTransactions);
+      const response = await transactionsService.getAll(params);
+      setTransactions(response.items || []);
+      setTotalTransactions(response.total || 0);
 
       // Restore scroll position after data loads
       requestAnimationFrame(() => {
@@ -597,7 +599,7 @@ const Transactions: React.FC = () => {
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 py-4 border-t">
                 <div className="text-sm text-muted-foreground">
                   Showing {(currentPage - 1) * pageSize + 1} to{" "}
-                  {(currentPage - 1) * pageSize + transactions.length} transactions
+                  {(currentPage - 1) * pageSize + transactions.length} of {totalTransactions} transactions
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
@@ -610,13 +612,13 @@ const Transactions: React.FC = () => {
                     Previous
                   </Button>
                   <div className="text-sm font-medium">
-                    Page {currentPage}
+                    Page {currentPage} of {Math.ceil(totalTransactions / pageSize)}
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentPage((prev) => prev + 1)}
-                    disabled={transactions.length < pageSize}
+                    disabled={(currentPage - 1) * pageSize + transactions.length >= totalTransactions}
                   >
                     Next
                     <ChevronRight className="h-4 w-4 ml-1" />
