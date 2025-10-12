@@ -30,18 +30,8 @@ const menuItems: MoreMenuItem[] = [
 const More: React.FC = () => {
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white lg:hidden">
-            More
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 lg:hidden">
-            Additional features and settings
-          </p>
-        </div>
-
-        <div>
-          {menuItems.map((item) => (
+      <div>
+        {menuItems.map((item) => (
             <Link key={item.href} to={item.href}>
               <Card className="mb-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
                 <CardContent className="p-4">
@@ -65,7 +55,6 @@ const More: React.FC = () => {
               </Card>
             </Link>
           ))}
-        </div>
       </div>
     </DashboardLayout>
   );

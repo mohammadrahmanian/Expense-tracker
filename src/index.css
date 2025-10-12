@@ -136,6 +136,12 @@
     animation: slide-out-to-bottom 0.2s cubic-bezier(0.32, 0.72, 0, 1);
   }
 
+  /* Safe area bottom padding with legacy support */
+  .pb-safe-bottom {
+    padding-bottom: constant(safe-area-inset-bottom); /* iOS 11.0-11.2 */
+    padding-bottom: env(safe-area-inset-bottom); /* iOS 11.2+ */
+  }
+
   /* Ensure mobile bottom sheets don't go beyond viewport */
   @media (max-width: 640px) {
     .mobile-safe-bottom {

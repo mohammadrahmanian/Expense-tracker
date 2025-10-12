@@ -116,6 +116,10 @@ app/
 ```
 
 This structure provides a clean separation of concerns between UI components, routes, and application logic.
-- When I ask you to make adjustments on the DAshboard, review the file at "src/pages/Dashboard.tsx" first
+- When I ask you to make adjustments on the Dashboard, review the file at "src/pages/Dashboard.tsx" first
 - When I ask you to make adjustments on the Transactions page, review the file at "src/pages/Transactions.tsx" first
 - When I ask you to make adjustments on the Reports page, review the file at "src/pages/Reports.tsx" first
+- When I ask you to make adjustments on the Categories page, review the file at "src/pages/Categories.tsx" first
+- When I ask you to make adjustments on the More page, review the file at "src/pages/More.tsx" first
+- When I ask you to make adjustments on the Recurring Transactions page, review the file at "src/pages/RecurringTransactions.tsx" first
+- When you want to use the Playwright MCP server, open the "http://localhost:8080" address. The app is running there. If you need to login, use the credentials `johndoe@example.com` and `password123`.
