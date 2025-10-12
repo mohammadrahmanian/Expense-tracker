@@ -113,13 +113,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       >
         {/* Top navigation */}
         <header
-          className="sticky top-0 z-10"
+          className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 lg:bg-transparent lg:border-b-0"
           style={{
             paddingTop: 'env(safe-area-inset-top)',
           }}
         >
-          <div className="mx-4 mt-2 lg:mt-4">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
+          <div className="lg:mx-4 lg:mt-4">
+            <div className="lg:bg-white lg:dark:bg-gray-800 lg:rounded-2xl lg:shadow-sm lg:border lg:border-gray-200 lg:dark:border-gray-700 px-4 py-3">
               <div className="flex justify-between items-center">
               {/* Mobile menu button - Hidden for bottom tab bar implementation */}
               
