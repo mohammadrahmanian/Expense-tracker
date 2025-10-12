@@ -60,14 +60,11 @@ export const BottomTabBar: React.FC = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-30 lg:hidden safe-area-bottom"
+      className="fixed bottom-0 left-0 right-0 z-30 lg:hidden"
       role="navigation"
       aria-label="Bottom navigation"
-      style={{
-        paddingBottom: 'env(safe-area-inset-bottom)',
-      }}
     >
-      <div className="mx-2 mb-2">
+      <div className="mx-2 mb-6">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
           <div className="flex justify-between items-center">
         {tabs.map((tab, index) => {

@@ -112,7 +112,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         )}
       >
         {/* Top navigation */}
-        <header 
+        <header
           className="sticky top-0 z-10"
           style={{
             paddingTop: 'env(safe-area-inset-top)',

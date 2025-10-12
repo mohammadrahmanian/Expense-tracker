@@ -97,7 +97,7 @@
 
   html {
     min-height: calc(100% + env(safe-area-inset-top));
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+    /* Safe area padding removed - handled by individual components for better PWA compatibility */
   }
 
   body {
