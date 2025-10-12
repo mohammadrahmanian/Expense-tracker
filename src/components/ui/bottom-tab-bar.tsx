@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
-import { MoreHorizontal } from "lucide-react";
-import { Icon } from '@iconify/react';
+import { Icon } from "@iconify/react";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -13,10 +12,15 @@ interface TabItem {
 
 // Icon components
 const DashboardTabIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <Icon icon="hugeicons:dashboard-square-03" className={cn("h-6 w-6", className)} />
+  <Icon
+    icon="hugeicons:dashboard-square-03"
+    className={cn("h-6 w-6", className)}
+  />
 );
 
-const TransactionsTabIcon: React.FC<{ className?: string }> = ({ className }) => (
+const TransactionsTabIcon: React.FC<{ className?: string }> = ({
+  className,
+}) => (
   <Icon icon="hugeicons:money-add-01" className={cn("h-6 w-6", className)} />
 );
 
@@ -25,7 +29,7 @@ const ReportsTabIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 const MoreTabIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <MoreHorizontal className={cn("h-6 w-6", className)} />
+  <Icon icon="hugeicons:more-02" className={cn("h-6 w-6", className)} />
 );
 
 const tabs: TabItem[] = [
@@ -60,56 +64,51 @@ export const BottomTabBar: React.FC = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-30 lg:hidden safe-area-bottom"
+      className="fixed bottom-0 left-0 right-0 z-30 lg:hidden"
       role="navigation"
       aria-label="Bottom navigation"
-      style={{
-        paddingBottom: 'env(safe-area-inset-bottom)',
-      }}
     >
-      <div className="mx-2 mb-2">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 px-4 py-3">
-          <div className="flex justify-between items-center">
-        {tabs.map((tab, index) => {
-          const isActive = location.pathname === tab.href;
-          const TabIcon = tab.icon;
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-t border-gray-200 dark:border-gray-700 pb-safe-bottom">
+        <div className="flex items-stretch pt-2 pb-2">
+          {tabs.map((tab, index) => {
+            const isActive = location.pathname === tab.href;
+            const TabIcon = tab.icon;
 
-          return (
-            <Link
-              key={tab.name}
-              to={tab.href}
-              className={cn(
-                "group relative flex flex-col items-center justify-center min-h-[44px] transition-all duration-200 ease-in-out p-2 rounded-lg",
-                "focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset",
-                isActive
-                  ? "text-indigo-600 dark:text-indigo-400"
-                  : "text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300",
-              )}
-              aria-label={tab.ariaLabel}
-              aria-current={isActive ? "page" : undefined}
-            >
-              <TabIcon
+            return (
+              <Link
+                key={tab.name}
+                to={tab.href}
                 className={cn(
-                  "transition-colors flex-shrink-0 mb-1",
+                  "group relative flex flex-1 flex-col items-center justify-center min-h-[56px] py-1.5 transition-colors duration-150",
+                  "focus-visible:outline-2 focus-visible:outline-indigo-500 focus-visible:outline-offset-2",
                   isActive
                     ? "text-indigo-600 dark:text-indigo-400"
-                    : "text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300",
+                    : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200",
                 )}
-              />
-              <span
-                className={cn(
-                  "text-xs font-medium transition-colors",
-                  isActive
-                    ? "text-indigo-600 dark:text-indigo-400"
-                    : "text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300",
-                )}
+                aria-label={tab.ariaLabel}
+                aria-current={isActive ? "page" : undefined}
               >
-                {tab.name}
-              </span>
-            </Link>
-          );
-        })}
-          </div>
+                <TabIcon
+                  className={cn(
+                    "transition-colors flex-shrink-0 mb-0.5 h-6 w-6",
+                    isActive
+                      ? "text-indigo-600 dark:text-indigo-400"
+                      : "text-gray-600 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-gray-200",
+                  )}
+                />
+                <span
+                  className={cn(
+                    "text-[10px] font-medium leading-tight transition-colors",
+                    isActive
+                      ? "text-indigo-600 dark:text-indigo-400"
+                      : "text-gray-600 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-gray-200",
+                  )}
+                >
+                  {tab.name}
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </nav>
