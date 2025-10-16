@@ -81,7 +81,7 @@ const Transactions: React.FC = () => {
     Transaction | undefined
   >();
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 50;
+  const [pageSize, setPageSize] = useState(50);
   const [sortField, setSortField] = useState<"date" | "amount">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const prevPageRef = React.useRef<number>(1);
@@ -92,14 +92,14 @@ const Transactions: React.FC = () => {
     loadCategories();
   }, []);
 
-  // Reset to page 1 when filters change
+  // Reset to page 1 when filters or page size change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, typeFilter, categoryFilter, startDate, endDate]);
+  }, [searchTerm, typeFilter, categoryFilter, startDate, endDate, pageSize]);
 
   useEffect(() => {
     loadData();
-  }, [refreshTrigger, searchTerm, typeFilter, categoryFilter, startDate, endDate, currentPage, sortField, sortOrder]);
+  }, [refreshTrigger, searchTerm, typeFilter, categoryFilter, startDate, endDate, currentPage, sortField, sortOrder, pageSize]);
 
   const loadCategories = async () => {
     try {
@@ -609,9 +609,28 @@ const Transactions: React.FC = () => {
             {/* Pagination Controls */}
             {!isLoading && transactions.length > 0 && (
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 py-4 border-t">
-                <div className="text-sm text-muted-foreground">
-                  Showing {(currentPage - 1) * pageSize + 1} to{" "}
-                  {(currentPage - 1) * pageSize + transactions.length} of {totalTransactions} transactions
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Show</span>
+                    <Select
+                      value={pageSize.toString()}
+                      onValueChange={(value) => setPageSize(Number(value))}
+                    >
+                      <SelectTrigger className="w-[80px] h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="25">25</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                        <SelectItem value="200">200</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Showing {(currentPage - 1) * pageSize + 1} to{" "}
+                    {(currentPage - 1) * pageSize + transactions.length} of {totalTransactions} transactions
+                  </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
