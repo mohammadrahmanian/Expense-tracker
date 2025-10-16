@@ -1,5 +1,4 @@
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { BottomTabBar } from "@/components/ui/bottom-tab-bar";
 import { setNavigationCallback } from "@/services/api";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -33,17 +32,6 @@ const NavigationSetup = () => {
   }, [navigate]);
 
   return null;
-};
-
-const ConditionalBottomTabBar = () => {
-  const location = useLocation();
-  
-  // Dashboard routes that should show the bottom tab bar
-  const dashboardRoutes = ['/dashboard', '/transactions', '/recurring-transactions', '/categories', '/reports', '/profile', '/more'];
-
-  const shouldShowTabBar = dashboardRoutes.includes(location.pathname);
-  
-  return shouldShowTabBar ? <BottomTabBar /> : null;
 };
 
 const App = () => (
@@ -120,7 +108,6 @@ const App = () => (
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-              <ConditionalBottomTabBar />
             </BrowserRouter>
           </TooltipProvider>
         </SidebarContextProvider>
