@@ -89,6 +89,17 @@ const Reports: React.FC = () => {
         return;
       }
 
+      // Validate date order
+      if (timeRange === "custom" && startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        if (end < start) {
+          setError("End date must be the same as or after start date");
+          setLoading(false);
+          return;
+        }
+      }
+
       const response = await dashboardService.getReports(startDate, endDate);
 
       // Map response to state
