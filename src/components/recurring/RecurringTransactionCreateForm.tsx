@@ -219,6 +219,7 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
                 <Input
                   id="amount"
                   type="text"
+                  inputMode="decimal"
                   placeholder="0.00 or 0,00"
                   value={amount}
                   onChange={handleAmountChange}

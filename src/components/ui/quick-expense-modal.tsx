@@ -230,6 +230,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
                 <Input
                   id="amount"
                   type="text"
+                  inputMode="decimal"
                   placeholder="0.00 or 0,00"
                   value={amount}
                   onChange={handleAmountChange}

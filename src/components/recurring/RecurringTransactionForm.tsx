@@ -238,6 +238,7 @@ export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> =
                 <Input
                   id="amount"
                   type="text"
+                  inputMode="decimal"
                   placeholder="0.00 or 0,00"
                   value={amount}
                   onChange={handleAmountChange}

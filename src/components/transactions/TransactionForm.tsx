@@ -203,6 +203,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
               <Input
                 id="amount"
                 type="text"
+                inputMode="decimal"
                 placeholder="0.00 or 0,00"
                 value={amount}
                 onChange={handleAmountChange}
