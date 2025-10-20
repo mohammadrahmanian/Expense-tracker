@@ -1,7 +1,3 @@
-# Fusion Starter
-
-The Fusion Starter is a modern, production-ready template for building full-stack React applications using react-router-dom in SPA mode.
-
 ## Agent Workflow
 When a prompt asks to add a feature, fix a bug, or add tests:
 1) Review the relevant files and ensure full understanding.
@@ -26,6 +22,7 @@ The routing system is powered by React Router 7:
 
 - Routes are defined in `src/App.tsx` using the `react-router-dom` import
 - Route files are located in the `src/pages/` directory
+- There are two ways for users to navigate the routes, a side menu on desktop view and a bottom sheet on mobile view.
 
 For example, routes can be defined with:
 
@@ -50,7 +47,7 @@ The styling system combines several technologies:
   - Radix UI: For accessible UI primitives
   - Class Variance Authority: For component variants
   - TailwindCSS: For styling
-  - Lucide React: For icons
+  - Icônes: For icons
   - Lots of utility components, like carousels, calendar, alerts...
 - **Class Name Utility**: The codebase includes a `cn` utility function from `@/lib/utils` that combines the functionality of `clsx` and `tailwind-merge`. Here's how it's typically used:
 
@@ -116,10 +113,13 @@ app/
 ```
 
 This structure provides a clean separation of concerns between UI components, routes, and application logic.
+
+The followings are the project business knowledge:
 - When I ask you to make adjustments on the Dashboard, review the file at "src/pages/Dashboard.tsx" first
 - When I ask you to make adjustments on the Transactions page, review the file at "src/pages/Transactions.tsx" first
 - When I ask you to make adjustments on the Reports page, review the file at "src/pages/Reports.tsx" first
 - When I ask you to make adjustments on the Categories page, review the file at "src/pages/Categories.tsx" first
 - When I ask you to make adjustments on the More page, review the file at "src/pages/More.tsx" first
 - When I ask you to make adjustments on the Recurring Transactions page, review the file at "src/pages/RecurringTransactions.tsx" first
-- When you want to use the Playwright MCP server, open the "http://localhost:8080" address. The app is running there. If you need to login, use the credentials `johndoe@example.com` and `password123`.
+- When you want to use the Playwright MCP server, open the "http://localhost:8080" address. The app is running there. If you need to login, use the credentials UI_TEST_EMAIL as username and UI_TEST_PASSWORD as password from the environment variables.
+- There is a core component called, the quick expense modal. This modals responsibility is to give a quick way of tracking expenses to the user. The quick expense modal has three predefined categories: Food, Health, Household. When a user adds a transaction using one of these categories but doesn't have the category defined, the modal creates the category first and then creates the transaction. 
