@@ -20,8 +20,10 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { dashboardService } from "@/services/api";
 import { CategorySpending, MonthlyData } from "@/types";
 import {
+  endOfDay,
   endOfMonth,
   format,
+  isAfter,
   startOfMonth,
   subMonths,
 } from "date-fns";
@@ -90,23 +92,23 @@ const Reports: React.FC = () => {
       }
 
       // Validate date order and future dates
-      if (timeRange === "custom" && startDate && endDate) {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
+      if (timeRange === "custom" && customStartDate && customEndDate) {
+        // Use the original Date objects from the pickers
+        const start = customStartDate;
+        const end = customEndDate;
 
-        // Set today's end to 23:59:59 for comparison
-        const todaysEnd = new Date();
-        todaysEnd.setHours(23, 59, 59, 999);
+        // Get end of today in local timezone
+        const todaysEnd = endOfDay(new Date());
 
         // Check if dates are in the future
-        if (start > todaysEnd || end > todaysEnd) {
+        if (isAfter(start, todaysEnd) || isAfter(end, todaysEnd)) {
           setError("Dates cannot be in the future");
           setLoading(false);
           return;
         }
 
         // Check date order
-        if (end < start) {
+        if (isAfter(start, end)) {
           setError("End date must be the same as or after start date");
           setLoading(false);
           return;
