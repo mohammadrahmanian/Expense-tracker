@@ -1,4 +1,4 @@
-import { Budget, Category, DashboardStats, RecurringTransaction, Transaction } from "@/types";
+import { Budget, Category, CategorySpending, DashboardStats, RecurringTransaction, ReportsResponse, Transaction } from "@/types";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 // Navigation singleton for use outside React components
@@ -293,6 +293,17 @@ export const dashboardService = {
     try {
       const response = await apiClient.get<DashboardStats>(
         `/dashboard/stats/monthly?year=${year}&month=${month}`,
+      );
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  getReports: async (startDate: string, endDate: string): Promise<ReportsResponse> => {
+    try {
+      const response = await apiClient.get<ReportsResponse>(
+        `/dashboard/reports?startDate=${startDate}&endDate=${endDate}`,
       );
       return response.data;
     } catch (error) {

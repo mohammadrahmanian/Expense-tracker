@@ -61,13 +61,28 @@ export interface CategorySpending {
   amount: number;
   color: string;
   percentage: number;
+  transactionCount?: number;
 }
 
 export interface MonthlyData {
   month: string;
+  monthLabel?: string;
   income: number;
   expenses: number;
   savings: number;
+}
+
+export interface ReportsResponse {
+  summary: {
+    totalIncome: number;
+    totalExpenses: number;
+    netSavings: number;
+  };
+  monthlyData: MonthlyData[];
+  categoryBreakdown: {
+    expenses: CategorySpending[];
+    income: CategorySpending[];
+  };
 }
 
 export interface RecurringTransaction {

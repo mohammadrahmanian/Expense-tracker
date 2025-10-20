@@ -1,7 +1,14 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HighchartsContainer } from "@/components/ui/highcharts-chart";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -10,22 +17,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { categoriesService, transactionsService } from "@/services/api";
-import { Category, CategorySpending, MonthlyData, Transaction } from "@/types";
+import { dashboardService } from "@/services/api";
+import { CategorySpending, MonthlyData } from "@/types";
 import {
-  eachMonthOfInterval,
+  endOfDay,
   endOfMonth,
   format,
+  isAfter,
   startOfMonth,
   subMonths,
 } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 const Reports: React.FC = () => {
   const { formatAmount } = useCurrency();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [timeRange, setTimeRange] = useState<"3m" | "6m" | "12m">("6m");
+  const [timeRange, setTimeRange] = useState<"3m" | "6m" | "12m" | "custom">("6m");
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
   const [categorySpending, setCategorySpending] = useState<CategorySpending[]>(
     [],
@@ -33,151 +41,189 @@ const Reports: React.FC = () => {
   const [incomeByCategory, setIncomeByCategory] = useState<CategorySpending[]>(
     [],
   );
+  const [summary, setSummary] = useState<{
+    totalIncome: number;
+    totalExpenses: number;
+    netSavings: number;
+  } | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [customStartDate, setCustomStartDate] = useState<Date | undefined>(undefined);
+  const [customEndDate, setCustomEndDate] = useState<Date | undefined>(undefined);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    processChartData();
-  }, [transactions, categories, timeRange]);
-
-  const loadData = async () => {
-    const transactionsResponse = await transactionsService.getAll();
-    const allTransactions = transactionsResponse.items;
-    const allCategories = await categoriesService.getAll();
-    setTransactions(allTransactions);
-    setCategories(allCategories);
-  };
-
-  const processChartData = () => {
-    const months = getMonthsForRange(timeRange);
-
-    // Process monthly data
-    const monthlyStats = months.map((month) => {
-      const monthTransactions = transactions.filter((t) => {
-        const transactionDate = new Date(t.date);
-        return (
-          transactionDate >= startOfMonth(month) &&
-          transactionDate <= endOfMonth(month)
-        );
-      });
-
-      const income = monthTransactions
-        .filter((t) => t.type === "INCOME")
-        .reduce((sum, t) => sum + t.amount, 0);
-
-      const expenses = monthTransactions
-        .filter((t) => t.type === "EXPENSE")
-        .reduce((sum, t) => sum + t.amount, 0);
-
+  const getDateRangeForTimeRange = (
+    range: "3m" | "6m" | "12m" | "custom",
+    customStart?: Date,
+    customEnd?: Date
+  ): { startDate: string; endDate: string } => {
+    if (range === "custom") {
       return {
-        month: format(month, "MMM yyyy"),
-        income,
-        expenses,
-        savings: income - expenses,
+        startDate: customStart ? format(customStart, "yyyy-MM-dd") : "",
+        endDate: customEnd ? format(customEnd, "yyyy-MM-dd") : ""
       };
-    });
+    }
 
-    setMonthlyData(monthlyStats);
-
-    // Process category spending (expenses only)
-    const expenseCategories = categories.filter(
-      (cat) => cat.type === "EXPENSE",
-    );
-    const expenseSpending = expenseCategories
-      .map((category) => {
-        const amount = transactions
-          .filter((t) => t.type === "EXPENSE" && t.categoryId === category.id)
-          .reduce((sum, t) => sum + t.amount, 0);
-
-        return {
-          categoryId: category.id,
-          categoryName: category.name,
-          amount,
-          color: category.color,
-          percentage: 0, // Will be calculated below
-        };
-      })
-      .filter((item) => item.amount > 0);
-
-    const totalExpenses = expenseSpending.reduce(
-      (sum, item) => sum + item.amount,
-      0,
-    );
-    const spendingWithPercentages = expenseSpending.map((item) => ({
-      ...item,
-      percentage: totalExpenses > 0 ? (item.amount / totalExpenses) * 100 : 0,
-    }));
-
-    setCategorySpending(spendingWithPercentages);
-
-    // Process income by category
-    const incomeCategories = categories.filter((cat) => cat.type === "INCOME");
-    const incomeByCategory = incomeCategories
-      .map((category) => {
-        const amount = transactions
-          .filter((t) => t.type === "INCOME" && t.categoryId === category.id)
-          .reduce((sum, t) => sum + t.amount, 0);
-
-        return {
-          categoryId: category.id,
-          categoryName: category.name,
-          amount,
-          color: category.color,
-          percentage: 0,
-        };
-      })
-      .filter((item) => item.amount > 0);
-
-    const totalIncome = incomeByCategory.reduce(
-      (sum, item) => sum + item.amount,
-      0,
-    );
-    const incomeWithPercentages = incomeByCategory.map((item) => ({
-      ...item,
-      percentage: totalIncome > 0 ? (item.amount / totalIncome) * 100 : 0,
-    }));
-
-    setIncomeByCategory(incomeWithPercentages);
-  };
-
-  const getMonthsForRange = (range: "3m" | "6m" | "12m") => {
     const monthsToSubtract = range === "3m" ? 3 : range === "6m" ? 6 : 12;
-    const endDate = new Date();
-    const startDate = subMonths(endDate, monthsToSubtract - 1);
-    return eachMonthOfInterval({ start: startDate, end: endDate });
+    const endDate = endOfMonth(new Date());
+    const startDate = startOfMonth(subMonths(endDate, monthsToSubtract - 1));
+
+    return {
+      startDate: format(startDate, "yyyy-MM-dd"),
+      endDate: format(endDate, "yyyy-MM-dd")
+    };
   };
 
-  const totalIncome = transactions
-    .filter((t) => t.type === "INCOME")
-    .reduce((sum, t) => sum + t.amount, 0);
+  const loadReports = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  const totalExpenses = transactions
-    .filter((t) => t.type === "EXPENSE")
-    .reduce((sum, t) => sum + t.amount, 0);
+      const { startDate, endDate } = getDateRangeForTimeRange(
+        timeRange,
+        customStartDate,
+        customEndDate
+      );
 
-  const currentBalance = totalIncome - totalExpenses;
+      // Validate custom dates if timeRange is "custom"
+      if (timeRange === "custom" && (!startDate || !endDate)) {
+        setError("Please select both start and end dates");
+        setLoading(false);
+        return;
+      }
+
+      // Validate date order and future dates
+      if (timeRange === "custom" && customStartDate && customEndDate) {
+        // Use the original Date objects from the pickers
+        const start = customStartDate;
+        const end = customEndDate;
+
+        // Get end of today in local timezone
+        const todaysEnd = endOfDay(new Date());
+
+        // Check if dates are in the future
+        if (isAfter(start, todaysEnd) || isAfter(end, todaysEnd)) {
+          setError("Dates cannot be in the future");
+          setLoading(false);
+          return;
+        }
+
+        // Check date order
+        if (isAfter(start, end)) {
+          setError("End date must be the same as or after start date");
+          setLoading(false);
+          return;
+        }
+      }
+
+      const response = await dashboardService.getReports(startDate, endDate);
+
+      // Map response to state
+      setSummary(response.summary);
+      setMonthlyData(response.monthlyData);
+      setCategorySpending(response.categoryBreakdown.expenses);
+      setIncomeByCategory(response.categoryBreakdown.income);
+
+    } catch (err) {
+      setError("Failed to load reports. Please try again.");
+      console.error("Error loading reports:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadReports();
+  }, [timeRange, customStartDate, customEndDate]);
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-end items-center">
+        <div className="flex flex-col gap-4 md:flex-row md:justify-end md:items-center">
           <Select
             value={timeRange}
-            onValueChange={(value: "3m" | "6m" | "12m") => setTimeRange(value)}
+            onValueChange={(value: "3m" | "6m" | "12m" | "custom") => setTimeRange(value)}
           >
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-full md:w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="3m">Last 3 months</SelectItem>
               <SelectItem value="6m">Last 6 months</SelectItem>
               <SelectItem value="12m">Last 12 months</SelectItem>
+              <SelectItem value="custom">Custom range</SelectItem>
             </SelectContent>
           </Select>
+
+          {timeRange === "custom" && (
+            <div className="flex items-center gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full md:w-[200px] justify-start text-left font-normal",
+                      !customStartDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {customStartDate ? format(customStartDate, "PPP") : "Start date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={customStartDate}
+                    onSelect={setCustomStartDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+
+              <span className="text-muted-foreground">to</span>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full md:w-[200px] justify-start text-left font-normal",
+                      !customEndDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {customEndDate ? format(customEndDate, "PPP") : "End date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={customEndDate}
+                    onSelect={setCustomEndDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
         </div>
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-red-600 dark:text-red-400">{error}</p>
+              <Button
+                onClick={loadReports}
+                variant="link"
+                size="sm"
+                className="underline hover:no-underline"
+              >
+                Retry
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Summary Stats */}
         <div className="grid gap-4 md:grid-cols-3">
@@ -188,7 +234,7 @@ const Reports: React.FC = () => {
                   Total Income
                 </p>
                 <p className="text-3xl font-bold text-green-600">
-                  {formatAmount(totalIncome)}
+                  {loading ? "..." : formatAmount(summary?.totalIncome || 0)}
                 </p>
               </div>
             </CardContent>
@@ -200,7 +246,7 @@ const Reports: React.FC = () => {
                   Total Expenses
                 </p>
                 <p className="text-3xl font-bold text-red-600">
-                  {formatAmount(totalExpenses)}
+                  {loading ? "..." : formatAmount(summary?.totalExpenses || 0)}
                 </p>
               </div>
             </CardContent>
@@ -212,9 +258,9 @@ const Reports: React.FC = () => {
                   Net Savings
                 </p>
                 <p
-                  className={`text-3xl font-bold ${currentBalance >= 0 ? "text-green-600" : "text-red-600"}`}
+                  className={`text-3xl font-bold ${(summary?.netSavings || 0) >= 0 ? "text-green-600" : "text-red-600"}`}
                 >
-                  {formatAmount(currentBalance)}
+                  {loading ? "..." : formatAmount(summary?.netSavings || 0)}
                 </p>
               </div>
             </CardContent>
@@ -238,7 +284,7 @@ const Reports: React.FC = () => {
                     text: undefined,
                   },
                   xAxis: {
-                    categories: monthlyData.map((d) => d.month),
+                    categories: monthlyData.map((d) => d.monthLabel || d.month),
                   },
                   yAxis: {
                     title: {
@@ -321,7 +367,7 @@ const Reports: React.FC = () => {
                     text: undefined,
                   },
                   xAxis: {
-                    categories: monthlyData.map((d) => d.month),
+                    categories: monthlyData.map((d) => d.monthLabel || d.month),
                   },
                   yAxis: {
                     title: {
@@ -432,7 +478,7 @@ const Reports: React.FC = () => {
                         </div>
                         <div className="flex items-center space-x-2">
                           <Badge variant="secondary">
-                            {item.percentage.toFixed(1)}%
+                            {(item.percentage ?? 0).toFixed(1)}%
                           </Badge>
                           <span className="text-sm font-medium">
                             {formatAmount(item.amount)}
@@ -516,7 +562,7 @@ const Reports: React.FC = () => {
                         </div>
                         <div className="flex items-center space-x-2">
                           <Badge variant="secondary">
-                            {item.percentage.toFixed(1)}%
+                            {(item.percentage ?? 0).toFixed(1)}%
                           </Badge>
                           <span className="text-sm font-medium">
                             {formatAmount(item.amount)}
