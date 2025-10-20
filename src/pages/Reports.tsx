@@ -89,10 +89,23 @@ const Reports: React.FC = () => {
         return;
       }
 
-      // Validate date order
+      // Validate date order and future dates
       if (timeRange === "custom" && startDate && endDate) {
         const start = new Date(startDate);
         const end = new Date(endDate);
+
+        // Set today's end to 23:59:59 for comparison
+        const todaysEnd = new Date();
+        todaysEnd.setHours(23, 59, 59, 999);
+
+        // Check if dates are in the future
+        if (start > todaysEnd || end > todaysEnd) {
+          setError("Dates cannot be in the future");
+          setLoading(false);
+          return;
+        }
+
+        // Check date order
         if (end < start) {
           setError("End date must be the same as or after start date");
           setLoading(false);
@@ -198,12 +211,14 @@ const Reports: React.FC = () => {
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
             <div className="flex items-center justify-between">
               <p className="text-red-600 dark:text-red-400">{error}</p>
-              <button
+              <Button
                 onClick={loadReports}
-                className="text-sm underline hover:no-underline"
+                variant="link"
+                size="sm"
+                className="underline hover:no-underline"
               >
                 Retry
-              </button>
+              </Button>
             </div>
           </div>
         )}
