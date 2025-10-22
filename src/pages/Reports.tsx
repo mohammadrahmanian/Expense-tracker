@@ -50,6 +50,7 @@ const Reports: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [customStartDate, setCustomStartDate] = useState<Date | undefined>(undefined);
   const [customEndDate, setCustomEndDate] = useState<Date | undefined>(undefined);
+  const [categoryBreakdownType, setCategoryBreakdownType] = useState<"expenses" | "income">("expenses");
 
   const getDateRangeForTimeRange = (
     range: "3m" | "6m" | "12m" | "custom",
@@ -71,6 +72,25 @@ const Reports: React.FC = () => {
       startDate: format(startDate, "yyyy-MM-dd"),
       endDate: format(endDate, "yyyy-MM-dd")
     };
+  };
+
+  const buildCategorySeriesData = (
+    monthlyData: MonthlyData[],
+    categoryBreakdown: CategorySpending[],
+    type: "income" | "expenses"
+  ) => {
+    // Build series for each category
+    const series = categoryBreakdown.map(category => ({
+      name: category.categoryName,
+      type: "column" as const,
+      data: monthlyData.map(month => {
+        const categories = type === "income" ? month.income.categories : month.expenses.categories;
+        return categories[category.categoryId] || 0;
+      }),
+      color: category.color,
+    }));
+
+    return series;
   };
 
   const loadReports = async () => {
@@ -120,8 +140,18 @@ const Reports: React.FC = () => {
       // Map response to state
       setSummary(response.summary);
       setMonthlyData(response.monthlyData);
-      setCategorySpending(response.categoryBreakdown.expenses);
-      setIncomeByCategory(response.categoryBreakdown.income);
+
+      // Calculate percentages for category breakdown
+      const calculatePercentages = (categories: Array<{ categoryId: string; categoryName: string; color: string; amount: number }>): CategorySpending[] => {
+        const total = categories.reduce((sum, cat) => sum + cat.amount, 0);
+        return categories.map(cat => ({
+          ...cat,
+          percentage: total > 0 ? (cat.amount / total) * 100 : 0
+        }));
+      };
+
+      setCategorySpending(calculatePercentages(response.categoryBreakdown.expenses));
+      setIncomeByCategory(calculatePercentages(response.categoryBreakdown.income));
 
     } catch (err) {
       setError("Failed to load reports. Please try again.");
@@ -295,14 +325,14 @@ const Reports: React.FC = () => {
                     {
                       name: "Income",
                       type: "spline",
-                      data: monthlyData.map((d) => d.income),
+                      data: monthlyData.map((d) => d.income.total),
                       color: "#00B894",
                       lineWidth: 3,
                     },
                     {
                       name: "Expenses",
                       type: "spline",
-                      data: monthlyData.map((d) => d.expenses),
+                      data: monthlyData.map((d) => d.expenses.total),
                       color: "#FF6B6B",
                       lineWidth: 3,
                     },
@@ -378,13 +408,13 @@ const Reports: React.FC = () => {
                     {
                       name: "Income",
                       type: "column",
-                      data: monthlyData.map((d) => d.income),
+                      data: monthlyData.map((d) => d.income.total),
                       color: "#00B894",
                     },
                     {
                       name: "Expenses",
                       type: "column",
-                      data: monthlyData.map((d) => d.expenses),
+                      data: monthlyData.map((d) => d.expenses.total),
                       color: "#FF6B6B",
                     },
                   ],
@@ -407,6 +437,83 @@ const Reports: React.FC = () => {
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
                   No data available for the selected time range.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Category Breakdown Over Time */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>
+                {categoryBreakdownType === "expenses"
+                  ? "Expense Categories Over Time"
+                  : "Income Sources Over Time"}
+              </CardTitle>
+              <Select
+                value={categoryBreakdownType}
+                onValueChange={(value: "expenses" | "income") => setCategoryBreakdownType(value)}
+              >
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="expenses">Expenses</SelectItem>
+                  <SelectItem value="income">Income</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {monthlyData.length > 0 &&
+             ((categoryBreakdownType === "expenses" && categorySpending.length > 0) ||
+              (categoryBreakdownType === "income" && incomeByCategory.length > 0)) ? (
+              <HighchartsContainer
+                className="w-full h-[420px]"
+                options={{
+                  chart: {
+                    type: "column",
+                  },
+                  title: {
+                    text: undefined,
+                  },
+                  xAxis: {
+                    categories: monthlyData.map((d) => d.monthLabel || d.month),
+                  },
+                  yAxis: {
+                    title: {
+                      text: "Amount",
+                    },
+                  },
+                  plotOptions: {
+                    column: {
+                      stacking: "normal",
+                      borderWidth: 0,
+                    },
+                  },
+                  series: buildCategorySeriesData(
+                    monthlyData,
+                    categoryBreakdownType === "expenses" ? categorySpending : incomeByCategory,
+                    categoryBreakdownType
+                  ),
+                  tooltip: {
+                    formatter: function () {
+                      return `<b>${this.series.name}</b><br/>${formatAmount(this.y || 0)}`;
+                    },
+                  },
+                  legend: {
+                    enabled: true,
+                  },
+                }}
+              />
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500 dark:text-gray-400">
+                  {categoryBreakdownType === "expenses"
+                    ? "No expense data available."
+                    : "No income data available."}
                 </p>
               </div>
             )}

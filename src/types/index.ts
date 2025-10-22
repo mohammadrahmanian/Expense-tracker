@@ -67,8 +67,14 @@ export interface CategorySpending {
 export interface MonthlyData {
   month: string;
   monthLabel?: string;
-  income: number;
-  expenses: number;
+  income: {
+    total: number;
+    categories: { [categoryId: string]: number };
+  };
+  expenses: {
+    total: number;
+    categories: { [categoryId: string]: number };
+  };
   savings: number;
 }
 
