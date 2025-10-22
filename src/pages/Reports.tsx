@@ -325,7 +325,7 @@ const Reports: React.FC = () => {
                     },
                     yAxis: {
                       title: {
-                        text: 'undefined',
+                        text: undefined,
                       },
                       labels: {
                         style: {
