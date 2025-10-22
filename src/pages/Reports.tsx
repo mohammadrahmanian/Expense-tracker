@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { cn } from "@/lib/utils";
 import { dashboardService } from "@/services/api";
 import { CategorySpending, MonthlyData } from "@/types";
 import {
@@ -29,7 +30,6 @@ import {
 } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
 
 const Reports: React.FC = () => {
   const { formatAmount } = useCurrency();
@@ -50,6 +50,7 @@ const Reports: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [customStartDate, setCustomStartDate] = useState<Date | undefined>(undefined);
   const [customEndDate, setCustomEndDate] = useState<Date | undefined>(undefined);
+  const [categoryBreakdownType, setCategoryBreakdownType] = useState<"expenses" | "income">("expenses");
 
   const getDateRangeForTimeRange = (
     range: "3m" | "6m" | "12m" | "custom",
@@ -71,6 +72,25 @@ const Reports: React.FC = () => {
       startDate: format(startDate, "yyyy-MM-dd"),
       endDate: format(endDate, "yyyy-MM-dd")
     };
+  };
+
+  const buildCategorySeriesData = (
+    monthlyData: MonthlyData[],
+    categoryBreakdown: CategorySpending[],
+    type: "income" | "expenses"
+  ) => {
+    // Build series for each category
+    const series = categoryBreakdown.map(category => ({
+      name: category.categoryName,
+      type: "column" as const,
+      data: monthlyData.map(month => {
+        const categories = type === "income" ? month.income.categories : month.expenses.categories;
+        return categories[category.categoryId] || 0;
+      }),
+      color: category.color,
+    }));
+
+    return series;
   };
 
   const loadReports = async () => {
@@ -120,8 +140,18 @@ const Reports: React.FC = () => {
       // Map response to state
       setSummary(response.summary);
       setMonthlyData(response.monthlyData);
-      setCategorySpending(response.categoryBreakdown.expenses);
-      setIncomeByCategory(response.categoryBreakdown.income);
+
+      // Calculate percentages for category breakdown
+      const calculatePercentages = (categories: Array<{ categoryId: string; categoryName: string; color: string; amount: number }>): CategorySpending[] => {
+        const total = categories.reduce((sum, cat) => sum + cat.amount, 0);
+        return categories.map(cat => ({
+          ...cat,
+          percentage: total > 0 ? (cat.amount / total) * 100 : 0
+        }));
+      };
+
+      setCategorySpending(calculatePercentages(response.categoryBreakdown.expenses));
+      setIncomeByCategory(calculatePercentages(response.categoryBreakdown.income));
 
     } catch (err) {
       setError("Failed to load reports. Please try again.");
@@ -137,7 +167,7 @@ const Reports: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-3">
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:justify-end md:items-center">
           <Select
@@ -226,39 +256,39 @@ const Reports: React.FC = () => {
         )}
 
         {/* Summary Stats */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-3">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4">
               <div className="text-center">
                 <p className="text-sm font-medium text-muted-foreground">
                   Total Income
                 </p>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-2xl font-bold text-green-600">
                   {loading ? "..." : formatAmount(summary?.totalIncome || 0)}
                 </p>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4">
               <div className="text-center">
                 <p className="text-sm font-medium text-muted-foreground">
                   Total Expenses
                 </p>
-                <p className="text-3xl font-bold text-red-600">
+                <p className="text-2xl font-bold text-red-600">
                   {loading ? "..." : formatAmount(summary?.totalExpenses || 0)}
                 </p>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4">
               <div className="text-center">
                 <p className="text-sm font-medium text-muted-foreground">
                   Net Savings
                 </p>
                 <p
-                  className={`text-3xl font-bold ${(summary?.netSavings || 0) >= 0 ? "text-green-600" : "text-red-600"}`}
+                  className={`text-2xl font-bold ${(summary?.netSavings || 0) >= 0 ? "text-green-600" : "text-red-600"}`}
                 >
                   {loading ? "..." : formatAmount(summary?.netSavings || 0)}
                 </p>
@@ -267,161 +297,281 @@ const Reports: React.FC = () => {
           </Card>
         </div>
 
-        {/* Monthly Trends */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Income vs Expenses Trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {monthlyData.length > 0 ? (
-              <HighchartsContainer
-                className="w-full h-[420px]"
-                options={{
-                  chart: {
-                    type: "spline",
-                  },
-                  title: {
-                    text: undefined,
-                  },
-                  xAxis: {
-                    categories: monthlyData.map((d) => d.monthLabel || d.month),
-                  },
-                  yAxis: {
+        {/* Main Charts - 3 Column Layout */}
+        <div className="grid gap-3 md:grid-cols-3">
+          {/* Income vs Expenses Trend */}
+          <Card>
+            <CardHeader className="p-4">
+              <CardTitle className="text-base font-semibold">Income vs Expenses</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              {monthlyData.length > 0 ? (
+                <HighchartsContainer
+                  className="w-full"
+                  options={{
+                    chart: {
+                      type: "spline",
+                    },
                     title: {
-                      text: "Amount",
+                      text: undefined,
                     },
-                  },
-                  series: [
-                    {
-                      name: "Income",
-                      type: "spline",
-                      data: monthlyData.map((d) => d.income),
-                      color: "#00B894",
-                      lineWidth: 3,
-                    },
-                    {
-                      name: "Expenses",
-                      type: "spline",
-                      data: monthlyData.map((d) => d.expenses),
-                      color: "#FF6B6B",
-                      lineWidth: 3,
-                    },
-                    {
-                      name: "Savings",
-                      type: "spline",
-                      data: monthlyData.map((d) => d.savings),
-                      color: "#6C5CE7",
-                      lineWidth: 3,
-                    },
-                  ],
-                  tooltip: {
-                    formatter: function () {
-                      return `<b>${this.series.name}</b><br/>${formatAmount(this.y || 0)}`;
-                    },
-                  },
-                  legend: {
-                    enabled: true,
-                  },
-                  plotOptions: {
-                    spline: {
-                      lineWidth: 3,
-                      marker: {
-                        enabled: true,
-                        radius: 4,
-                        lineWidth: 2,
-                        lineColor: "#FFFFFF",
-                      },
-                      states: {
-                        hover: {
-                          lineWidth: 4,
+                    xAxis: {
+                      categories: monthlyData.map((d) => d.monthLabel || d.month),
+                      labels: {
+                        style: {
+                          fontSize: '10px',
                         },
                       },
                     },
-                  },
-                }}
-              />
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">
-                  No data available for the selected time range.
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                    yAxis: {
+                      title: {
+                        text: undefined,
+                      },
+                      labels: {
+                        style: {
+                          fontSize: '10px',
+                        },
+                      },
+                    },
+                    series: [
+                      {
+                        name: "Income",
+                        type: "spline",
+                        data: monthlyData.map((d) => d.income.total),
+                        color: "#00B894",
+                        lineWidth: 3,
+                      },
+                      {
+                        name: "Expenses",
+                        type: "spline",
+                        data: monthlyData.map((d) => d.expenses.total),
+                        color: "#FF6B6B",
+                        lineWidth: 3,
+                      },
+                      {
+                        name: "Savings",
+                        type: "spline",
+                        data: monthlyData.map((d) => d.savings),
+                        color: "#6C5CE7",
+                        lineWidth: 3,
+                      },
+                    ],
+                    tooltip: {
+                      formatter: function () {
+                        return `<b>${this.series.name}</b><br/>${formatAmount(this.y || 0)}`;
+                      },
+                    },
+                    legend: {
+                      enabled: true,
+                      itemStyle: {
+                        fontSize: '10px',
+                      },
+                    },
+                    plotOptions: {
+                      spline: {
+                        lineWidth: 3,
+                        marker: {
+                          enabled: true,
+                          radius: 4,
+                          lineWidth: 2,
+                          lineColor: "#FFFFFF",
+                        },
+                        states: {
+                          hover: {
+                            lineWidth: 4,
+                          },
+                        },
+                      },
+                    },
+                  }}
+                />
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No data available for the selected time range.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        {/* Monthly Bar Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Monthly Comparison</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {monthlyData.length > 0 ? (
-              <HighchartsContainer
-                className="w-full h-[420px]"
-                options={{
-                  chart: {
-                    type: "column",
-                  },
-                  title: {
-                    text: undefined,
-                  },
-                  xAxis: {
-                    categories: monthlyData.map((d) => d.monthLabel || d.month),
-                  },
-                  yAxis: {
+          {/* Category Breakdown Over Time */}
+          <Card>
+            <CardHeader className="p-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-semibold">
+                  {categoryBreakdownType === "expenses"
+                    ? "Expense Categories"
+                    : "Income Sources"}
+                </CardTitle>
+                <Select
+                  value={categoryBreakdownType}
+                  onValueChange={(value: "expenses" | "income") => setCategoryBreakdownType(value)}
+                >
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="expenses">Expenses</SelectItem>
+                    <SelectItem value="income">Income</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              {monthlyData.length > 0 &&
+               ((categoryBreakdownType === "expenses" && categorySpending.length > 0) ||
+                (categoryBreakdownType === "income" && incomeByCategory.length > 0)) ? (
+                <HighchartsContainer
+                  className="w-full"
+                  options={{
+                    chart: {
+                      type: "column",
+                    },
                     title: {
-                      text: "Amount",
+                      text: undefined,
                     },
-                  },
-                  series: [
-                    {
-                      name: "Income",
-                      type: "column",
-                      data: monthlyData.map((d) => d.income),
-                      color: "#00B894",
+                    xAxis: {
+                      categories: monthlyData.map((d) => d.monthLabel || d.month),
+                      labels: {
+                        style: {
+                          fontSize: '10px',
+                        },
+                      },
                     },
-                    {
-                      name: "Expenses",
-                      type: "column",
-                      data: monthlyData.map((d) => d.expenses),
-                      color: "#FF6B6B",
+                    yAxis: {
+                      title: {
+                        text: undefined,
+                      },
+                      labels: {
+                        style: {
+                          fontSize: '10px',
+                        },
+                      },
                     },
-                  ],
-                  tooltip: {
-                    formatter: function () {
-                      return `<b>${this.series.name}</b><br/>${formatAmount(this.y || 0)}`;
+                    plotOptions: {
+                      column: {
+                        stacking: "normal",
+                        borderWidth: 0,
+                      },
                     },
-                  },
-                  legend: {
-                    enabled: true,
-                  },
-                  plotOptions: {
-                    column: {
-                      borderWidth: 0,
+                    series: buildCategorySeriesData(
+                      monthlyData,
+                      categoryBreakdownType === "expenses" ? categorySpending : incomeByCategory,
+                      categoryBreakdownType
+                    ),
+                    tooltip: {
+                      formatter: function () {
+                        return `<b>${this.series.name}</b><br/>${formatAmount(this.y || 0)}`;
+                      },
                     },
-                  },
-                }}
-              />
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">
-                  No data available for the selected time range.
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                    legend: {
+                      enabled: true,
+                      itemStyle: {
+                        fontSize: '10px',
+                      },
+                    },
+                  }}
+                />
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500 dark:text-gray-400">
+                    {categoryBreakdownType === "expenses"
+                      ? "No expense data available."
+                      : "No income data available."}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        <div className="grid gap-6 md:grid-cols-2">
+          {/* Monthly Comparison */}
+          <Card>
+            <CardHeader className="p-4">
+              <CardTitle className="text-base font-semibold">Monthly Comparison</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              {monthlyData.length > 0 ? (
+                <HighchartsContainer
+                  className="w-full"
+                  options={{
+                    chart: {
+                      type: "column",
+                    },
+                    title: {
+                      text: undefined,
+                    },
+                    xAxis: {
+                      categories: monthlyData.map((d) => d.monthLabel || d.month),
+                      labels: {
+                        style: {
+                          fontSize: '10px',
+                        },
+                      },
+                    },
+                    yAxis: {
+                      title: {
+                        text: undefined,
+                      },
+                      labels: {
+                        style: {
+                          fontSize: '10px',
+                        },
+                      },
+                    },
+                    series: [
+                      {
+                        name: "Income",
+                        type: "column",
+                        data: monthlyData.map((d) => d.income.total),
+                        color: "#00B894",
+                      },
+                      {
+                        name: "Expenses",
+                        type: "column",
+                        data: monthlyData.map((d) => d.expenses.total),
+                        color: "#FF6B6B",
+                      },
+                    ],
+                    tooltip: {
+                      formatter: function () {
+                        return `<b>${this.series.name}</b><br/>${formatAmount(this.y || 0)}`;
+                      },
+                    },
+                    legend: {
+                      enabled: true,
+                      itemStyle: {
+                        fontSize: '10px',
+                      },
+                    },
+                    plotOptions: {
+                      column: {
+                        borderWidth: 0,
+                      },
+                    },
+                  }}
+                />
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No data available for the selected time range.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Pie Charts - 2 Column Layout */}
+        <div className="grid gap-3 md:grid-cols-2">
           {/* Expense Breakdown */}
           <Card>
-            <CardHeader>
-              <CardTitle>Expense Breakdown by Category</CardTitle>
+            <CardHeader className="p-4">
+              <CardTitle className="text-base font-semibold">Expense Breakdown</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4">
               {categorySpending.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <HighchartsContainer
                     className="w-full h-[320px]"
                     options={{
@@ -500,12 +650,12 @@ const Reports: React.FC = () => {
 
           {/* Income Breakdown */}
           <Card>
-            <CardHeader>
-              <CardTitle>Income Breakdown by Source</CardTitle>
+            <CardHeader className="p-4">
+              <CardTitle className="text-base font-semibold">Income Breakdown</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4">
               {incomeByCategory.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <HighchartsContainer
                     className="w-full h-[320px]"
                     options={{
