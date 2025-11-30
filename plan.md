@@ -1,74 +1,150 @@
-# Plan: Fix Toast and FAB Overlap Issue
+# Recurring Transaction API Analysis and Implementation Plan
 
-## Problem
-- Notification toasts are appearing over the FAB (Floating Action Button)
-- Toasts don't have a close button for manual dismissal
+## Task Summary
+Analyze the API documentation for an endpoint that creates recurring transactions without creating an actual transaction, and create an implementation plan if such an API exists.
 
-## Current State
-- **FAB Position**:
-  - Mobile: `bottom-32 right-6` (128px from bottom)
-  - Desktop: `bottom-6 right-6` (24px from bottom)
-  - z-index: `z-50`
-  - Located in: `src/components/ui/floating-action-button.tsx`
+## API Documentation Access
+**Status:** ❌ Unable to access https://mr-expense-tracker.fly.dev/docs/json
+- Reason: 403 Forbidden (host_not_allowed)
+- Alternative approaches attempted: /docs, /api/docs, curl requests
+- All attempts resulted in network restrictions
 
-- **Toast Implementation**:
-  - Using Sonner library (from "sonner" package)
-  - Configured in: `src/components/ui/sonner.tsx`
-  - Currently has default positioning (bottom of screen)
-  - No close button currently enabled
+## Current Implementation Analysis
 
-## Solution
+### Existing API Methods in `/src/services/api.ts`
 
-### 1. Adjust Toast Positioning
-**File**: `src/components/ui/sonner.tsx`
+The codebase currently has **TWO** different methods for creating recurring transactions:
 
-Modify the Sonner component to:
-- Set the `position` prop to control toast placement
-- Add bottom offset using `offset` prop to move toasts above the FAB
-- On mobile: offset should be greater than 128px (FAB is at bottom-32)
-- On desktop: offset should be greater than 24px (FAB is at bottom-6)
-- Recommended offset: `160px` for mobile, `80px` for desktop to provide comfortable spacing
-
-### 2. Add Close Button
-**File**: `src/components/ui/sonner.tsx`
-
-Enable the close button by:
-- Adding `closeButton={true}` prop to the Sonner component
-- This will add an X button to each toast notification
-
-### 3. Implementation Details
-
-Changes to `src/components/ui/sonner.tsx`:
-```tsx
-<Sonner
-  theme={theme as ToasterProps["theme"]}
-  className="toaster group"
-  position="bottom-right"  // ADD: Explicit position
-  offset="160px"           // ADD: Offset to avoid FAB on mobile
-  closeButton={true}       // ADD: Close button
-  toastOptions={{
-    classNames: {
-      toast: "...",
-      // ... existing classNames
-    },
-  }}
-  {...props}
-/>
+#### 1. `createRecurring()` - **CURRENTLY IN USE** ✅
+**Location:** `src/services/api.ts:488-509`
+```typescript
+createRecurring: async (data: {
+  title: string;
+  amount: number;
+  type: "INCOME" | "EXPENSE";
+  categoryId: string;
+  startDate: string;
+  endDate?: string;
+  description?: string;
+  recurrenceFrequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+}): Promise<RecurringTransaction>
 ```
 
-**Note**: We'll use a single offset value of `160px` which works well for mobile (where FAB is at 128px). On desktop, the FAB is lower (24px), so the 160px offset will provide even more comfortable spacing.
+- **Endpoint:** `POST /recurring-transactions`
+- **Returns:** `RecurringTransaction` object
+- **Behavior:** Creates ONLY a recurring schedule without creating an actual transaction
+- **Used by:** `RecurringTransactionCreateForm.tsx:164`
 
-## Files to Modify
-1. `src/components/ui/sonner.tsx` - Add position, offset, and closeButton props
+#### 2. `create()` - **OLD/UNUSED METHOD** ⚠️
+**Location:** `src/services/api.ts:472-486`
+```typescript
+create: async (
+  data: Omit<RecurringTransaction, "id" | "nextOccurrence">
+): Promise<Transaction>
+```
 
-## Verification Steps
-1. Test toast notifications on mobile viewport (width < 1024px)
-2. Test toast notifications on desktop viewport (width >= 1024px)
-3. Verify toasts don't overlap with FAB at bottom-32 (mobile) or bottom-6 (desktop)
-4. Verify close button appears and works on each toast
-5. Check that multiple toasts stack properly with the new positioning
+- **Endpoint:** `POST /transactions` with `isRecurring: true`
+- **Returns:** `Transaction` object
+- **Behavior:** Creates an actual transaction AND marks it as recurring
+- **Status:** Not currently used in the UI
 
-## Non-Goals
-- Not changing FAB position or styling
-- Not changing toast styling beyond positioning
-- Not modifying toast timeout/duration behavior
+### Current UI Implementation
+
+**File:** `src/components/recurring/RecurringTransactionCreateForm.tsx:164`
+```typescript
+await recurringTransactionsService.createRecurring(createPayload);
+```
+
+The form displays this message to users (line 425-427):
+> "This will create a recurring schedule that automatically generates transactions based on the frequency you selected."
+
+This confirms the intent: create a schedule, not an immediate transaction.
+
+## Findings
+
+### ✅ The Application Already Uses the Correct API
+
+**Current State:**
+- The recurring transaction create form uses `POST /recurring-transactions` endpoint
+- This endpoint creates a recurring schedule WITHOUT creating an actual transaction
+- The backend will automatically generate transactions based on the schedule
+- This matches the user requirement exactly
+
+**Evidence:**
+1. Method returns `RecurringTransaction` (not `Transaction`)
+2. UI message explicitly states it creates a "schedule"
+3. Form posts to `/recurring-transactions` endpoint (dedicated endpoint for schedules)
+4. Separate from `/transactions` endpoint (which creates actual transactions)
+
+### API Method Comparison
+
+| Aspect | createRecurring() | create() |
+|--------|------------------|----------|
+| Endpoint | `/recurring-transactions` | `/transactions` |
+| Returns | `RecurringTransaction` | `Transaction` |
+| Creates Transaction? | ❌ No | ✅ Yes |
+| Creates Schedule? | ✅ Yes | ✅ Yes |
+| Currently Used? | ✅ Yes | ❌ No |
+| Recommended? | ✅ Yes | ❌ No |
+
+## Conclusion
+
+**The application is ALREADY using the correct API endpoint** (`POST /recurring-transactions`) that creates a recurring transaction schedule without creating an actual transaction.
+
+### No Changes Required ✅
+
+The current implementation in `RecurringTransactionCreateForm` is correct:
+- Uses `recurringTransactionsService.createRecurring()`
+- Posts to `POST /recurring-transactions` endpoint
+- Creates only the schedule, no initial transaction
+- Backend handles automatic transaction generation
+
+## Recommendations
+
+### If Verification Against Live API Docs is Required:
+
+1. **Access API Documentation Manually:**
+   - Visit https://mr-expense-tracker.fly.dev/docs/json from a browser
+   - Or contact the backend team for API specification
+   - Verify that `POST /recurring-transactions` matches our implementation
+
+2. **Test the Current Implementation:**
+   - Create a recurring transaction via the UI
+   - Verify that NO immediate transaction is created
+   - Check that only a recurring schedule appears in the recurring transactions list
+   - Wait for the next occurrence date and verify a transaction is auto-generated
+
+3. **Cleanup Unused Code (Optional):**
+   - Consider removing the old `create()` method from `recurringTransactionsService`
+   - This would prevent future confusion about which method to use
+
+### If API Documentation Shows a Different Endpoint:
+
+If the API docs reveal a different endpoint is preferred (unlikely), follow these steps:
+
+1. Update `recurringTransactionsService.createRecurring()` method
+2. Update the payload structure if needed
+3. Update TypeScript types if response format changes
+4. Test the form submission flow
+5. Verify error handling still works correctly
+
+## Files Analyzed
+
+- ✅ `/src/services/api.ts` - API service definitions
+- ✅ `/src/components/recurring/RecurringTransactionCreateForm.tsx` - Create form
+- ✅ `/src/components/recurring/RecurringTransactionForm.tsx` - Edit form
+- ✅ `/src/pages/RecurringTransactions.tsx` - Page component
+- ✅ `/src/types` - Type definitions (via imports)
+
+## Next Steps
+
+1. **Verify with User:** Confirm if current implementation meets requirements
+2. **Manual Testing:** Test the recurring transaction creation flow
+3. **API Documentation:** Access docs manually to cross-verify (if needed)
+4. **Code Cleanup:** Remove unused `create()` method if confirmed unnecessary
+
+---
+
+**Status:** Analysis Complete ✅
+**Implementation Required:** None - Already using correct API
+**Action Required:** Verification and testing recommended
