@@ -130,16 +130,4 @@
       padding-bottom: env(safe-area-inset-bottom);
     }
   }
-
-  /* Toast positioning to avoid FAB and bottom sheet overlap */
-  [data-sonner-toaster] {
-    bottom: 10rem !important; /* 160px - above FAB on mobile */
-  }
-
-  /* Desktop: position closer to bottom since FAB is lower */
-  @media (min-width: 1024px) {
-    [data-sonner-toaster] {
-      bottom: 5rem !important; /* 80px - above FAB on desktop */
-    }
-  }
 }
