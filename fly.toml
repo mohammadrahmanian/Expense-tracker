@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for expensio on 2025-07-20T14:24:22+02:00
+# fly.toml app configuration file generated for [APP NAME] on 2025-07-20T14:24:22+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'expensio'
+app = [APP NAME]
 primary_region = 'fra'
 
 [build]
