@@ -469,22 +469,6 @@ export const recurringTransactionsService = {
     }
   },
 
-  create: async (
-    data: Omit<RecurringTransaction, "id" | "nextOccurrence">
-  ): Promise<Transaction> => {
-    try {
-      const payload = {
-        ...data,
-        isRecurring: true,
-        recurrenceFrequency: data.recurrenceFrequency,
-      };
-      const response = await apiClient.post<Transaction>("/transactions", payload);
-      return response.data;
-    } catch (error) {
-      handleApiError(error);
-    }
-  },
-
   createRecurring: async (
     data: {
       title: string;
