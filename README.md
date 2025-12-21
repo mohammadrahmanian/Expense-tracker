@@ -50,7 +50,7 @@ A modern expense tracker with insights - visualize your spending patterns, track
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/mohammadrahmanian/Expense-tracker.git
+git clone https://github.com/mohammadrahmanian/Expense-Tracker-BE.git
 ```
 
 2. Install dependencies:
