@@ -598,7 +598,7 @@ const Reports: React.FC = () => {
                       ],
                       tooltip: {
                         formatter: function () {
-                          return `<b>${this.point.name}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
+                          return `<b>${this.key}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
                         },
                       },
                       legend: {
@@ -682,7 +682,7 @@ const Reports: React.FC = () => {
                       ],
                       tooltip: {
                         formatter: function () {
-                          return `<b>${this.point.name}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
+                          return `<b>${this.key}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
                         },
                       },
                       legend: {

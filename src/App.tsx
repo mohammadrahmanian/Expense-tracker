@@ -8,7 +8,7 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { DataRefreshProvider } from "@/contexts/DataRefreshContext";
 import { SidebarContextProvider } from "@/contexts/SidebarContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import Categories from "./pages/Categories";
 import Dashboard from "./pages/Dashboard";
 import Index from "./pages/Index";

@@ -43,7 +43,7 @@ const recurringTransactionSchema = z
     description: z.string().max(256, "Description must be 256 characters or less").optional(),
   })
   .refine(
-    (data) => {
+    () => {
       // endDate validation will be done against startDate from transaction
       return true;
     },

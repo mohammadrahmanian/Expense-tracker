@@ -30,7 +30,7 @@ import { categoriesService, recurringTransactionsService } from "@/services/api"
 import { Category, RecurringTransaction } from "@/types";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useDataRefresh } from "@/contexts/DataRefreshContext";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import {
   ArrowDownLeft,
   ArrowUpRight,

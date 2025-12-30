@@ -111,7 +111,7 @@ export const transactionsService = {
       const response = await apiClient.get<{ items: Transaction[]; total: number; count: number }>(url);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -120,7 +120,7 @@ export const transactionsService = {
       const response = await apiClient.get<Transaction>(`/transactions/${id}`);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -134,7 +134,7 @@ export const transactionsService = {
       );
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -149,7 +149,7 @@ export const transactionsService = {
       );
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -157,7 +157,7 @@ export const transactionsService = {
     try {
       await apiClient.delete(`/transactions/${id}`);
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -171,7 +171,7 @@ export const transactionsService = {
       );
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };
@@ -183,7 +183,7 @@ export const categoriesService = {
       const response = await apiClient.get<Category[]>("/categories");
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -192,7 +192,7 @@ export const categoriesService = {
       const response = await apiClient.get<Category>(`/categories/${id}`);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -203,7 +203,7 @@ export const categoriesService = {
       const response = await apiClient.post<Category>("/categories", category);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -215,7 +215,7 @@ export const categoriesService = {
       );
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -223,7 +223,7 @@ export const categoriesService = {
     try {
       await apiClient.delete(`/categories/${id}`);
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };
@@ -235,7 +235,7 @@ export const budgetsService = {
       const response = await apiClient.get<Budget[]>("/budgets");
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -244,7 +244,7 @@ export const budgetsService = {
       const response = await apiClient.get<Budget>(`/budgets/${id}`);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -253,7 +253,7 @@ export const budgetsService = {
       const response = await apiClient.post<Budget>("/budgets", budget);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -262,7 +262,7 @@ export const budgetsService = {
       const response = await apiClient.put<Budget>(`/budgets/${id}`, updates);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -270,7 +270,7 @@ export const budgetsService = {
     try {
       await apiClient.delete(`/budgets/${id}`);
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };
@@ -282,7 +282,7 @@ export const dashboardService = {
       const response = await apiClient.get<DashboardStats>("/dashboard/stats");
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -296,7 +296,7 @@ export const dashboardService = {
       );
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -307,7 +307,7 @@ export const dashboardService = {
       );
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -411,7 +411,7 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -431,7 +431,7 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -451,7 +451,7 @@ export const authService = {
       const response = await apiClient.get("/users/me");
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };
@@ -465,7 +465,7 @@ export const recurringTransactionsService = {
       );
       return response.data.recurringTransactions;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -488,7 +488,7 @@ export const recurringTransactionsService = {
       );
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -499,7 +499,7 @@ export const recurringTransactionsService = {
     try {
       await apiClient.put(`/recurring-transactions/${id}`, data);
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -507,7 +507,7 @@ export const recurringTransactionsService = {
     try {
       await apiClient.delete(`/recurring-transactions/${id}`);
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -515,7 +515,7 @@ export const recurringTransactionsService = {
     try {
       await apiClient.post(`/recurring-transactions/${id}/toggle`, { active });
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };

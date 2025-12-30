@@ -19,7 +19,7 @@ import {
   User,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -38,7 +38,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     // Initialize from localStorage, default to false if not found
     if (typeof window !== "undefined") {
@@ -288,8 +287,8 @@ const DashboardSidebar = ({
 
           {closeButton}
         </div>
-        <nav className={cn("flex-1", "space-y-1")}>          
-          {navigation.map((item, index) => {
+        <nav className={cn("flex-1", "space-y-1")}>
+          {navigation.map((item) => {
             const isActive = location.pathname === item.href;
             return (
               <Link

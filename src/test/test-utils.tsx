@@ -9,18 +9,20 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Mock user data for testing
 export const mockUser = {
-  id: 1,
+  id: '1',
   name: 'Test User',
   email: 'test@example.com',
+  createdAt: new Date(),
 };
 
 // Mock auth context value
 export const mockAuthContext: AuthContextType = {
   user: mockUser,
   login: vi.fn(),
+  register: vi.fn(),
   logout: vi.fn(),
-  loading: false,
-  error: null,
+  isLoading: false,
+  isInitializingAuth: false,
 };
 
 // Mock currency context value
@@ -42,7 +44,6 @@ export const renderWithProviders = (
   {
     authContext = {},
     currencyContext = {},
-    initialEntries = ['/'],
     ...renderOptions
   }: CustomRenderOptions = {}
 ) => {
@@ -78,8 +79,7 @@ export const renderWithProviders = (
 
 // Helper to render components with router only
 export const renderWithRouter = (
-  ui: ReactElement,
-  { initialEntries = ['/'] }: { initialEntries?: string[] } = {}
+  ui: ReactElement
 ) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <BrowserRouter>
