@@ -19,7 +19,6 @@
 9. [Testing Requirements](#9-testing-requirements)
 10. [Performance Considerations](#10-performance-considerations)
 11. [Deployment & CI/CD](#11-deployment--cicd)
-12. [Known Issues & Technical Debt](#12-known-issues--technical-debt)
 
 ---
 
@@ -44,11 +43,13 @@ Expensio is a modern, mobile-first Progressive Web App (PWA) for personal expens
 ### Tech Stack
 
 **Core:**
+
 - React 18 (Functional components with hooks)
 - TypeScript (Type safety and better DX)
 - Vite (Fast build tool and dev server)
 
 **UI & Styling:**
+
 - Tailwind CSS (Utility-first CSS framework)
 - Radix UI (Accessible component primitives)
 - shadcn/ui (Re-usable component patterns)
@@ -56,12 +57,14 @@ Expensio is a modern, mobile-first Progressive Web App (PWA) for personal expens
 - Highcharts (Charts and visualizations)
 
 **Data & State:**
+
 - TanStack Query (Server state management) - **Currently installed but underutilized**
 - React Context API (Global UI state: Auth, Currency, Sidebar)
 - React Hook Form + Zod (Forms and validation)
 - Axios (HTTP client with interceptors)
 
 **Testing:**
+
 - Vitest (Unit testing)
 - Testing Library (Component testing)
 
@@ -71,7 +74,7 @@ Expensio is a modern, mobile-first Progressive Web App (PWA) for personal expens
 
 ### Project Structure
 
-```
+```text
 src/
 ├── components/           # Reusable UI components
 │   ├── layouts/         # Layout components (DashboardLayout, AuthLayout)
@@ -132,82 +135,94 @@ src/
 When adding a new feature, follow this workflow:
 
 #### 1. **Understand the Requirement**
-   - Read the feature request carefully
-   - Ask clarifying questions if anything is ambiguous
-   - Understand the business context and user needs
-   - Check if similar features exist in the codebase
+
+- Read the feature request carefully
+- Ask clarifying questions if anything is ambiguous
+- Understand the business context and user needs
+- Check if similar features exist in the codebase
 
 #### 2. **Create a Plan (for non-trivial features)**
-   - Write a detailed plan in `plan.md` before changing any code
-   - Break the plan into small, verifiable steps
-   - Remove ambiguities and assumptions by asking as many questions as needed from the user
-   - Share the plan and wait for user feedback before implementation
-   - Use the **frontend-developer** subagent for frontend development tasks
+
+- Write a detailed plan in `plan.md` before changing any code
+- Break the plan into small, verifiable steps
+- Remove ambiguities and assumptions by asking as many questions as needed from the user
+- Share the plan and wait for user feedback before implementation
+- Use the **frontend-developer** subagent for frontend development tasks
 
 #### 3. **Review Existing Code**
-   - **For Dashboard changes:** Review `src/pages/Dashboard.tsx` first
-   - **For Transactions page:** Review `src/pages/Transactions.tsx` first
-   - **For Reports page:** Review `src/pages/Reports.tsx` first
-   - **For Categories page:** Review `src/pages/Categories.tsx` first
-   - **For More page:** Review `src/pages/More.tsx` first
-   - **For Recurring Transactions:** Review `src/pages/RecurringTransactions.tsx` first
-   - Understand existing patterns and conventions
-   - Identify reusable components
+
+- **For Dashboard changes:** Review `src/pages/Dashboard.tsx` first
+- **For Transactions page:** Review `src/pages/Transactions.tsx` first
+- **For Reports page:** Review `src/pages/Reports.tsx` first
+- **For Categories page:** Review `src/pages/Categories.tsx` first
+- **For More page:** Review `src/pages/More.tsx` first
+- **For Recurring Transactions:** Review `src/pages/RecurringTransactions.tsx` first
+- Understand existing patterns and conventions
+- Identify reusable components
 
 #### 4. **Design the Implementation**
-   - Decide where files should go (pages, components, hooks, etc.)
-   - Plan the component structure
-   - Plan the API integration
-   - Plan the state management approach
-   - Identify required types and interfaces
+
+- Decide where files should go (pages, components, hooks, etc.)
+- Plan the component structure
+- Plan the API integration
+- Plan the state management approach
+- Identify required types and interfaces
 
 #### 5. **Implement the Feature**
 
-   **a. Create Types (if needed)**
-   - Add types to `src/types/index.ts`
-   - Use descriptive names following existing patterns
-   - Export all types for reuse
+##### a. Create Types (if needed)
 
-   **b. Create API Service Methods (if needed)**
-   - Add methods to the correct file under the  `src/services/network/` directory
-   - Export the service methods so they can be used by TanStack Query hooks
-   - Follow existing service pattern
-   - Use proper TypeScript types
-   - Include error handling
+- Add types to `src/types/index.ts`
+- Use descriptive names following existing patterns
+- Export all types for reuse
 
-   **c. Create Components**
-   - **Reusable UI components** → `src/components/ui/`
-   - **Feature-specific components** → `src/components/{feature}/`
-   - **Page components** → `src/pages/`
-   - Follow shadcn/ui patterns for UI components
-   - Use React Hook Form + Zod for forms
+##### b. Create API Service Methods (if needed)
 
-   **d. Add State Management**
-   - Use **TanStack Query** for server state (API data)
-   - Use **Context API** for global UI state (theme, auth, etc.)
-   - Use **useState** for component-specific state
+- Add methods to the correct file under the  `src/services/network/` directory
+- Export the service methods so they can be used by TanStack Query hooks
+- Follow existing service pattern
+- Use proper TypeScript types
+- Include error handling
 
-   **e. Add Routing (if new page)**
-   - Add route in `src/App.tsx`
-   - Wrap protected routes with `<ProtectedRoute>`
-   - Update navigation components if needed
+##### c. Create Components
+
+- **Reusable UI components** → `src/components/ui/`
+- **Feature-specific components** → `src/components/{feature}/`
+- **Page components** → `src/pages/`
+- Follow shadcn/ui patterns for UI components
+- Use React Hook Form + Zod for forms
+
+##### d. Add State Management
+
+- Use **TanStack Query** for server state (API data)
+- Use **Context API** for global UI state (theme, auth, etc.)
+- Use **useState** for component-specific state
+
+##### e. Add Routing (if new page)
+
+- Add route in `src/App.tsx`
+- Wrap protected routes with `<ProtectedRoute>`
+- Update navigation components if needed
 
 #### 6. **Test the Feature**
-   - Write unit tests for utilities and hooks
-   - Write component tests for critical components
+
+- Write unit tests for utilities and hooks
+- Write component tests for critical components
 
 #### 7. **Ensure Code Quality**
-   - Run `npm run typecheck` to check TypeScript errors
-   - Run `npm run test` to run tests
-   - Ensure no console errors or warnings
-   - Check for accessibility issues
-   - Verify responsive design
+
+- Run `npm run typecheck` to check TypeScript errors
+- Run `npm run test` to run tests
+- Ensure no console errors or warnings
+- Check for accessibility issues
+- Verify responsive design
 
 #### 8. **Document (if needed)**
-   - Add JSDoc comments for complex functions
-   - Update relevant documentation
-   - Add comments explaining "why" not "what"
-   - Update this AGENT.md if new conventions are introduced or changed
+
+- Add JSDoc comments for complex functions
+- Update relevant documentation
+- Add comments explaining "why" not "what"
+- Update this AGENT.md if new conventions are introduced or changed
 
 ### Example: Adding a "Duplicate Transaction" Feature
 
@@ -293,33 +308,44 @@ export default function TransactionsList() {
 ### TypeScript Conventions
 
 - **Interfaces:** PascalCase, no suffix for component props
+
   ```typescript
   interface TransactionFormProps {
     transaction?: Transaction;
     onSubmit: (data: Transaction) => void;
   }
   ```
+
 - **Context Types:** Use `ContextValue` suffix for context types
+
   ```typescript
   interface AuthContextValue {
     user: User | null;
     login: (email: string, password: string) => Promise<void>;
   }
   ```
+
 - **Types:** Use `Type` for union types, enums, or type aliases
+
   ```typescript
   type TransactionType = "INCOME" | "EXPENSE";
   ```
+
 - **Constants:** UPPER_SNAKE_CASE
+
   ```typescript
   const MAX_AMOUNT = 999999999;
   const API_TIMEOUT = 10000;
   ```
+
 - **Variables & Functions:** camelCase
+
   ```typescript
   const handleSubmit = async (data: FormData) => { ... };
   ```
+
 - **Booleans:** Use `is*`, `has*`, `should*` prefixes
+
   ```typescript
   const isLoading = true;
   const hasError = false;
@@ -329,6 +355,7 @@ export default function TransactionsList() {
 ### TypeScript Strictness
 
 **IMPORTANT:** New code should aim for strict typing:
+
 - Enable strict null checks
 - Avoid `any` types - use `unknown` if type is truly unknown
 - Add explicit return types for public functions
@@ -385,6 +412,7 @@ function Button({ onClick }: ButtonProps) {
 ### Import Organization
 
 Order imports as follows:
+
 1. React and React-related libraries
 2. Third-party libraries
 3. Internal modules (using `@/` alias)
@@ -460,12 +488,14 @@ export function normalizeAmount(value: string): string {
 #### 1. **DO NOT Use Direct localStorage Access**
 
 **❌ Wrong:**
+
 ```typescript
 const token = localStorage.getItem("authToken");
 localStorage.setItem("authToken", token);
 ```
 
 **✅ Correct:**
+
 ```typescript
 // Use the storage abstraction (to be created) with error handling
 import { storage, STORAGE_KEYS } from "@/lib/storage";
@@ -475,6 +505,7 @@ const token = storage.getItem(STORAGE_KEYS.AUTH_TOKEN);
 #### 2. **DO NOT Use Manual Data Refresh (DataRefreshContext)**
 
 **❌ Wrong:**
+
 ```typescript
 const { triggerRefresh } = useDataRefresh();
 // After mutation
@@ -482,6 +513,7 @@ triggerRefresh();  // Refreshes ALL queries globally
 ```
 
 **✅ Correct:**
+
 ```typescript
 // Use TanStack Query's invalidateQueries
 const queryClient = useQueryClient();
@@ -493,6 +525,7 @@ queryClient.invalidateQueries({ queryKey: ["transactions"] });
 #### 3. **DO NOT Hard-code User IDs**
 
 **❌ Wrong:**
+
 ```typescript
 const transactionData = {
   userId: "1",  // NEVER DO THIS
@@ -502,6 +535,7 @@ const transactionData = {
 ```
 
 **✅ Correct:**
+
 ```typescript
 // Backend should derive userId from JWT token
 // Frontend should NOT send userId
@@ -515,11 +549,13 @@ const transactionData = {
 #### 4. **DO NOT Create Inline React Query Configurations**
 
 **❌ Wrong:**
+
 ```typescript
 const queryClient = new QueryClient();  // No configuration
 ```
 
 **✅ Correct:**
+
 ```typescript
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -536,6 +572,7 @@ const queryClient = new QueryClient({
 #### 5. **DO NOT Perform Business Logic on Client Side**
 
 **❌ Wrong:**
+
 ```typescript
 // Fetching ALL transactions and filtering client-side
 const allTransactions = await transactionsService.getAll();
@@ -543,6 +580,7 @@ const filtered = allTransactions.filter(t => t.categoryId === categoryId);
 ```
 
 **✅ Correct:**
+
 ```typescript
 // Use server-side filtering
 const transactions = await transactionsService.getAll({ categoryId });
@@ -551,6 +589,7 @@ const transactions = await transactionsService.getAll({ categoryId });
 #### 6. **DO NOT Duplicate Form Validation Logic**
 
 **❌ Wrong:**
+
 ```typescript
 // Inline validation in each form
 const schema = z.object({
@@ -560,6 +599,7 @@ const schema = z.object({
 ```
 
 **✅ Correct:**
+
 ```typescript
 // Create reusable schemas in src/schemas/
 import { transactionSchema } from "@/schemas/transaction-schema";
@@ -572,12 +612,14 @@ const { register } = useForm({
 #### 7. **DO NOT Import All Pages Synchronously**
 
 **❌ Wrong:**
+
 ```typescript
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
 ```
 
 **✅ Correct:**
+
 ```typescript
 // Use code splitting (to be implemented)
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -587,12 +629,14 @@ const Transactions = lazy(() => import("./pages/Transactions"));
 #### 8. **DO NOT Use Magic Numbers/Strings**
 
 **❌ Wrong:**
+
 ```typescript
 const recent = transactions.slice(0, 5);  // Why 5?
 setTimeout(refetch, 10000);  // Why 10 seconds?
 ```
 
 **✅ Correct:**
+
 ```typescript
 import { DASHBOARD_RECENT_LIMIT } from "@/constants/ui-constants";
 import { API_TIMEOUT } from "@/constants/api-constants";
@@ -604,6 +648,7 @@ setTimeout(refetch, API_TIMEOUT);
 #### 9. **DO NOT Skip Error Boundaries**
 
 **❌ Wrong:**
+
 ```typescript
 // No error boundary - app crashes with white screen
 <Routes>
@@ -612,6 +657,7 @@ setTimeout(refetch, API_TIMEOUT);
 ```
 
 **✅ Correct:**
+
 ```typescript
 // Wrap routes with error boundary
 <ErrorBoundary fallback={<ErrorFallback />}>
@@ -624,6 +670,7 @@ setTimeout(refetch, API_TIMEOUT);
 #### 10. **DO NOT Create Components Without Dark Mode Support**
 
 **❌ Wrong:**
+
 ```typescript
 <div className="bg-white text-black">
   {/* No dark mode support */}
@@ -631,6 +678,7 @@ setTimeout(refetch, API_TIMEOUT);
 ```
 
 **✅ Correct:**
+
 ```typescript
 <div className="bg-white dark:bg-gray-800 text-black dark:text-white">
   {/* Supports dark mode */}
@@ -658,6 +706,7 @@ setTimeout(refetch, API_TIMEOUT);
 ### Core Business Entities
 
 #### Transaction
+
 - Represents a single financial transaction (income or expense)
 - Can be one-time or recurring
 - Must have a category
@@ -665,12 +714,14 @@ setTimeout(refetch, API_TIMEOUT);
 - **Important:** Backend derives `userId` from JWT - never send it from frontend
 
 #### Category
+
 - Organizes transactions into groups (Food, Health, Transport, etc.)
 - Has a type: INCOME or EXPENSE
 - Has a color for visual identification
 - Users can create custom categories
 
 #### Recurring Transaction
+
 - Automated transactions that repeat on a schedule
 - Frequencies: DAILY, WEEKLY, MONTHLY, YEARLY
 - Can be activated/deactivated
@@ -678,6 +729,7 @@ setTimeout(refetch, API_TIMEOUT);
 - **Important:** Recurring transactions create actual transactions automatically
 
 #### Budget (Not Implemented - To Be Removed)
+
 - **Status:** Backend types exist but UI not implemented
 - **Decision:** Feature will not be implemented
 - **Action:** Remove budget-related code from codebase
@@ -689,6 +741,7 @@ setTimeout(refetch, API_TIMEOUT);
 **Purpose:** Provides a quick way to track common expenses without navigating to the full transaction form.
 
 **Behavior:**
+
 - Three predefined categories: **Food**, **Health**, **Household**
 - Each category has a specific icon and color
 - When user selects a category that doesn't exist:
@@ -704,16 +757,19 @@ setTimeout(refetch, API_TIMEOUT);
 **Location:** `src/pages/Dashboard.tsx` and `src/services/api.ts`
 
 **Current Balance:**
-```
+
+```text
 Current Balance = Total Income - Total Expenses
 ```
 
 **Monthly Savings:**
-```
+
+```text
 Monthly Savings = Monthly Income - Monthly Expenses
 ```
 
 **Category Expenses:**
+
 - Shows top 5 categories by spending
 - Remaining categories grouped as "Others"
 - Calculated as percentage of total expenses
@@ -724,10 +780,12 @@ Monthly Savings = Monthly Income - Monthly Expenses
 **Location:** `src/contexts/CurrencyContext.tsx`
 
 **Supported Currencies:**
+
 - USD (United States Dollar) - Symbol: $
 - EUR (Euro) - Symbol: €
 
 **Format Function:**
+
 ```typescript
 formatAmount(amount: number) => string
 // USD: "$1,234.56"
@@ -746,6 +804,7 @@ formatAmount(amount: number) => string
 ### Protected Routes
 
 All authenticated pages are wrapped with `<ProtectedRoute>`:
+
 - `/dashboard`
 - `/transactions`
 - `/categories`
@@ -755,6 +814,7 @@ All authenticated pages are wrapped with `<ProtectedRoute>`:
 - `/more`
 
 Public routes:
+
 - `/` (Index/Landing page)
 - `/login`
 - `/register`
@@ -762,11 +822,13 @@ Public routes:
 ### Mobile Navigation
 
 **Mobile (< md breakpoint):**
+
 - Bottom tab bar with 4 tabs: Dashboard, Transactions, Reports, More
 - No sidebar
 - Floating action button for quick expense entry
 
 **Desktop (≥ md breakpoint):**
+
 - Collapsible sidebar navigation
 - No bottom tab bar
 - Sidebar state persisted to localStorage
@@ -777,7 +839,7 @@ Public routes:
 
 ### Decision Tree: When to Use What
 
-```
+```text
 Is this data from the API?
 ├─ YES → Use TanStack Query (React Query)
 │   ├─ Example: Transactions, Categories, Dashboard stats
@@ -800,6 +862,7 @@ Is this data from the API?
 ### TanStack Query (React Query) - For Server State
 
 **When to Use:**
+
 - Fetching data from API
 - Creating, updating, or deleting server resources
 - Caching API responses
@@ -807,6 +870,7 @@ Is this data from the API?
 - Optimistic updates
 
 **Pattern:**
+
 ```typescript
 // Query (GET)
 const { data, isLoading, error } = useQuery({
@@ -828,6 +892,7 @@ const mutation = useMutation({
 ```
 
 **Important:**
+
 - Use query keys consistently (create a query key factory)
 - Configure staleTime and cacheTime appropriately
 - Invalidate related queries after mutations
@@ -836,6 +901,7 @@ const mutation = useMutation({
 ### Context API - For Global UI State
 
 **When to Use:**
+
 - Authentication state (user, login, logout)
 - Theme/dark mode
 - Currency selection
@@ -843,6 +909,7 @@ const mutation = useMutation({
 - Language/locale (future)
 
 **Pattern:**
+
 ```typescript
 // Create context
 interface AuthContextValue {
@@ -879,6 +946,7 @@ export function useAuth() {
 ```
 
 **Important:**
+
 - Memoize context value to prevent unnecessary re-renders
 - Split large contexts into smaller, focused ones
 - Provide custom hook for consuming context
@@ -887,6 +955,7 @@ export function useAuth() {
 ### Local Component State - For UI State
 
 **When to Use:**
+
 - Form inputs (before submission)
 - Modal/dialog open/close
 - Tabs, accordions, dropdowns
@@ -894,6 +963,7 @@ export function useAuth() {
 - Temporary UI state
 
 **Pattern:**
+
 ```typescript
 function MyComponent() {
   const [isOpen, setIsOpen] = useState(false);
@@ -910,18 +980,21 @@ function MyComponent() {
 ### Cache Invalidation Strategy
 
 **After Creating a Transaction:**
+
 ```typescript
 queryClient.invalidateQueries({ queryKey: ["transactions"] });
 queryClient.invalidateQueries({ queryKey: ["dashboard"] });
 ```
 
 **After Updating a Category:**
+
 ```typescript
 queryClient.invalidateQueries({ queryKey: ["categories"] });
 queryClient.invalidateQueries({ queryKey: ["transactions"] });  // Transactions include category
 ```
 
 **After Deleting a Recurring Transaction:**
+
 ```typescript
 queryClient.invalidateQueries({ queryKey: ["recurring-transactions"] });
 ```
@@ -933,6 +1006,7 @@ queryClient.invalidateQueries({ queryKey: ["recurring-transactions"] });
 ### Form Stack: React Hook Form + Zod
 
 **ALL forms MUST use:**
+
 - React Hook Form for form state
 - Zod for validation schemas
 - zodResolver to connect them
@@ -941,11 +1015,12 @@ queryClient.invalidateQueries({ queryKey: ["recurring-transactions"] });
 
 ### Form Schema Naming Convention
 
-```
+```text
 {Feature}FormSchema
 ```
 
 Examples:
+
 - `TransactionFormSchema`
 - `CategoryFormSchema`
 - `LoginFormSchema`
@@ -1104,6 +1179,7 @@ const onSubmit = async (data: FormData) => {
 ### Testing Strategy
 
 **For All New Features:**
+
 - **Unit tests** are **MANDATORY** for:
   - Utility functions
   - Custom hooks
@@ -1124,6 +1200,7 @@ const onSubmit = async (data: FormData) => {
 ### What to Test
 
 **✅ DO Test:**
+
 - Public APIs and utilities
 - Custom hooks
 - Form validation logic
@@ -1132,6 +1209,7 @@ const onSubmit = async (data: FormData) => {
 - Edge cases
 
 **❌ DON'T Test:**
+
 - Third-party libraries
 - Simple getters/setters
 - Trivial functions
@@ -1145,7 +1223,7 @@ const onSubmit = async (data: FormData) => {
 
 ### Test File Naming
 
-```
+```text
 {filename}.test.ts    // For TypeScript files
 {filename}.test.tsx   // For React components
 ```
@@ -1153,7 +1231,8 @@ const onSubmit = async (data: FormData) => {
 ### Test Location
 
 - **Co-located with source files** (preferred for utilities)
-  ```
+
+  ```text
   src/lib/amount-utils.ts
   src/lib/amount-utils.test.ts
   ```
@@ -1260,6 +1339,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 #### 2. **React.memo for Expensive Components**
 
 Use `React.memo` for components that:
+
 - Are expensive to render
 - Are rendered frequently
 - Have props that rarely change
@@ -1316,11 +1396,13 @@ const handleDelete = useCallback((id: string) => {
 ### Environment Variables
 
 Required at build time:
+
 ```bash
 VITE_API_BASE_URL=https://api.expensio.com/api
 ```
 
 Test credentials (for UI testing):
+
 ```bash
 UI_TEST_EMAIL=test@example.com
 UI_TEST_PASSWORD=testpassword
@@ -1329,10 +1411,12 @@ UI_TEST_PASSWORD=testpassword
 ### CI/CD Status
 
 **Current:**
+
 - GitHub Actions workflow configured (`.github/workflows/fly-deploy.yml`)
 - No automated checks yet (planned)
 
 **Planned:**
+
 - Linting before deployment
 - Type checking before deployment
 - Test execution before deployment
@@ -1371,7 +1455,7 @@ When working with this codebase:
 ### Common Tasks Quick Reference
 
 | Task | Location | Pattern |
-|------|----------|---------|
+| ---- | -------- | ------- |
 | Add new page | `src/pages/` | Create component, add route in App.tsx |
 | Add API method | `src/services/api.ts` | Follow existing service pattern |
 | Add type | `src/types/index.ts` | Export interface/type |
