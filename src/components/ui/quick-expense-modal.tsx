@@ -10,7 +10,6 @@ import {
   ResponsiveDialogHeader as DialogHeader,
   ResponsiveDialogTitle as DialogTitle,
 } from '@/components/ui/responsive-dialog';
-import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
@@ -42,7 +41,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { formatAmount, currency } = useCurrency();
+  const { currency } = useCurrency();
   const { triggerRefresh } = useDataRefresh();
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState<Date>(new Date());

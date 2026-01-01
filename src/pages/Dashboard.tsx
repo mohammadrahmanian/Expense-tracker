@@ -18,7 +18,6 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   PiggyBank,
-  Plus,
   TrendingDown,
   TrendingUp,
   Wallet
@@ -240,7 +239,7 @@ const Dashboard: React.FC = () => {
                       }],
                       tooltip: {
                         formatter: function() {
-                          return `<b>${this.point.name}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
+                          return `<b>${this.key}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
                         },
                       },
                       legend: {

@@ -70,7 +70,7 @@ export const BottomTabBar: React.FC = () => {
     >
       <div className="bg-white dark:bg-gray-800 shadow-sm border-t border-gray-200 dark:border-gray-700 pb-safe-bottom">
         <div className="flex items-stretch pt-2 pb-2">
-          {tabs.map((tab, index) => {
+          {tabs.map((tab) => {
             const isActive = location.pathname === tab.href;
             const TabIcon = tab.icon;
 

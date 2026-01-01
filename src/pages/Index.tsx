@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -13,7 +12,6 @@ import {
   TrendingUp,
   PieChart,
   Shield,
-  Smartphone,
   BarChart3,
   Wallet,
 } from "lucide-react";

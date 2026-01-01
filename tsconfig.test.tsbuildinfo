@@ -1,1 +1,1 @@
-{"root":["./src/components/ui/bottom-tab-bar.test.tsx","./src/lib/utils.spec.ts","./src/test/setup.ts","./src/test/test-utils.tsx"],"errors":true,"version":"5.8.3"}
+{"root":["./src/lib/utils.spec.ts","./src/test/setup.ts","./src/test/test-utils.tsx"],"version":"5.8.3"}
