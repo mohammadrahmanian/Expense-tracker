@@ -9,8 +9,37 @@ export default defineConfig(({ mode }) => {
   // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
   const env = loadEnv(mode, process.cwd(), "");
 
-  // Extract base URL and remove /api suffix if present
-  const proxyTarget = env.VITE_API_PROXY_TARGET;
+  // Validate and normalize the proxy target
+  let rawProxyTarget = env.VITE_API_PROXY_TARGET;
+
+  // Provide sensible default for local development
+  if (!rawProxyTarget) {
+    rawProxyTarget = "http://localhost:4000";
+    console.warn(
+      "VITE_API_PROXY_TARGET not set, using default: http://localhost:4000"
+    );
+  }
+
+  // Normalize the proxy target:
+  // 1. Strip trailing "/api" to avoid duplication (proxy already adds /api)
+  // 2. Strip any trailing slashes
+  // 3. Ensure protocol is present
+  let proxyTarget = rawProxyTarget.trim();
+
+  // Strip trailing "/api" if present
+  if (proxyTarget.endsWith("/api")) {
+    proxyTarget = proxyTarget.slice(0, -4);
+  }
+
+  // Strip trailing slashes
+  proxyTarget = proxyTarget.replace(/\/+$/, "");
+
+  // Ensure protocol is present
+  if (!proxyTarget.startsWith("http://") && !proxyTarget.startsWith("https://")) {
+    throw new Error(
+      `VITE_API_PROXY_TARGET must include protocol (http:// or https://). Got: ${rawProxyTarget}`
+    );
+  }
 
   return {
     server: {
@@ -39,16 +68,11 @@ export default defineConfig(({ mode }) => {
           globIgnores: ["**/splash/**"],
           runtimeCaching: [
             {
+              // API endpoints contain authenticated user data - never cache
+              // Using NetworkOnly to prevent caching sensitive financial information
+              // that could be exposed if device is shared or service worker persists
               urlPattern: /^https:\/\/.*\/api\/.*/i,
-              handler: "NetworkFirst",
-              options: {
-                cacheName: "expensio-api-cache",
-                networkTimeoutSeconds: 5,
-                expiration: {
-                  maxEntries: 50,
-                  maxAgeSeconds: 5 * 60, // 5 minutes
-                },
-              },
+              handler: "NetworkOnly",
             },
             {
               urlPattern: /\.(?:js|css|html)$/,
