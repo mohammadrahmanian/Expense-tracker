@@ -24,6 +24,7 @@ const apiClient: AxiosInstance = axios.create({
     "Content-Type": "application/json",
   },
   timeout: 10000, // 10 seconds timeout
+  withCredentials: true, // Enable sending/receiving cookies in cross-origin requests
 });
 
 // Request interceptor to add authentication token
