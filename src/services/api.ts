@@ -438,7 +438,7 @@ export const authService = {
 
   logout: async (): Promise<void> => {
     try {
-      await apiClient.post("/users/logout/");
+      await apiClient.post("/users/logout");
     } catch (error) {
       // Even if logout fails on server, clear local token
       console.error("Logout error:", error);
