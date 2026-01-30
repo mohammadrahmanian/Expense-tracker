@@ -24,6 +24,7 @@ const apiClient: AxiosInstance = axios.create({
     "Content-Type": "application/json",
   },
   timeout: 10000, // 10 seconds timeout
+  withCredentials: true, // Enable sending/receiving cookies in cross-origin requests
 });
 
 // Request interceptor to add authentication token
@@ -437,7 +438,7 @@ export const authService = {
 
   logout: async (): Promise<void> => {
     try {
-      await apiClient.post("/users/logout/");
+      await apiClient.post("/users/logout");
     } catch (error) {
       // Even if logout fails on server, clear local token
       console.error("Logout error:", error);

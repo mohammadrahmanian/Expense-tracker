@@ -2,6 +2,12 @@
 
 name: Fly Deploy
 
+## Uncomment the following lines to enable automatic deployment on pushes to main branch
+# on:
+#   push:
+#     branches:
+#       - main
+
 jobs:
   deploy:
     name: Deploy app

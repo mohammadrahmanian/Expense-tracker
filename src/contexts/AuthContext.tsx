@@ -24,18 +24,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // Check if user is logged in on app start
     const checkAuthStatus = async () => {
-      const token = localStorage.getItem("authToken");
-      if (token) {
-        try {
-          const userData = await authService.getCurrentUser();
-          setUser(userData);
-        } catch (error) {
-          // Token is invalid, remove it
+      // Check if we have a legacy localStorage token that needs migration
+      const hasLegacyToken = !!localStorage.getItem("authToken");
+
+      try {
+        // Always attempt to get current user
+        // This will work if:
+        // 1. httpOnly cookie exists (new method) - automatically sent by browser
+        // 2. localStorage token exists (legacy method) - sent via axios interceptor
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
+
+        // Migration: If authentication succeeded and we had a localStorage token,
+        // remove it since the backend has now set an httpOnly cookie
+        if (hasLegacyToken) {
           localStorage.removeItem("authToken");
-          localStorage.removeItem("user");
         }
+      } catch (error) {
+        // Authentication failed - no valid cookie or localStorage token
+        // Clean up localStorage in case it has an invalid token
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("user");
+      } finally {
+        setIsInitializingAuth(false);
       }
-      setIsInitializingAuth(false);
     };
 
     checkAuthStatus();
@@ -49,6 +61,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Store user data
       setUser(response.user);
       localStorage.setItem("user", JSON.stringify(response.user));
+
+      // Migration: Remove legacy token if it exists
+      // Backend has set httpOnly cookie, so localStorage token is no longer needed
+      localStorage.removeItem("authToken");
     } catch (error: any) {
       throw new Error(error.message || "Login failed");
     } finally {
@@ -64,6 +80,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Store user data
       setUser(response.user);
       localStorage.setItem("user", JSON.stringify(response.user));
+
+      // Migration: Remove legacy token if it exists
+      // Backend has set httpOnly cookie, so localStorage token is no longer needed
+      localStorage.removeItem("authToken");
     } catch (error: any) {
       throw new Error(error.message || "Registration failed");
     } finally {
