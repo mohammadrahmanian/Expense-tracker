@@ -1,6 +1,7 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { 
+import {
   ResponsiveDialogFooter as DialogFooter,
   ResponsiveDialogHeader as DialogHeader,
   ResponsiveDialogTitle as DialogTitle
@@ -22,12 +23,14 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { createAmountChangeHandler, normalizeAmount } from "@/lib/amount-utils";
-import { categoriesService, transactionsService } from "@/services/api";
-import { Category, Transaction } from "@/types";
+import { Transaction } from "@/types";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCategories } from "@/hooks/queries/useCategories";
+import { useCreateTransaction } from "@/hooks/mutations/useCreateTransaction";
+import { useUpdateTransaction } from "@/hooks/mutations/useUpdateTransaction";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { AlertCircle, CalendarIcon, Loader2 } from "lucide-react";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -58,28 +61,20 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   onCancel,
 }) => {
   const { currency } = useCurrency();
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [amount, setAmount] = React.useState<string>(
     transaction?.amount?.toString() || ""
   );
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setIsLoading(true);
-        const allCategories = await categoriesService.getAll();
-        setCategories(allCategories);
-      } catch (error) {
-        toast.error("Failed to load categories. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Fetch categories using TanStack Query
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+    isError: categoriesError
+  } = useCategories();
 
-    fetchCategories();
-  }, []);
+  // Mutation hooks for create and update
+  const createTransaction = useCreateTransaction();
+  const updateTransaction = useUpdateTransaction();
 
   // Update amount state when transaction changes (for editing)
   useEffect(() => {
@@ -117,60 +112,79 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
   const filteredCategories = categories.filter((cat) => cat.type === watchType);
 
+  // Handle categories loading error
+  if (categoriesError) {
+    return (
+      <>
+        <DialogHeader>
+          <DialogTitle>
+            {transaction ? "Edit Transaction" : "Add New Transaction"}
+          </DialogTitle>
+        </DialogHeader>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Failed to Load Categories</AlertTitle>
+          <AlertDescription>
+            Unable to load categories. Please try again.
+          </AlertDescription>
+        </Alert>
+        <DialogFooter>
+          <Button variant="outline" onClick={onCancel}>Close</Button>
+        </DialogFooter>
+      </>
+    );
+  }
+
   const onSubmit = async (data: TransactionFormData) => {
-    try {
-      setIsSubmitting(true);
+    // Validate amount
+    if (!amount) {
+      toast.error('Please enter an amount');
+      return;
+    }
 
-      // Validate amount manually
-      if (!amount) {
-        toast.error('Please enter an amount');
-        setIsSubmitting(false);
-        return;
-      }
+    const normalizedAmount = normalizeAmount(amount.trim());
+    const numericAmount = parseFloat(normalizedAmount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      toast.error('Please enter a valid amount');
+      return;
+    }
 
-      const normalizedAmount = normalizeAmount(amount.trim());
-      const numericAmount = parseFloat(normalizedAmount);
-      if (isNaN(numericAmount) || numericAmount <= 0) {
-        toast.error('Please enter a valid amount');
-        setIsSubmitting(false);
-        return;
-      }
+    // Convert date to UTC to avoid timezone issues
+    const utcDate = new Date(
+      data.date.getTime() - data.date.getTimezoneOffset() * 60000,
+    );
 
-      // Convert date to UTC to avoid timezone issues on the backend
-      const utcDate = new Date(
-        data.date.getTime() - data.date.getTimezoneOffset() * 60000,
+    // Prepare transaction data (backend derives userId from JWT)
+    const transactionData = {
+      title: data.title,
+      amount: numericAmount,
+      type: data.type,
+      date: utcDate,
+      categoryId: data.categoryId,
+      isRecurring: data.isRecurring,
+      recurrenceFrequency: data.recurrenceFrequency,
+    };
+
+    // Use mutation hooks
+    if (transaction) {
+      updateTransaction.mutate(
+        { id: transaction.id, updates: transactionData },
+        {
+          onSuccess: () => {
+            reset();
+            setAmount("");
+            onSuccess();
+          }
+        }
       );
-
-      const transactionData = {
-        userId: "1", // In a real app, this would come from auth context
-        title: data.title,
-        amount: numericAmount,
-        type: data.type,
-        date: utcDate,
-        categoryId: data.categoryId,
-        isRecurring: data.isRecurring,
-        recurrenceFrequency: data.recurrenceFrequency,
-      };
-
-      if (transaction) {
-        await transactionsService.update(transaction.id, transactionData);
-        toast.success("Transaction updated successfully!");
-      } else {
-        await transactionsService.create(transactionData);
-        toast.success("Transaction added successfully!");
-      }
-
-      reset();
-      setAmount("");
-      onSuccess();
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to save transaction. Please try again.";
-      toast.error(errorMessage);
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      createTransaction.mutate(transactionData, {
+        onSuccess: () => {
+          reset();
+          setAmount("");
+          onSuccess();
+        }
+      });
     }
   };
 
@@ -345,19 +359,23 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             variant="outline"
             onClick={onCancel}
             className="flex-1"
-            disabled={isSubmitting}
+            disabled={createTransaction.isPending || updateTransaction.isPending}
           >
             Cancel
           </Button>
           <Button
             type="submit"
             className="flex-1"
-            disabled={isSubmitting || isLoading}
+            disabled={
+              createTransaction.isPending ||
+              updateTransaction.isPending ||
+              categoriesLoading
+            }
           >
-            {isSubmitting && (
+            {(createTransaction.isPending || updateTransaction.isPending) && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
-            {isSubmitting
+            {createTransaction.isPending || updateTransaction.isPending
               ? `${transaction ? "Updating" : "Adding"}...`
               : `${transaction ? "Update" : "Add"} Transaction`}
           </Button>

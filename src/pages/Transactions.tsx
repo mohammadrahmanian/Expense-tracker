@@ -1,13 +1,14 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { TransactionForm } from "@/components/transactions/TransactionForm";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  ResponsiveDialog as Dialog, 
-  ResponsiveDialogContent as DialogContent, 
-  ResponsiveDialogTrigger as DialogTrigger 
+import {
+  ResponsiveDialog as Dialog,
+  ResponsiveDialogContent as DialogContent,
+  ResponsiveDialogTrigger as DialogTrigger
 } from "@/components/ui/responsive-dialog";
 import {
   DropdownMenu,
@@ -37,10 +38,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { categoriesService, transactionsService } from "@/services/api";
-import { Category, Transaction } from "@/types";
+import { Transaction } from "@/types";
 import { format } from "date-fns";
 import {
+  AlertCircle,
   ArrowDownLeft,
   ArrowUpRight,
   Calendar as CalendarIcon,
@@ -57,133 +58,124 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
+import React, { useEffect, useMemo, useState } from "react";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { useDataRefresh } from "@/contexts/DataRefreshContext";
+import { useTransactions } from "@/hooks/queries/useTransactions";
+import { useCategories } from "@/hooks/queries/useCategories";
+import { useDeleteTransaction } from "@/hooks/mutations/useDeleteTransaction";
 
 const Transactions: React.FC = () => {
   const { formatAmount } = useCurrency();
-  const { refreshTrigger } = useDataRefresh();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [totalTransactions, setTotalTransactions] = useState(0);
-  const [categories, setCategories] = useState<Category[]>([]);
+
+  // Filter and pagination state
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">(
-    "all",
-  );
+  const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState<
-    Transaction | undefined
-  >();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [sortField, setSortField] = useState<"date" | "amount">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  // UI state
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
   const prevPageRef = React.useRef<number>(1);
   const prevSortFieldRef = React.useRef<"date" | "amount">("date");
   const prevSortOrderRef = React.useRef<"asc" | "desc">("desc");
 
-  useEffect(() => {
-    loadCategories();
-  }, []);
+  // Build query params for React Query
+  const queryParams = useMemo(() => {
+    const params: {
+      sort: "date" | "amount";
+      order: "asc" | "desc";
+      limit: number;
+      offset: number;
+      type?: "INCOME" | "EXPENSE";
+      fromDate?: string;
+      toDate?: string;
+      categoryId?: string;
+      query?: string;
+    } = {
+      sort: sortField,
+      order: sortOrder,
+      limit: pageSize,
+      offset: (currentPage - 1) * pageSize,
+    };
+
+    if (searchTerm) {
+      params.query = searchTerm;
+    }
+
+    if (typeFilter !== "all") {
+      params.type = typeFilter;
+    }
+
+    if (categoryFilter !== "all") {
+      params.categoryId = categoryFilter;
+    }
+
+    if (startDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      params.fromDate = start.toISOString();
+    }
+
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      params.toDate = end.toISOString();
+    }
+
+    return params;
+  }, [searchTerm, typeFilter, categoryFilter, startDate, endDate, currentPage, pageSize, sortField, sortOrder]);
+
+  // Fetch data using React Query hooks with error states
+  const {
+    data: transactionsData,
+    isLoading: transactionsLoading,
+    isError: transactionsError,
+    error: transactionsErrorInfo
+  } = useTransactions(queryParams);
+
+  const {
+    data: categories,
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+    error: categoriesErrorInfo
+  } = useCategories();
+
+  const deleteTransaction = useDeleteTransaction();
+
+  const isLoading = transactionsLoading || categoriesLoading;
+  const hasError = transactionsError || categoriesError;
+  const transactions = transactionsData?.items || [];
+  const totalTransactions = transactionsData?.total || 0;
 
   // Reset to page 1 when filters or page size change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, typeFilter, categoryFilter, startDate, endDate, pageSize]);
 
+  // Scroll to top when pagination or sort changes
   useEffect(() => {
-    loadData();
-  }, [refreshTrigger, searchTerm, typeFilter, categoryFilter, startDate, endDate, currentPage, sortField, sortOrder, pageSize]);
+    const pageChanged = prevPageRef.current !== currentPage;
+    const sortChanged =
+      prevSortFieldRef.current !== sortField ||
+      prevSortOrderRef.current !== sortOrder;
 
-  const loadCategories = async () => {
-    try {
-      const allCategories = await categoriesService.getAll();
-      setCategories(allCategories);
-    } catch (error) {
-      toast.error("Failed to load categories. Please try again.");
+    if (pageChanged || sortChanged) {
+      window.scrollTo(0, 0);
     }
-  };
 
-  const loadData = async () => {
-    try {
-      // Check if pagination or sort changed
-      const pageChanged = prevPageRef.current !== currentPage;
-      const sortChanged =
-        prevSortFieldRef.current !== sortField ||
-        prevSortOrderRef.current !== sortOrder;
-
-      setIsLoading(true);
-
-      // Build filter params for API
-      const params: {
-        sort: "date" | "amount";
-        order: "asc" | "desc";
-        limit: number;
-        offset: number;
-        type?: "INCOME" | "EXPENSE";
-        fromDate?: string;
-        toDate?: string;
-        categoryId?: string;
-        query?: string;
-      } = {
-        sort: sortField,
-        order: sortOrder,
-        limit: pageSize,
-        offset: (currentPage - 1) * pageSize,
-      };
-
-      if (searchTerm) {
-        params.query = searchTerm;
-      }
-
-      if (typeFilter !== "all") {
-        params.type = typeFilter;
-      }
-
-      if (categoryFilter !== "all") {
-        params.categoryId = categoryFilter;
-      }
-
-      if (startDate) {
-        const start = new Date(startDate);
-        start.setHours(0, 0, 0, 0);
-        params.fromDate = start.toISOString();
-      }
-
-      if (endDate) {
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
-        params.toDate = end.toISOString();
-      }
-
-      const response = await transactionsService.getAll(params);
-      setTransactions(response.items || []);
-      setTotalTransactions(response.total || 0);
-
-      // Scroll to top only when pagination or sort changes
-      if (pageChanged || sortChanged) {
-        window.scrollTo(0, 0);
-      }
-
-      // Update refs for next comparison
-      prevPageRef.current = currentPage;
-      prevSortFieldRef.current = sortField;
-      prevSortOrderRef.current = sortOrder;
-    } catch (error) {
-      toast.error("Failed to load transactions. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    prevPageRef.current = currentPage;
+    prevSortFieldRef.current = sortField;
+    prevSortOrderRef.current = sortOrder;
+  }, [currentPage, sortField, sortOrder]);
 
   const getCategoryById = (categoryId: string) => {
-    return categories.find((cat) => cat.id === categoryId);
+    return categories?.find((cat) => cat.id === categoryId);
   };
 
   const handleEdit = (transaction: Transaction) => {
@@ -191,25 +183,15 @@ const Transactions: React.FC = () => {
     setIsFormOpen(true);
   };
 
-  const handleDelete = async (transactionId: string) => {
+  const handleDelete = (transactionId: string) => {
     if (confirm("Are you sure you want to delete this transaction?")) {
-      try {
-        setIsLoading(true);
-        await transactionsService.delete(transactionId);
-        await loadData();
-        toast.success("Transaction deleted successfully!");
-      } catch (error) {
-        toast.error("Failed to delete transaction. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
+      deleteTransaction.mutate(transactionId);
     }
   };
 
   const handleFormSuccess = () => {
     setIsFormOpen(false);
     setEditingTransaction(undefined);
-    loadData();
   };
 
   const handleFormCancel = () => {
@@ -255,9 +237,9 @@ const Transactions: React.FC = () => {
         <div className="flex justify-end items-center">
           <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
-              <Button 
+              <Button
                 onClick={() => setEditingTransaction(undefined)}
-                disabled={isLoading}
+                disabled={deleteTransaction.isPending}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Transaction
@@ -274,7 +256,7 @@ const Transactions: React.FC = () => {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className={cn("grid gap-4 md:grid-cols-3", hasError && "opacity-50 pointer-events-none")}>
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
@@ -284,7 +266,7 @@ const Transactions: React.FC = () => {
                     Total Income
                   </p>
                   <p className="text-2xl font-bold text-green-600">
-                    +{formatAmount(totalIncome)}
+                    {hasError ? '—' : `+${formatAmount(totalIncome)}`}
                   </p>
                 </div>
               </div>
@@ -299,7 +281,7 @@ const Transactions: React.FC = () => {
                     Total Expenses
                   </p>
                   <p className="text-2xl font-bold text-red-600">
-                    -{formatAmount(totalExpenses)}
+                    {hasError ? '—' : `-${formatAmount(totalExpenses)}`}
                   </p>
                 </div>
               </div>
@@ -311,6 +293,7 @@ const Transactions: React.FC = () => {
                 <div
                   className={cn(
                     "h-5 w-5 rounded-full",
+                    hasError ? "bg-gray-400" :
                     totalIncome - totalExpenses >= 0
                       ? "bg-green-600"
                       : "bg-red-600",
@@ -323,12 +306,13 @@ const Transactions: React.FC = () => {
                   <p
                     className={cn(
                       "text-2xl font-bold",
+                      hasError ? "text-gray-900 dark:text-white" :
                       totalIncome - totalExpenses >= 0
                         ? "text-green-600"
                         : "text-red-600",
                     )}
                   >
-                    {totalIncome - totalExpenses >= 0 ? "+" : "-"}{formatAmount(Math.abs(totalIncome - totalExpenses))}
+                    {hasError ? '—' : `${totalIncome - totalExpenses >= 0 ? "+" : "-"}${formatAmount(Math.abs(totalIncome - totalExpenses))}`}
                   </p>
                 </div>
               </div>
@@ -373,7 +357,7 @@ const Transactions: React.FC = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All categories</SelectItem>
-                  {categories.map((category) => (
+                  {categories?.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       <div className="flex items-center space-x-2">
                         <div
@@ -458,7 +442,22 @@ const Transactions: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {hasError ? (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Failed to Load Transactions</AlertTitle>
+                <AlertDescription>
+                  <div className="mt-2 space-y-1">
+                    {transactionsError && (
+                      <p>• Transactions: {transactionsErrorInfo?.message || 'Unknown error'}</p>
+                    )}
+                    {categoriesError && (
+                      <p>• Categories: {categoriesErrorInfo?.message || 'Unknown error'}</p>
+                    )}
+                  </div>
+                </AlertDescription>
+              </Alert>
+            ) : isLoading ? (
               <div className="flex justify-center items-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin" />
                 <span className="ml-2">Loading transactions...</span>
@@ -582,7 +581,7 @@ const Transactions: React.FC = () => {
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem
                                   onClick={() => handleEdit(transaction)}
-                                  disabled={isLoading}
+                                  disabled={deleteTransaction.isPending}
                                 >
                                   <Edit className="mr-2 h-4 w-4" />
                                   Edit
@@ -590,7 +589,7 @@ const Transactions: React.FC = () => {
                                 <DropdownMenuItem
                                   onClick={() => handleDelete(transaction.id)}
                                   className="text-red-600"
-                                  disabled={isLoading}
+                                  disabled={deleteTransaction.isPending}
                                 >
                                   <Trash2 className="mr-2 h-4 w-4" />
                                   Delete

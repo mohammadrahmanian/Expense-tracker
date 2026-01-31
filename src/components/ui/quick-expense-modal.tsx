@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   ResponsiveDialog as Dialog,
   ResponsiveDialogContent as DialogContent,
@@ -10,21 +15,17 @@ import {
   ResponsiveDialogHeader as DialogHeader,
   ResponsiveDialogTitle as DialogTitle,
 } from '@/components/ui/responsive-dialog';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useCreateCategory } from '@/hooks/mutations/useCreateCategory';
+import { useCreateTransaction } from '@/hooks/mutations/useCreateTransaction';
+import { useCategories } from '@/hooks/queries/useCategories';
 import { createAmountChangeHandler, normalizeAmount } from '@/lib/amount-utils';
-import { useDataRefresh } from '@/contexts/DataRefreshContext';
-import { transactionsService, categoriesService } from '@/services/api';
-import { Category } from '@/types';
-import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { CalendarIcon, UtensilsCrossed, Heart, Home, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Category } from '@/types';
+import { format } from 'date-fns';
+import { CalendarIcon, Heart, Home, Loader2, UtensilsCrossed } from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
 
 interface QuickExpenseModalProps {
   isOpen: boolean;
@@ -42,33 +43,22 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
   onClose,
 }) => {
   const { currency } = useCurrency();
-  const { triggerRefresh } = useDataRefresh();
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState<Date>(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [transactionName, setTransactionName] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-  React.useEffect(() => {
-    if (isOpen) {
-      loadCategories();
-    }
-  }, [isOpen]);
+  // Fetch expense categories using React Query
+  const { data: allCategories } = useCategories('EXPENSE');
+  const createCategory = useCreateCategory();
+  const createTransaction = useCreateTransaction();
 
-  const loadCategories = async () => {
-    try {
-      const allCategories = await categoriesService.getAll();
-      setCategories(allCategories.filter(cat => cat.type === 'EXPENSE'));
-    } catch (error) {
-      console.error('Failed to load categories:', error);
-      toast.error('Failed to load categories. Please try again.');
-    }
-  };
+  const categories = allCategories || [];
+  const isSubmitting = createCategory.isPending || createTransaction.isPending;
 
   const findCategoryByName = (name: string): Category | undefined => {
-    return categories.find(cat => 
+    return categories.find(cat =>
       cat.name.toLowerCase() === name.toLowerCase()
     );
   };
@@ -77,7 +67,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!amount || !selectedCategory) {
       toast.error('Please fill in all required fields');
       return;
@@ -90,54 +80,41 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({
       return;
     }
 
-    setIsSubmitting(true);
+    let category = findCategoryByName(selectedCategory);
 
-    try {
-      let category = findCategoryByName(selectedCategory);
-
-      // If category doesn't exist, create it
-      if (!category) {
-        try {
-          const newCategory = await categoriesService.create({
-            name: selectedCategory,
-            type: 'EXPENSE',
-            color: quickCategories.find(cat => cat.name === selectedCategory)?.color || '#6366f1',
-          });
-          category = newCategory;
-
-          // Refresh categories list
-          await loadCategories();
-
-          toast.success(`Created "${selectedCategory}" category`);
-        } catch (catError) {
-          console.error('Error creating category:', catError);
-          toast.error('Failed to create category. Please try again.');
-          return;  // Abort if category creation fails
-        }
-      }
-
-      const title = transactionName.trim() || `${selectedCategory} expense`;
-
+    // If category doesn't exist, create it first
+    if (!category) {
       try {
-        await transactionsService.create({
-          title,
-          amount: numericAmount,
+        const newCategory = await createCategory.mutateAsync({
+          name: selectedCategory,
           type: 'EXPENSE',
-          categoryId: category.id,
-          date,
-          isRecurring: false,
+          color: quickCategories.find(cat => cat.name === selectedCategory)?.color || '#6366f1',
         });
-
-        toast.success('Expense added successfully!');
-        triggerRefresh(); // Trigger refresh for all pages
-        handleClose();
-      } catch (transError) {
-        console.error('Error creating transaction:', transError);
-        toast.error('Failed to add expense. Please try again.');
+        category = newCategory;
+      } catch (error) {
+        // Error toast is already shown by the mutation hook
+        return;
       }
-    } finally {
-      setIsSubmitting(false);
     }
+
+    const title = transactionName.trim() || `${selectedCategory} expense`;
+
+    // Create transaction
+    createTransaction.mutate(
+      {
+        title,
+        amount: numericAmount,
+        type: 'EXPENSE',
+        categoryId: category.id,
+        date,
+        isRecurring: false,
+      },
+      {
+        onSuccess: () => {
+          handleClose();
+        },
+      }
+    );
   };
 
   const handleClose = () => {
