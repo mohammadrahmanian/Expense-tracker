@@ -18,8 +18,9 @@ import {
 } from "@/components/ui/select";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { cn } from "@/lib/utils";
-import { dashboardService } from "@/services/api";
 import { CategorySpending, MonthlyData } from "@/types";
+import { useReports } from "@/hooks/queries/useReports";
+import { useMemo } from "react";
 import {
   endOfDay,
   endOfMonth,
@@ -29,50 +30,127 @@ import {
   subMonths,
 } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+
+const getDateRangeForTimeRange = (
+  range: "3m" | "6m" | "12m" | "custom",
+  customStart?: Date,
+  customEnd?: Date
+): { startDate: string; endDate: string } => {
+  if (range === "custom") {
+    return {
+      startDate: customStart ? format(customStart, "yyyy-MM-dd") : "",
+      endDate: customEnd ? format(customEnd, "yyyy-MM-dd") : ""
+    };
+  }
+
+  const monthsToSubtract = range === "3m" ? 3 : range === "6m" ? 6 : 12;
+  const endDate = endOfMonth(new Date());
+  const startDate = startOfMonth(subMonths(endDate, monthsToSubtract - 1));
+
+  return {
+    startDate: format(startDate, "yyyy-MM-dd"),
+    endDate: format(endDate, "yyyy-MM-dd")
+  };
+};
 
 const Reports: React.FC = () => {
   const { formatAmount } = useCurrency();
   const [timeRange, setTimeRange] = useState<"3m" | "6m" | "12m" | "custom">("6m");
-  const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
-  const [categorySpending, setCategorySpending] = useState<CategorySpending[]>(
-    [],
-  );
-  const [incomeByCategory, setIncomeByCategory] = useState<CategorySpending[]>(
-    [],
-  );
-  const [summary, setSummary] = useState<{
-    totalIncome: number;
-    totalExpenses: number;
-    netSavings: number;
-  } | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const [customStartDate, setCustomStartDate] = useState<Date | undefined>(undefined);
   const [customEndDate, setCustomEndDate] = useState<Date | undefined>(undefined);
   const [categoryBreakdownType, setCategoryBreakdownType] = useState<"expenses" | "income">("expenses");
 
-  const getDateRangeForTimeRange = (
-    range: "3m" | "6m" | "12m" | "custom",
-    customStart?: Date,
-    customEnd?: Date
-  ): { startDate: string; endDate: string } => {
-    if (range === "custom") {
-      return {
-        startDate: customStart ? format(customStart, "yyyy-MM-dd") : "",
-        endDate: customEnd ? format(customEnd, "yyyy-MM-dd") : ""
-      };
+  // Calculate date range based on time range selection
+  // Keep this in component - it's UI state logic
+  const dateRange = useMemo(() => {
+    return getDateRangeForTimeRange(timeRange, customStartDate, customEndDate);
+  }, [timeRange, customStartDate, customEndDate]);
+
+  // Validate dates for custom range
+  // Keep this in component - it's complex UI validation logic
+  const datesAreValid = useMemo(() => {
+    if (timeRange !== 'custom') return true;
+
+    const { startDate, endDate } = dateRange;
+    if (!startDate || !endDate) return false;
+
+    const todaysEnd = endOfDay(new Date());
+    const start = customStartDate!;
+    const end = customEndDate!;
+
+    // Check if dates are in the future
+    if (isAfter(start, todaysEnd) || isAfter(end, todaysEnd)) return false;
+
+    // Check date order
+    if (isAfter(start, end)) return false;
+
+    return true;
+  }, [timeRange, dateRange, customStartDate, customEndDate]);
+
+  // Fetch reports data with TanStack Query
+  const {
+    data: reportsData,
+    isLoading,
+    error: queryError,
+    refetch,
+  } = useReports({
+    startDate: dateRange.startDate,
+    endDate: dateRange.endDate,
+    enabled: datesAreValid, // Only fetch when dates are valid
+  });
+
+  // Derive error message from validation or query error
+  const error = useMemo(() => {
+    if (timeRange === 'custom' && !datesAreValid) {
+      if (!customStartDate || !customEndDate) {
+        return 'Please select both start and end dates';
+      }
+      if (customStartDate && customEndDate) {
+        const todaysEnd = endOfDay(new Date());
+        if (isAfter(customStartDate, todaysEnd) || isAfter(customEndDate, todaysEnd)) {
+          return 'Dates cannot be in the future';
+        }
+        if (isAfter(customStartDate, customEndDate)) {
+          return 'End date must be the same as or after start date';
+        }
+      }
     }
+    if (queryError) {
+      return 'Failed to load reports. Please try again.';
+    }
+    return null;
+  }, [timeRange, datesAreValid, customStartDate, customEndDate, queryError]);
 
-    const monthsToSubtract = range === "3m" ? 3 : range === "6m" ? 6 : 12;
-    const endDate = endOfMonth(new Date());
-    const startDate = startOfMonth(subMonths(endDate, monthsToSubtract - 1));
+  // Calculate percentages for category breakdown
+  // Keep this in component - it's data transformation for display
+  const categorySpending = useMemo(() => {
+    if (!reportsData?.categoryBreakdown.expenses) return [];
+    const total = reportsData.categoryBreakdown.expenses.reduce(
+      (sum, cat) => sum + cat.amount,
+      0
+    );
+    return reportsData.categoryBreakdown.expenses.map((cat) => ({
+      ...cat,
+      percentage: total > 0 ? (cat.amount / total) * 100 : 0,
+    }));
+  }, [reportsData]);
 
-    return {
-      startDate: format(startDate, "yyyy-MM-dd"),
-      endDate: format(endDate, "yyyy-MM-dd")
-    };
-  };
+  const incomeByCategory = useMemo(() => {
+    if (!reportsData?.categoryBreakdown.income) return [];
+    const total = reportsData.categoryBreakdown.income.reduce(
+      (sum, cat) => sum + cat.amount,
+      0
+    );
+    return reportsData.categoryBreakdown.income.map((cat) => ({
+      ...cat,
+      percentage: total > 0 ? (cat.amount / total) * 100 : 0,
+    }));
+  }, [reportsData]);
+
+  // Extract data for easier access in JSX
+  const summary = reportsData?.summary ?? null;
+  const monthlyData = reportsData?.monthlyData ?? [];
 
   const buildCategorySeriesData = (
     monthlyData: MonthlyData[],
@@ -92,78 +170,6 @@ const Reports: React.FC = () => {
 
     return series;
   };
-
-  const loadReports = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const { startDate, endDate } = getDateRangeForTimeRange(
-        timeRange,
-        customStartDate,
-        customEndDate
-      );
-
-      // Validate custom dates if timeRange is "custom"
-      if (timeRange === "custom" && (!startDate || !endDate)) {
-        setError("Please select both start and end dates");
-        setLoading(false);
-        return;
-      }
-
-      // Validate date order and future dates
-      if (timeRange === "custom" && customStartDate && customEndDate) {
-        // Use the original Date objects from the pickers
-        const start = customStartDate;
-        const end = customEndDate;
-
-        // Get end of today in local timezone
-        const todaysEnd = endOfDay(new Date());
-
-        // Check if dates are in the future
-        if (isAfter(start, todaysEnd) || isAfter(end, todaysEnd)) {
-          setError("Dates cannot be in the future");
-          setLoading(false);
-          return;
-        }
-
-        // Check date order
-        if (isAfter(start, end)) {
-          setError("End date must be the same as or after start date");
-          setLoading(false);
-          return;
-        }
-      }
-
-      const response = await dashboardService.getReports(startDate, endDate);
-
-      // Map response to state
-      setSummary(response.summary);
-      setMonthlyData(response.monthlyData);
-
-      // Calculate percentages for category breakdown
-      const calculatePercentages = (categories: Array<{ categoryId: string; categoryName: string; color: string; amount: number }>): CategorySpending[] => {
-        const total = categories.reduce((sum, cat) => sum + cat.amount, 0);
-        return categories.map(cat => ({
-          ...cat,
-          percentage: total > 0 ? (cat.amount / total) * 100 : 0
-        }));
-      };
-
-      setCategorySpending(calculatePercentages(response.categoryBreakdown.expenses));
-      setIncomeByCategory(calculatePercentages(response.categoryBreakdown.income));
-
-    } catch (err) {
-      setError("Failed to load reports. Please try again.");
-      console.error("Error loading reports:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadReports();
-  }, [timeRange, customStartDate, customEndDate]);
 
   return (
     <DashboardLayout>
@@ -244,7 +250,7 @@ const Reports: React.FC = () => {
             <div className="flex items-center justify-between">
               <p className="text-red-600 dark:text-red-400">{error}</p>
               <Button
-                onClick={loadReports}
+                onClick={() => refetch()}
                 variant="link"
                 size="sm"
                 className="underline hover:no-underline"
@@ -264,7 +270,7 @@ const Reports: React.FC = () => {
                   Total Income
                 </p>
                 <p className="text-2xl font-bold text-green-600">
-                  {loading ? "..." : formatAmount(summary?.totalIncome || 0)}
+                  {isLoading ? "..." : formatAmount(summary?.totalIncome || 0)}
                 </p>
               </div>
             </CardContent>
@@ -276,7 +282,7 @@ const Reports: React.FC = () => {
                   Total Expenses
                 </p>
                 <p className="text-2xl font-bold text-red-600">
-                  {loading ? "..." : formatAmount(summary?.totalExpenses || 0)}
+                  {isLoading ? "..." : formatAmount(summary?.totalExpenses || 0)}
                 </p>
               </div>
             </CardContent>
@@ -290,7 +296,7 @@ const Reports: React.FC = () => {
                 <p
                   className={`text-2xl font-bold ${(summary?.netSavings || 0) >= 0 ? "text-green-600" : "text-red-600"}`}
                 >
-                  {loading ? "..." : formatAmount(summary?.netSavings || 0)}
+                  {isLoading ? "..." : formatAmount(summary?.netSavings || 0)}
                 </p>
               </div>
             </CardContent>

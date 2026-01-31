@@ -26,10 +26,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { categoriesService, recurringTransactionsService } from "@/services/api";
 import { Category, RecurringTransaction } from "@/types";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { useDataRefresh } from "@/contexts/DataRefreshContext";
 import { formatDistanceToNow } from "date-fns";
 import {
   ArrowDownLeft,
@@ -43,8 +41,7 @@ import {
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
+import React, { useMemo, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -57,50 +54,38 @@ import {
 } from "@/components/ui/alert-dialog";
 import { RecurringTransactionForm } from "@/components/recurring/RecurringTransactionForm";
 import { RecurringTransactionCreateForm } from "@/components/recurring/RecurringTransactionCreateForm";
+import { useRecurringTransactions } from "@/hooks/queries/useRecurringTransactions";
+import { useCategories } from "@/hooks/queries/useCategories";
+import { useDeleteRecurringTransaction } from "@/hooks/mutations/useDeleteRecurringTransaction";
+import { useToggleRecurringTransaction } from "@/hooks/mutations/useToggleRecurringTransaction";
 
 const RecurringTransactions: React.FC = () => {
   const { formatAmount } = useCurrency();
-  const { refreshTrigger, triggerRefresh } = useDataRefresh();
-  const [recurringTransactions, setRecurringTransactions] = useState<RecurringTransaction[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [filteredTransactions, setFilteredTransactions] = useState<RecurringTransaction[]>([]);
+
+  // Filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [isLoading, setIsLoading] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  // UI state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [toggleDialogOpen, setToggleDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<RecurringTransaction | null>(null);
 
-  useEffect(() => {
-    loadData();
-  }, [refreshTrigger]);
+  // Fetch data using React Query hooks
+  const { data: recurringTransactions, isLoading: recurringLoading } = useRecurringTransactions();
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const deleteTransaction = useDeleteRecurringTransaction();
+  const toggleTransaction = useToggleRecurringTransaction();
 
-  useEffect(() => {
-    filterTransactions();
-  }, [recurringTransactions, searchTerm, typeFilter, categoryFilter]);
+  const isLoading = recurringLoading || categoriesLoading;
 
-  const loadData = async () => {
-    try {
-      setIsLoading(true);
-      const [transactions, allCategories] = await Promise.all([
-        recurringTransactionsService.getAll(),
-        categoriesService.getAll(),
-      ]);
-      setRecurringTransactions(transactions);
-      setCategories(allCategories);
-    } catch (error) {
-      toast.error("Failed to load recurring transactions. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Filter transactions using useMemo (client-side filtering)
+  const filteredTransactions = useMemo(() => {
+    if (!recurringTransactions) return [];
 
-  const filterTransactions = () => {
     let filtered = [...recurringTransactions];
 
     // Search filter
@@ -120,46 +105,39 @@ const RecurringTransactions: React.FC = () => {
       filtered = filtered.filter((t) => t.categoryId === categoryFilter);
     }
 
-    setFilteredTransactions(filtered);
-  };
+    return filtered;
+  }, [recurringTransactions, searchTerm, typeFilter, categoryFilter]);
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!selectedTransaction) return;
 
-    try {
-      setDeletingId(selectedTransaction.id);
-      await recurringTransactionsService.delete(selectedTransaction.id);
-      toast.success("Recurring transaction deleted successfully");
-      triggerRefresh();
-      loadData();
-    } catch (error) {
-      toast.error("Failed to delete recurring transaction");
-    } finally {
-      setDeletingId(null);
-      setDeleteDialogOpen(false);
-      setSelectedTransaction(null);
-    }
+    deleteTransaction.mutate(selectedTransaction.id, {
+      onSuccess: () => {
+        setDeleteDialogOpen(false);
+        setSelectedTransaction(null);
+      },
+    });
   };
 
-  const handleToggleStatus = async () => {
+  const handleToggleStatus = () => {
     if (!selectedTransaction) return;
 
-    try {
-      setTogglingId(selectedTransaction.id);
-      const newStatus = !selectedTransaction.isActive;
-      await recurringTransactionsService.toggleStatus(selectedTransaction.id, newStatus);
-      toast.success(
-        `Recurring transaction ${newStatus ? "activated" : "deactivated"} successfully`
-      );
-      triggerRefresh();
-      loadData();
-    } catch (error) {
-      toast.error("Failed to toggle recurring transaction status");
-    } finally {
-      setTogglingId(null);
-      setToggleDialogOpen(false);
-      setSelectedTransaction(null);
-    }
+    const newStatus = !selectedTransaction.isActive;
+    toggleTransaction.mutate(
+      { id: selectedTransaction.id, isActive: newStatus },
+      {
+        onSuccess: () => {
+          setToggleDialogOpen(false);
+          setSelectedTransaction(null);
+        },
+      }
+    );
+  };
+
+  const handleFormSuccess = () => {
+    setEditDialogOpen(false);
+    setCreateDialogOpen(false);
+    setSelectedTransaction(null);
   };
 
   const getRelativeTime = (dateString: string) => {
@@ -172,7 +150,7 @@ const RecurringTransactions: React.FC = () => {
   };
 
   const getCategoryInfo = (categoryId: string) => {
-    return categories.find((cat) => cat.id === categoryId);
+    return categories?.find((cat) => cat.id === categoryId);
   };
 
   const activeTransactions = filteredTransactions.filter((t) => t.isActive);
@@ -208,7 +186,7 @@ const RecurringTransactions: React.FC = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((category) => (
+              {categories?.map((category) => (
                 <SelectItem key={category.id} value={category.id}>
                   <div className="flex items-center space-x-2">
                     <div
@@ -270,8 +248,8 @@ const RecurringTransactions: React.FC = () => {
                         setSelectedTransaction(transaction);
                         setEditDialogOpen(true);
                       }}
-                      isDeleting={deletingId === transaction.id}
-                      isToggling={togglingId === transaction.id}
+                      isDeleting={deleteTransaction.isPending && selectedTransaction?.id === transaction.id}
+                      isToggling={toggleTransaction.isPending && selectedTransaction?.id === transaction.id}
                     />
                   ))}
                 </div>
@@ -304,8 +282,8 @@ const RecurringTransactions: React.FC = () => {
                         setSelectedTransaction(transaction);
                         setEditDialogOpen(true);
                       }}
-                      isDeleting={deletingId === transaction.id}
-                      isToggling={togglingId === transaction.id}
+                      isDeleting={deleteTransaction.isPending && selectedTransaction?.id === transaction.id}
+                      isToggling={toggleTransaction.isPending && selectedTransaction?.id === transaction.id}
                     />
                   ))}
                 </div>
@@ -362,12 +340,7 @@ const RecurringTransactions: React.FC = () => {
           {selectedTransaction && (
             <RecurringTransactionForm
               transaction={selectedTransaction}
-              onSuccess={() => {
-                setEditDialogOpen(false);
-                setSelectedTransaction(null);
-                loadData();
-                triggerRefresh();
-              }}
+              onSuccess={handleFormSuccess}
               onCancel={() => {
                 setEditDialogOpen(false);
                 setSelectedTransaction(null);
@@ -381,11 +354,7 @@ const RecurringTransactions: React.FC = () => {
       <ResponsiveDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
         <ResponsiveDialogContent>
           <RecurringTransactionCreateForm
-            onSuccess={() => {
-              setCreateDialogOpen(false);
-              loadData();
-              triggerRefresh();
-            }}
+            onSuccess={handleFormSuccess}
             onCancel={() => {
               setCreateDialogOpen(false);
             }}

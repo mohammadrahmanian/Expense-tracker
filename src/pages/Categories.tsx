@@ -25,8 +25,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
-import { categoriesService } from "@/services/api";
 import { Category } from "@/types";
+import { useCategories } from "@/hooks/queries/useCategories";
+import { useCreateCategory } from "@/hooks/mutations/useCreateCategory";
+import { useUpdateCategory } from "@/hooks/mutations/useUpdateCategory";
+import { useDeleteCategory } from "@/hooks/mutations/useDeleteCategory";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -65,11 +68,18 @@ const predefinedColors = [
 
 const Categories: React.FC = () => {
   const { user } = useAuth();
-  const [categories, setCategories] = useState<Category[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<
     Category | undefined
   >();
+
+  // Fetch categories with TanStack Query
+  const { data: categories = [], isLoading, error } = useCategories();
+
+  // Mutation hooks
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
+  const deleteCategory = useDeleteCategory();
 
   const {
     register,
@@ -90,30 +100,12 @@ const Categories: React.FC = () => {
   const watchColor = watch("color");
 
   useEffect(() => {
-    loadCategories();
-  }, []);
-
-  useEffect(() => {
     if (editingCategory) {
       setValue("name", editingCategory.name);
       setValue("type", editingCategory.type);
       setValue("color", editingCategory.color);
     }
   }, [editingCategory, setValue]);
-
-  const loadCategories = async () => {
-    try {
-      const allCategories = await categoriesService.getAll();
-      setCategories(allCategories);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(`Failed to load categories: ${error.message}`);
-      } else {
-        toast.error("Failed to load categories. Please try again.");
-      }
-      setCategories([]);
-    }
-  };
 
   const onSubmit = async (data: CategoryFormData) => {
     if (!user) {
@@ -123,27 +115,26 @@ const Categories: React.FC = () => {
 
     try {
       if (editingCategory) {
-        await categoriesService.update(editingCategory.id, data);
-        toast.success("Category updated successfully!");
-      } else {
-        await categoriesService.create({
-          name: data.name,
-          type: data.type,
-          color: data.color,
+        // Update existing category
+        await updateCategory.mutateAsync({
+          id: editingCategory.id,
+          updates: data,
         });
-        toast.success("Category created successfully!");
+        // Toast handled by mutation hook
+      } else {
+        // Create new category
+        await createCategory.mutateAsync(data);
+        // Toast handled by mutation hook
       }
 
+      // Reset form and close modal
       reset();
       setIsFormOpen(false);
       setEditingCategory(undefined);
-      await loadCategories();
+      // No manual refresh needed - mutation hooks invalidate cache automatically
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error("Failed to save category. Please try again.");
-      } else {
-        toast.error("An unexpected error occurred. Please try again.");
-      }
+      // Error toast already shown by mutation hook
+      console.error('Category operation failed:', error);
     }
   };
 
@@ -159,15 +150,11 @@ const Categories: React.FC = () => {
       )
     ) {
       try {
-        await categoriesService.delete(categoryId);
-        toast.success("Category deleted successfully!");
-        await loadCategories();
+        await deleteCategory.mutateAsync(categoryId);
+        // Toast and cache invalidation handled by mutation hook
       } catch (error: unknown) {
-        if (error instanceof Error) {
-          toast.error(`Failed to delete category: ${error.message}`);
-        } else {
-          toast.error("Failed to delete category. Please try again.");
-        }
+        // Error toast already shown by mutation hook
+        console.error('Delete category failed:', error);
       }
     }
   };
@@ -183,9 +170,27 @@ const Categories: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex justify-end items-center">
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center h-64">
+          <p className="text-gray-500 dark:text-gray-400">Loading categories...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
+          <p className="text-red-600 dark:text-red-400">
+            Failed to load categories. Please try again.
+          </p>
+        </div>
+      )}
+
+      {/* Content only shows when data is loaded */}
+      {!isLoading && !error && (
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex justify-end items-center">
           <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
               <Button onClick={() => setEditingCategory(undefined)}>
@@ -405,7 +410,8 @@ const Categories: React.FC = () => {
             )}
           </CardContent>
         </Card>
-      </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

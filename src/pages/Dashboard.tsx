@@ -5,14 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { HighchartsContainer } from "@/components/ui/highcharts-chart";
 import { cn } from "@/lib/utils";
-import {
-  categoriesService,
-  dashboardService,
-  transactionsService,
-} from "@/services/api";
-import { Category, CategorySpending, DashboardStats, Transaction } from "@/types";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { useDataRefresh } from "@/contexts/DataRefreshContext";
 import { format } from "date-fns";
 import {
   ArrowDownLeft,
@@ -22,75 +15,41 @@ import {
   TrendingUp,
   Wallet
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
+import { useDashboardStats } from "@/hooks/queries/useDashboardStats";
+import { useTransactions } from "@/hooks/queries/useTransactions";
+import { useCategories } from "@/hooks/queries/useCategories";
+import { useCategoryExpenses } from "@/hooks/queries/useCategoryExpenses";
 
 const Dashboard: React.FC = () => {
   const { formatAmount } = useCurrency();
-  const { refreshTrigger } = useDataRefresh();
-  const [stats, setStats] = useState<DashboardStats>({
-    totalIncome: 0,
-    totalExpenses: 0,
-    currentBalance: 0,
-    monthlyIncome: 0,
-    monthlyExpenses: 0,
-    monthlySaving: 0,
-  });
-  const [recentTransactions, setRecentTransactions] = useState<Transaction[]>(
-    [],
-  );
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [categoryExpenses, setCategoryExpenses] = useState<CategorySpending[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        setIsLoading(true);
+  // Fetch data using React Query hooks
+  const { data: stats, isLoading: statsLoading } = useDashboardStats();
+  const { data: transactionsData, isLoading: transactionsLoading } = useTransactions();
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const { data: categoryExpenses } = useCategoryExpenses();
 
-        // Load dashboard stats from API
-        const dashboardStats = await dashboardService.getStats();
-        setStats(dashboardStats);
+  // Compute overall loading state
+  const isLoading = statsLoading || transactionsLoading || categoriesLoading;
 
-        // Load recent transactions
-        const transactionsResponse = await transactionsService.getAll();
-        const allTransactions = transactionsResponse.items;
-        const recent = allTransactions
-          .sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-          )
-          .slice(0, 5);
-        setRecentTransactions(recent);
+  // Extract and sort recent transactions (top 5 by date)
+  const recentTransactions = useMemo(() => {
+    if (!transactionsData?.items) return [];
+    return [...transactionsData.items]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5);
+  }, [transactionsData]);
 
-        // Load categories
-        const allCategories = await categoriesService.getAll();
-        setCategories(allCategories);
-
-        // Load category expenses for bubble chart
-        try {
-          const expenses = await dashboardService.getCategoryExpenses();
-          setCategoryExpenses(expenses || []);
-        } catch (error) {
-          console.error('Failed to load category expenses:', error);
-          setCategoryExpenses([]);
-        }
-      } catch (error) {
-        toast.error("Failed to load dashboard data. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadDashboardData();
-  }, [refreshTrigger]); // Re-run when refreshTrigger changes
-
+  // Helper function to get category by ID
   const getCategoryById = (categoryId: string) => {
-    return categories.find((cat) => cat.id === categoryId);
+    return categories?.find((cat) => cat.id === categoryId);
   };
 
+  // Calculate savings rate
   const savingsRate =
-    stats.monthlyIncome > 0
+    stats?.monthlyIncome && stats.monthlyIncome > 0
       ? (stats.monthlySaving / stats.monthlyIncome) * 100
       : 0;
 
@@ -108,7 +67,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {formatAmount(stats.currentBalance || 0)}
+                {formatAmount(stats?.currentBalance || 0)}
               </div>
               <p className="text-xs text-muted-foreground">
                 Total income minus expenses
@@ -125,7 +84,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                +{formatAmount(stats.monthlyIncome || 0)}
+                +{formatAmount(stats?.monthlyIncome || 0)}
               </div>
               <p className="text-xs text-muted-foreground">
                 This month's earnings
@@ -142,7 +101,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                -{formatAmount(stats.monthlyExpenses || 0)}
+                -{formatAmount(stats?.monthlyExpenses || 0)}
               </div>
               <p className="text-xs text-muted-foreground">
                 This month's spending
@@ -159,7 +118,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
-                {formatAmount(stats.monthlySaving || 0)}
+                {formatAmount(stats?.monthlySaving || 0)}
               </div>
               <p className="text-xs text-muted-foreground">
                 {savingsRate.toFixed(1)}% savings rate
@@ -180,7 +139,7 @@ const Dashboard: React.FC = () => {
                 <div className="flex justify-between text-sm">
                   <span>Monthly Savings</span>
                   <span>
-                    {formatAmount(stats.monthlySaving || 0)} of {formatAmount(stats.monthlyIncome || 0)}
+                    {formatAmount(stats?.monthlySaving || 0)} of {formatAmount(stats?.monthlyIncome || 0)}
                   </span>
                 </div>
                 <Progress
@@ -201,7 +160,7 @@ const Dashboard: React.FC = () => {
             <CardHeader>
               <CardTitle>Expense by Category</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Current month: {formatAmount(stats.monthlyExpenses || 0)}
+                Current month: {formatAmount(stats?.monthlyExpenses || 0)}
               </p>
             </CardHeader>
             <CardContent>
@@ -209,7 +168,7 @@ const Dashboard: React.FC = () => {
                 <div className="flex items-center justify-center h-64">
                   <div className="text-sm text-muted-foreground">Loading chart...</div>
                 </div>
-              ) : categoryExpenses.length > 0 ? (
+              ) : categoryExpenses && categoryExpenses.length > 0 ? (
                 <div className="space-y-4">
                   <HighchartsContainer
                     className="w-full h-[320px]"
