@@ -11,7 +11,13 @@
 export type TransactionQueryParams = {
   limit?: number;
   offset?: number;
+  sort?: 'date' | 'amount';
+  order?: 'asc' | 'desc';
   type?: 'INCOME' | 'EXPENSE';
+  fromDate?: string | Date;
+  toDate?: string | Date;
+  categoryId?: string;
+  query?: string;
 };
 
 /**

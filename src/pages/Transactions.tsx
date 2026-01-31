@@ -1,5 +1,6 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { TransactionForm } from "@/components/transactions/TransactionForm";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -40,6 +41,7 @@ import { cn } from "@/lib/utils";
 import { Transaction } from "@/types";
 import { format } from "date-fns";
 import {
+  AlertCircle,
   ArrowDownLeft,
   ArrowUpRight,
   Calendar as CalendarIcon,
@@ -129,12 +131,25 @@ const Transactions: React.FC = () => {
     return params;
   }, [searchTerm, typeFilter, categoryFilter, startDate, endDate, currentPage, pageSize, sortField, sortOrder]);
 
-  // Fetch data using React Query hooks
-  const { data: transactionsData, isLoading: transactionsLoading } = useTransactions(queryParams);
-  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  // Fetch data using React Query hooks with error states
+  const {
+    data: transactionsData,
+    isLoading: transactionsLoading,
+    isError: transactionsError,
+    error: transactionsErrorInfo
+  } = useTransactions(queryParams);
+
+  const {
+    data: categories,
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+    error: categoriesErrorInfo
+  } = useCategories();
+
   const deleteTransaction = useDeleteTransaction();
 
   const isLoading = transactionsLoading || categoriesLoading;
+  const hasError = transactionsError || categoriesError;
   const transactions = transactionsData?.items || [];
   const totalTransactions = transactionsData?.total || 0;
 
@@ -241,7 +256,7 @@ const Transactions: React.FC = () => {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className={cn("grid gap-4 md:grid-cols-3", hasError && "opacity-50 pointer-events-none")}>
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
@@ -251,7 +266,7 @@ const Transactions: React.FC = () => {
                     Total Income
                   </p>
                   <p className="text-2xl font-bold text-green-600">
-                    +{formatAmount(totalIncome)}
+                    {hasError ? '—' : `+${formatAmount(totalIncome)}`}
                   </p>
                 </div>
               </div>
@@ -266,7 +281,7 @@ const Transactions: React.FC = () => {
                     Total Expenses
                   </p>
                   <p className="text-2xl font-bold text-red-600">
-                    -{formatAmount(totalExpenses)}
+                    {hasError ? '—' : `-${formatAmount(totalExpenses)}`}
                   </p>
                 </div>
               </div>
@@ -278,6 +293,7 @@ const Transactions: React.FC = () => {
                 <div
                   className={cn(
                     "h-5 w-5 rounded-full",
+                    hasError ? "bg-gray-400" :
                     totalIncome - totalExpenses >= 0
                       ? "bg-green-600"
                       : "bg-red-600",
@@ -290,12 +306,13 @@ const Transactions: React.FC = () => {
                   <p
                     className={cn(
                       "text-2xl font-bold",
+                      hasError ? "text-gray-900 dark:text-white" :
                       totalIncome - totalExpenses >= 0
                         ? "text-green-600"
                         : "text-red-600",
                     )}
                   >
-                    {totalIncome - totalExpenses >= 0 ? "+" : "-"}{formatAmount(Math.abs(totalIncome - totalExpenses))}
+                    {hasError ? '—' : `${totalIncome - totalExpenses >= 0 ? "+" : "-"}${formatAmount(Math.abs(totalIncome - totalExpenses))}`}
                   </p>
                 </div>
               </div>
@@ -425,7 +442,22 @@ const Transactions: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {hasError ? (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Failed to Load Transactions</AlertTitle>
+                <AlertDescription>
+                  <div className="mt-2 space-y-1">
+                    {transactionsError && (
+                      <p>• Transactions: {transactionsErrorInfo?.message || 'Unknown error'}</p>
+                    )}
+                    {categoriesError && (
+                      <p>• Categories: {categoriesErrorInfo?.message || 'Unknown error'}</p>
+                    )}
+                  </div>
+                </AlertDescription>
+              </Alert>
+            ) : isLoading ? (
               <div className="flex justify-center items-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin" />
                 <span className="ml-2">Loading transactions...</span>
