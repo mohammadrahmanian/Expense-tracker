@@ -1,4 +1,16 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { RecurringTransactionCreateForm } from "@/components/recurring/RecurringTransactionCreateForm";
+import { RecurringTransactionForm } from "@/components/recurring/RecurringTransactionForm";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,6 +22,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+} from "@/components/ui/responsive-dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -17,17 +33,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  ResponsiveDialog,
-  ResponsiveDialogContent,
-} from "@/components/ui/responsive-dialog";
-import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { useDeleteRecurringTransaction } from "@/hooks/mutations/useDeleteRecurringTransaction";
+import { useToggleRecurringTransaction } from "@/hooks/mutations/useToggleRecurringTransaction";
+import { useCategories } from "@/hooks/queries/useCategories";
+import { useRecurringTransactions } from "@/hooks/queries/useRecurringTransactions";
 import { cn } from "@/lib/utils";
 import { Category, RecurringTransaction } from "@/types";
-import { useCurrency } from "@/contexts/CurrencyContext";
 import { formatDistanceToNow } from "date-fns";
 import {
   ArrowDownLeft,
@@ -37,34 +53,20 @@ import {
   MoreHorizontal,
   Plus,
   Search,
-  Trash2,
   ToggleLeft,
   ToggleRight,
+  Trash2,
 } from "lucide-react";
 import React, { useMemo, useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { RecurringTransactionForm } from "@/components/recurring/RecurringTransactionForm";
-import { RecurringTransactionCreateForm } from "@/components/recurring/RecurringTransactionCreateForm";
-import { useRecurringTransactions } from "@/hooks/queries/useRecurringTransactions";
-import { useCategories } from "@/hooks/queries/useCategories";
-import { useDeleteRecurringTransaction } from "@/hooks/mutations/useDeleteRecurringTransaction";
-import { useToggleRecurringTransaction } from "@/hooks/mutations/useToggleRecurringTransaction";
 
 const RecurringTransactions: React.FC = () => {
   const { formatAmount } = useCurrency();
 
   // Filter state
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">("all");
+  const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">(
+    "all",
+  );
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
   // UI state
@@ -72,10 +74,12 @@ const RecurringTransactions: React.FC = () => {
   const [toggleDialogOpen, setToggleDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState<RecurringTransaction | null>(null);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<RecurringTransaction | null>(null);
 
   // Fetch data using React Query hooks
-  const { data: recurringTransactions, isLoading: recurringLoading } = useRecurringTransactions();
+  const { data: recurringTransactions, isLoading: recurringLoading } =
+    useRecurringTransactions();
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const deleteTransaction = useDeleteRecurringTransaction();
   const toggleTransaction = useToggleRecurringTransaction();
@@ -91,7 +95,7 @@ const RecurringTransactions: React.FC = () => {
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter((t) =>
-        t.title.toLowerCase().includes(searchTerm.toLowerCase())
+        t.title.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -124,13 +128,13 @@ const RecurringTransactions: React.FC = () => {
 
     const newStatus = !selectedTransaction.isActive;
     toggleTransaction.mutate(
-      { id: selectedTransaction.id, isActive: newStatus },
+      { id: selectedTransaction.id, active: newStatus },
       {
         onSuccess: () => {
           setToggleDialogOpen(false);
           setSelectedTransaction(null);
         },
-      }
+      },
     );
   };
 
@@ -170,7 +174,10 @@ const RecurringTransactions: React.FC = () => {
               className="pl-10"
             />
           </div>
-          <Select value={typeFilter} onValueChange={(value: any) => setTypeFilter(value)}>
+          <Select
+            value={typeFilter}
+            onValueChange={(value: any) => setTypeFilter(value)}
+          >
             <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
@@ -213,7 +220,11 @@ const RecurringTransactions: React.FC = () => {
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                   ACTIVE RECURRING TRANSACTIONS ({activeTransactions.length})
                 </h2>
-                <Button size="sm" className="gap-2" onClick={() => setCreateDialogOpen(true)}>
+                <Button
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => setCreateDialogOpen(true)}
+                >
                   <Plus className="h-4 w-4" />
                   Add New
                 </Button>
@@ -248,8 +259,14 @@ const RecurringTransactions: React.FC = () => {
                         setSelectedTransaction(transaction);
                         setEditDialogOpen(true);
                       }}
-                      isDeleting={deleteTransaction.isPending && selectedTransaction?.id === transaction.id}
-                      isToggling={toggleTransaction.isPending && selectedTransaction?.id === transaction.id}
+                      isDeleting={
+                        deleteTransaction.isPending &&
+                        selectedTransaction?.id === transaction.id
+                      }
+                      isToggling={
+                        toggleTransaction.isPending &&
+                        selectedTransaction?.id === transaction.id
+                      }
                     />
                   ))}
                 </div>
@@ -260,7 +277,8 @@ const RecurringTransactions: React.FC = () => {
             {inactiveTransactions.length > 0 && (
               <div className="space-y-4">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  INACTIVE RECURRING TRANSACTIONS ({inactiveTransactions.length})
+                  INACTIVE RECURRING TRANSACTIONS ({inactiveTransactions.length}
+                  )
                 </h2>
                 <div className="space-y-3">
                   {inactiveTransactions.map((transaction) => (
@@ -282,8 +300,14 @@ const RecurringTransactions: React.FC = () => {
                         setSelectedTransaction(transaction);
                         setEditDialogOpen(true);
                       }}
-                      isDeleting={deleteTransaction.isPending && selectedTransaction?.id === transaction.id}
-                      isToggling={toggleTransaction.isPending && selectedTransaction?.id === transaction.id}
+                      isDeleting={
+                        deleteTransaction.isPending &&
+                        selectedTransaction?.id === transaction.id
+                      }
+                      isToggling={
+                        toggleTransaction.isPending &&
+                        selectedTransaction?.id === transaction.id
+                      }
                     />
                   ))}
                 </div>
@@ -299,13 +323,17 @@ const RecurringTransactions: React.FC = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Recurring Transaction</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this recurring transaction? This will not affect
-              existing transactions that have already been created.
+              Are you sure you want to delete this recurring transaction? This
+              will not affect existing transactions that have already been
+              created.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -317,7 +345,8 @@ const RecurringTransactions: React.FC = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {selectedTransaction?.isActive ? "Deactivate" : "Activate"} Recurring Transaction
+              {selectedTransaction?.isActive ? "Deactivate" : "Activate"}{" "}
+              Recurring Transaction
             </AlertDialogTitle>
             <AlertDialogDescription>
               {selectedTransaction?.isActive
@@ -351,7 +380,10 @@ const RecurringTransactions: React.FC = () => {
       </ResponsiveDialog>
 
       {/* Create Recurring Transaction Dialog */}
-      <ResponsiveDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+      <ResponsiveDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      >
         <ResponsiveDialogContent>
           <RecurringTransactionCreateForm
             onSuccess={handleFormSuccess}
@@ -400,7 +432,7 @@ const RecurringTransactionCard: React.FC<RecurringTransactionCardProps> = ({
                 "w-12 h-12 rounded-xl flex items-center justify-center",
                 transaction.type === "INCOME"
                   ? "bg-green-100 dark:bg-green-900/20"
-                  : "bg-red-100 dark:bg-red-900/20"
+                  : "bg-red-100 dark:bg-red-900/20",
               )}
             >
               <TypeIcon
@@ -408,7 +440,7 @@ const RecurringTransactionCard: React.FC<RecurringTransactionCardProps> = ({
                   "h-6 w-6",
                   transaction.type === "INCOME"
                     ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
+                    : "text-red-600 dark:text-red-400",
                 )}
               />
             </div>
@@ -436,7 +468,9 @@ const RecurringTransactionCard: React.FC<RecurringTransactionCardProps> = ({
               {/* Badges row */}
               <div className="flex items-center gap-2 mb-1">
                 <Badge
-                  variant={transaction.type === "INCOME" ? "default" : "destructive"}
+                  variant={
+                    transaction.type === "INCOME" ? "default" : "destructive"
+                  }
                   className="shrink-0"
                 >
                   {transaction.type}
@@ -447,7 +481,7 @@ const RecurringTransactionCard: React.FC<RecurringTransactionCardProps> = ({
                     "shrink-0",
                     transaction.isActive
                       ? "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
-                      : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400"
+                      : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400",
                   )}
                 >
                   {transaction.isActive ? "Active" : "Inactive"}
@@ -459,10 +493,14 @@ const RecurringTransactionCard: React.FC<RecurringTransactionCardProps> = ({
               </p>
 
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                <span>Every {transaction.recurrenceFrequency.toLowerCase()}</span>
+                <span>
+                  Every {transaction.recurrenceFrequency.toLowerCase()}
+                </span>
                 <span className="mx-2">•</span>
                 {transaction.isActive ? (
-                  <span>Next: {getRelativeTime(transaction.nextOccurrence)}</span>
+                  <span>
+                    Next: {getRelativeTime(transaction.nextOccurrence)}
+                  </span>
                 ) : (
                   <span>Deactivated</span>
                 )}
