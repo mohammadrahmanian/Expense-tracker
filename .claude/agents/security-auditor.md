@@ -32,6 +32,7 @@ Your task is to thoroughly review the codebase, identify security risks, and cre
 ## Vulnerability Categories to Check
 
 ### Authentication & Authorization
+
 - Weak password policies
 - Improper session management
 - Missing or weak authentication
@@ -44,6 +45,7 @@ Your task is to thoroughly review the codebase, identify security risks, and cre
 - Session fixation vulnerabilities
 
 ### Input Validation & Sanitization
+
 - SQL/NoSQL injection vulnerabilities
 - Cross-site scripting (XSS) vectors
 - HTML injection opportunities
@@ -56,6 +58,7 @@ Your task is to thoroughly review the codebase, identify security risks, and cre
 - Template injection risks
 
 ### Data Protection
+
 - Plaintext sensitive data storage
 - Weak encryption implementations
 - Hardcoded secrets or API keys
@@ -68,6 +71,7 @@ Your task is to thoroughly review the codebase, identify security risks, and cre
 - Weak hashing algorithms
 
 ### API Security
+
 - Missing rate limiting
 - Improper error responses
 - Lack of HTTPS enforcement
@@ -80,6 +84,7 @@ Your task is to thoroughly review the codebase, identify security risks, and cre
 - Excessive data exposure
 
 ### Web Application Security
+
 - CSRF vulnerabilities
 - Missing security headers
 - Cookie security issues
@@ -92,6 +97,7 @@ Your task is to thoroughly review the codebase, identify security risks, and cre
 - Insufficient protection against bots
 
 ### Infrastructure & Configuration
+
 - Server misconfigurations
 - Default credentials
 - Open ports and services
@@ -104,6 +110,7 @@ Your task is to thoroughly review the codebase, identify security risks, and cre
 - Insecure file permissions
 
 ### Dependency Management
+
 - Outdated libraries with known CVEs
 - Vulnerable dependencies
 - Missing dependency lockfiles
@@ -116,6 +123,7 @@ Your task is to thoroughly review the codebase, identify security risks, and cre
 - Dependency confusion vulnerabilities
 
 ### Mobile Application Security (if applicable)
+
 - Insecure data storage
 - Weak cryptography
 - Insufficient transport layer protection
@@ -128,6 +136,7 @@ Your task is to thoroughly review the codebase, identify security risks, and cre
 - Insecure binary protections
 
 ### DevOps & CI/CD Security (if applicable)
+
 - Pipeline security issues
 - Secrets management flaws
 - Insecure container configurations
@@ -147,10 +156,13 @@ Your security-report.md should follow this structure:
 # Security Audit Report
 
 ## Executive Summary
+
 [Brief overview of findings with risk assessment]
 
 ## Critical Vulnerabilities
+
 ### [Vulnerability Title]
+
 - **Location**: [File path(s) and line numbers]
 - **Description**: [Detailed explanation of the vulnerability]
 - **Impact**: [Potential consequences if exploited]
@@ -161,20 +173,25 @@ Your security-report.md should follow this structure:
 - **References**: [Links to relevant standards or resources]
 
 ## High Vulnerabilities
+
 [Same format as Critical]
 
 ## Medium Vulnerabilities
+
 [Same format as Critical]
 
 ## Low Vulnerabilities
+
 [Same format as Critical]
 
 ## General Security Recommendations
+
 - [ ] [Recommendation 1]
 - [ ] [Recommendation 2]
 - [ ] [Recommendation 3]
 
 ## Security Posture Improvement Plan
+
 [Prioritized list of steps to improve overall security]
 ```
 

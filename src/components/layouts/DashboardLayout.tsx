@@ -10,7 +10,7 @@ import {
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import { Icon } from '@iconify/react';
+import { Icon } from "@iconify/react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -26,11 +26,47 @@ interface DashboardLayoutProps {
 }
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:dashboard-square-03" className={cn("h-5 w-5", className)} /> },
-  { name: "Transactions", href: "/transactions", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:money-add-01" className={cn("h-5 w-5", className)} /> },
-  { name: "Recurring", href: "/recurring-transactions", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:repeat" className={cn("h-5 w-5", className)} /> },
-  { name: "Reports", href: "/reports", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:chart-02" className={cn("h-5 w-5", className)} /> },
-  { name: "Categories", href: "/categories", icon: ({ className }: { className?: string }) => <Icon icon="hugeicons:folder-02" className={cn("h-5 w-5", className)} /> },
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: ({ className }: { className?: string }) => (
+      <Icon
+        icon="hugeicons:dashboard-square-03"
+        className={cn("h-5 w-5", className)}
+      />
+    ),
+  },
+  {
+    name: "Transactions",
+    href: "/transactions",
+    icon: ({ className }: { className?: string }) => (
+      <Icon
+        icon="hugeicons:money-add-01"
+        className={cn("h-5 w-5", className)}
+      />
+    ),
+  },
+  {
+    name: "Recurring",
+    href: "/recurring-transactions",
+    icon: ({ className }: { className?: string }) => (
+      <Icon icon="hugeicons:repeat" className={cn("h-5 w-5", className)} />
+    ),
+  },
+  {
+    name: "Reports",
+    href: "/reports",
+    icon: ({ className }: { className?: string }) => (
+      <Icon icon="hugeicons:chart-02" className={cn("h-5 w-5", className)} />
+    ),
+  },
+  {
+    name: "Categories",
+    href: "/categories",
+    icon: ({ className }: { className?: string }) => (
+      <Icon icon="hugeicons:folder-02" className={cn("h-5 w-5", className)} />
+    ),
+  },
 ];
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -61,7 +97,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       "/reports": "Reports",
       "/categories": "Categories",
       "/profile": "Profile",
-      "/more": "More"
+      "/more": "More",
     };
     return titles[location.pathname] || "Dashboard";
   };
@@ -74,7 +110,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       "/reports": "Analyze your spending patterns",
       "/categories": "Organize your expense categories",
       "/profile": "Manage your account settings",
-      "/more": "Additional features and settings"
+      "/more": "Additional features and settings",
     };
     return descriptions[location.pathname] || "Welcome back to your dashboard";
   };
@@ -114,95 +150,95 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <header
           className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 lg:bg-transparent lg:border-b-0"
           style={{
-            paddingTop: 'env(safe-area-inset-top)',
+            paddingTop: "env(safe-area-inset-top)",
           }}
         >
           <div className="lg:mx-4 lg:mt-4">
             <div className="lg:bg-white lg:dark:bg-gray-800 lg:rounded-2xl lg:shadow-sm lg:border lg:border-gray-200 lg:dark:border-gray-700 px-4 py-3">
               <div className="flex justify-between items-center">
-              {/* Mobile menu button - Hidden for bottom tab bar implementation */}
-              
-              {/* Left side - Back button (mobile only) + Page title and description */}
-              <div className="flex flex-1 min-w-0 items-center">
-                {/* Back button - only on specific pages on mobile */}
-                {(location.pathname === '/categories' || location.pathname === '/recurring-transactions') && (
-                  <Link
-                    to="/more"
-                    className="lg:hidden mr-2 p-1 -ml-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                  >
-                    <ChevronLeft className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                  </Link>
-                )}
+                {/* Mobile menu button - Hidden for bottom tab bar implementation */}
 
-                <div className="flex items-center space-x-4 flex-1 min-w-0">
-                  <div className="flex-1 min-w-0">
-                    <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white truncate">
-                      {getPageTitle()}
-                    </h1>
-                    <p className="hidden lg:block text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">
-                      {getPageDescription()}
-                    </p>
+                {/* Left side - Back button (mobile only) + Page title and description */}
+                <div className="flex flex-1 min-w-0 items-center">
+                  {/* Back button - only on specific pages on mobile */}
+                  {(location.pathname === "/categories" ||
+                    location.pathname === "/recurring-transactions") && (
+                    <Link
+                      to="/more"
+                      className="lg:hidden mr-2 p-1 -ml-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    >
+                      <ChevronLeft className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                    </Link>
+                  )}
+
+                  <div className="flex items-center space-x-4 flex-1 min-w-0">
+                    <div className="flex-1 min-w-0">
+                      <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white truncate">
+                        {getPageTitle()}
+                      </h1>
+                      <p className="hidden lg:block text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">
+                        {getPageDescription()}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              {/* Right side items */}
-              <div className="flex items-center space-x-4">
+                {/* Right side items */}
+                <div className="flex items-center space-x-4">
+                  {/* Currency switcher */}
+                  <CurrencySwitcher />
 
-                {/* Currency switcher */}
-                <CurrencySwitcher />
-
-                {/* User profile */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <div className="flex items-center space-x-3 cursor-pointer group">
-                      <div className="hidden md:block text-right">
+                  {/* User profile */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <div className="flex items-center space-x-3 cursor-pointer group">
+                        <div className="hidden md:block text-right">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            {user?.name || "User"}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {user?.email || "user@example.com"}
+                          </p>
+                        </div>
+                        <button className="relative h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-200">
+                          <span className="text-white text-sm font-medium">
+                            {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                          </span>
+                        </button>
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <div className="px-2 py-1.5">
                         <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          {user?.name || 'User'}
+                          {user?.name || "User"}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {user?.email || 'user@example.com'}
+                          {user?.email || "user@example.com"}
                         </p>
                       </div>
-                      <button className="relative h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-200">
-                        <span className="text-white text-sm font-medium">
-                          {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                        </span>
-                      </button>
-                    </div>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <div className="px-2 py-1.5">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {user?.name || 'User'}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {user?.email || 'user@example.com'}
-                      </p>
-                    </div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link to="/profile" className="flex items-center">
-                        <User className="mr-2 h-4 w-4" />
-                        Profile
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/settings" className="flex items-center">
-                        <Settings className="mr-2 h-4 w-4" />
-                        Settings
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      onClick={logout}
-                      className="flex items-center text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile" className="flex items-center">
+                          <User className="mr-2 h-4 w-4" />
+                          Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/settings" className="flex items-center">
+                          <Settings className="mr-2 h-4 w-4" />
+                          Settings
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={logout}
+                        className="flex items-center text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             </div>
           </div>
@@ -211,9 +247,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* Page content */}
         <main className="flex-1">
           <div className="py-6 pb-32 lg:pb-6">
-            <div className="max-w-7xl mx-auto px-4">
-              {children}
-            </div>
+            <div className="max-w-7xl mx-auto px-4">{children}</div>
           </div>
         </main>
 

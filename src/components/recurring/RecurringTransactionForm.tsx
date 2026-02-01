@@ -22,9 +22,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { createAmountChangeHandler, normalizeAmount } from "@/lib/amount-utils";
-import { categoriesService, recurringTransactionsService } from "@/services/api";
-import { Category, RecurringTransaction } from "@/types";
+import { RecurringTransaction } from "@/types";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCategories } from "@/hooks/queries/useCategories";
+import { useUpdateRecurringTransaction } from "@/hooks/mutations/useUpdateRecurringTransaction";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, Info, Loader2 } from "lucide-react";
@@ -36,11 +37,17 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const recurringTransactionSchema = z
   .object({
-    title: z.string().min(1, "Title is required").max(40, "Title must be 40 characters or less"),
+    title: z
+      .string()
+      .min(1, "Title is required")
+      .max(40, "Title must be 40 characters or less"),
     type: z.enum(["INCOME", "EXPENSE"]),
     categoryId: z.string().min(1, "Category is required"),
     endDate: z.date().optional().nullable(),
-    description: z.string().max(256, "Description must be 256 characters or less").optional(),
+    description: z
+      .string()
+      .max(256, "Description must be 256 characters or less")
+      .optional(),
   })
   .refine(
     () => {
@@ -50,7 +57,7 @@ const recurringTransactionSchema = z
     {
       message: "End date must be after start date",
       path: ["endDate"],
-    }
+    },
   );
 
 type RecurringTransactionFormData = z.infer<typeof recurringTransactionSchema>;
@@ -61,33 +68,20 @@ interface RecurringTransactionFormProps {
   onCancel: () => void;
 }
 
-export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> = ({
-  transaction,
-  onSuccess,
-  onCancel,
-}) => {
+export const RecurringTransactionForm: React.FC<
+  RecurringTransactionFormProps
+> = ({ transaction, onSuccess, onCancel }) => {
   const { currency } = useCurrency();
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [amount, setAmount] = React.useState<string>(transaction.amount.toString());
+  const [amount, setAmount] = React.useState<string>(
+    transaction.amount.toString(),
+  );
   const [endCalendarOpen, setEndCalendarOpen] = React.useState(false);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setIsLoading(true);
-        const allCategories = await categoriesService.getAll();
-        setCategories(allCategories);
-      } catch (error) {
-        toast.error("Failed to load categories. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Fetch categories with TanStack Query
+  const { data: categories = [], isLoading } = useCategories();
 
-    fetchCategories();
-  }, []);
+  // Update recurring transaction mutation
+  const updateRecurringTransaction = useUpdateRecurringTransaction();
 
   const handleAmountChange = createAmountChangeHandler(setAmount);
 
@@ -114,85 +108,80 @@ export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> =
   const filteredCategories = categories.filter((cat) => cat.type === watchType);
 
   const onSubmit = async (data: RecurringTransactionFormData) => {
-    try {
-      setIsSubmitting(true);
-
-      // Validate amount manually
-      if (!amount) {
-        toast.error("Please enter an amount");
-        setIsSubmitting(false);
-        return;
-      }
-
-      const normalizedAmount = normalizeAmount(amount.trim());
-      const numericAmount = parseFloat(normalizedAmount);
-      if (isNaN(numericAmount) || numericAmount <= 0) {
-        toast.error("Please enter a valid amount");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Validate end date is after start date
-      if (data.endDate) {
-        const startDate = new Date(transaction.startDate);
-        if (data.endDate <= startDate) {
-          toast.error("End date must be after start date");
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      // Build update payload - only send changed fields
-      const updatePayload: any = {};
-
-      if (data.title !== transaction.title) {
-        updatePayload.title = data.title;
-      }
-
-      if (numericAmount !== transaction.amount) {
-        updatePayload.amount = numericAmount;
-      }
-
-      if (data.type !== transaction.type) {
-        updatePayload.type = data.type;
-      }
-
-      if (data.categoryId !== transaction.categoryId) {
-        updatePayload.categoryId = data.categoryId;
-      }
-
-      if (data.description !== transaction.description) {
-        updatePayload.description = data.description || undefined;
-      }
-
-      // Handle endDate changes (including removal)
-      const currentEndDate = transaction.endDate ? new Date(transaction.endDate).getTime() : null;
-      const newEndDate = data.endDate ? data.endDate.getTime() : null;
-
-      if (currentEndDate !== newEndDate) {
-        updatePayload.endDate = data.endDate ? data.endDate.toISOString() : null;
-      }
-
-      // Check if anything changed
-      if (Object.keys(updatePayload).length === 0) {
-        toast.info("No changes to save");
-        setIsSubmitting(false);
-        return;
-      }
-
-      await recurringTransactionsService.update(transaction.id, updatePayload);
-
-      toast.success("Recurring transaction updated successfully!");
-      onSuccess();
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to update recurring transaction. Please try again.";
-      toast.error(errorMessage);
-    } finally {
-      setIsSubmitting(false);
+    // Validate amount manually
+    if (!amount) {
+      toast.error("Please enter an amount");
+      return;
     }
+
+    const normalizedAmount = normalizeAmount(amount.trim());
+    const numericAmount = parseFloat(normalizedAmount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+
+    // Validate end date is after start date
+    if (data.endDate) {
+      const startDate = new Date(transaction.startDate);
+      if (data.endDate <= startDate) {
+        toast.error("End date must be after start date");
+        return;
+      }
+    }
+
+    // Build update payload - only send changed fields
+    const updatePayload: any = {};
+
+    if (data.title !== transaction.title) {
+      updatePayload.title = data.title;
+    }
+
+    if (numericAmount !== transaction.amount) {
+      updatePayload.amount = numericAmount;
+    }
+
+    if (data.type !== transaction.type) {
+      updatePayload.type = data.type;
+    }
+
+    if (data.categoryId !== transaction.categoryId) {
+      updatePayload.categoryId = data.categoryId;
+    }
+
+    if (data.description !== transaction.description) {
+      updatePayload.description = data.description || undefined;
+    }
+
+    // Handle endDate changes (including removal)
+    const currentEndDate = transaction.endDate
+      ? new Date(transaction.endDate).getTime()
+      : null;
+    const newEndDate = data.endDate ? data.endDate.getTime() : null;
+
+    if (currentEndDate !== newEndDate) {
+      updatePayload.endDate = data.endDate ? data.endDate.toISOString() : null;
+    }
+
+    // Check if anything changed
+    if (Object.keys(updatePayload).length === 0) {
+      toast.info("No changes to save");
+      return;
+    }
+
+    // Use TanStack Query mutation
+    updateRecurringTransaction.mutate(
+      {
+        id: transaction.id,
+        updates: updatePayload,
+      },
+      {
+        onSuccess: () => {
+          onSuccess();
+        },
+        // Error handling is done by the mutation hook
+      },
+    );
   };
 
   return (
@@ -229,7 +218,8 @@ export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> =
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="amount">
-                Amount ({currency === "USD" ? "$" : "€"}) <span className="text-red-500">*</span>
+                Amount ({currency === "USD" ? "$" : "€"}){" "}
+                <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
@@ -266,7 +256,9 @@ export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> =
                   <SelectItem value="INCOME">Income</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.type && <p className="text-sm text-red-500">{errors.type.message}</p>}
+              {errors.type && (
+                <p className="text-sm text-red-500">{errors.type.message}</p>
+              )}
             </div>
           </div>
 
@@ -279,7 +271,9 @@ export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> =
               value={watch("categoryId")}
               onValueChange={(value) => setValue("categoryId", value)}
             >
-              <SelectTrigger className={errors.categoryId ? "border-red-500" : ""}>
+              <SelectTrigger
+                className={errors.categoryId ? "border-red-500" : ""}
+              >
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
@@ -297,7 +291,9 @@ export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> =
               </SelectContent>
             </Select>
             {errors.categoryId && (
-              <p className="text-sm text-red-500">{errors.categoryId.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.categoryId.message}
+              </p>
             )}
           </div>
 
@@ -313,7 +309,9 @@ export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> =
               rows={2}
             />
             {errors.description && (
-              <p className="text-sm text-red-500">{errors.description.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.description.message}
+              </p>
             )}
           </div>
         </div>
@@ -360,11 +358,15 @@ export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> =
                   className={cn(
                     "w-full justify-start text-left font-normal",
                     !watchEndDate && "text-muted-foreground",
-                    errors.endDate && "border-red-500"
+                    errors.endDate && "border-red-500",
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {watchEndDate ? format(watchEndDate, "PPP") : <span>Select end date...</span>}
+                  {watchEndDate ? (
+                    format(watchEndDate, "PPP")
+                  ) : (
+                    <span>Select end date...</span>
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -391,7 +393,9 @@ export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> =
                 Clear end date
               </Button>
             )}
-            {errors.endDate && <p className="text-sm text-red-500">{errors.endDate.message}</p>}
+            {errors.endDate && (
+              <p className="text-sm text-red-500">{errors.endDate.message}</p>
+            )}
             <p className="text-xs text-gray-500 dark:text-gray-400">
               Leave empty for indefinite recurrence
             </p>
@@ -401,7 +405,8 @@ export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> =
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription className="text-xs">
-              Next occurrence: {format(new Date(transaction.nextOccurrence), "PPP")}
+              Next occurrence:{" "}
+              {format(new Date(transaction.nextOccurrence), "PPP")}
               <br />
               Changes will affect future occurrences only.
             </AlertDescription>
@@ -415,12 +420,16 @@ export const RecurringTransactionForm: React.FC<RecurringTransactionFormProps> =
             variant="outline"
             onClick={onCancel}
             className="flex-1"
-            disabled={isSubmitting}
+            disabled={updateRecurringTransaction.isPending}
           >
             Cancel
           </Button>
-          <Button type="submit" className="flex-1" disabled={isSubmitting || isLoading}>
-            {isSubmitting ? (
+          <Button
+            type="submit"
+            className="flex-1"
+            disabled={updateRecurringTransaction.isPending || isLoading}
+          >
+            {updateRecurringTransaction.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Saving...

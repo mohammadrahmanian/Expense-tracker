@@ -1,11 +1,13 @@
 # Mobile Navigation Implementation Plan: Bottom Tab Bar
 
 ## Overview
+
 Transform the current burger menu mobile navigation into a bottom tab bar with 5 tabs: Dashboard, Transactions, Categories, Reports, and User Profile. The FAB (Floating Action Button) should remain floating over the bottom tab bar.
 
 ## Current State Analysis
+
 - **Current Navigation**: Burger menu (hamburger) with slide-out sidebar for mobile
-- **Desktop Navigation**: Fixed left sidebar 
+- **Desktop Navigation**: Fixed left sidebar
 - **Existing Components**: DashboardLayout, FloatingActionButton
 - **Navigation Items**: Dashboard, Transactions, Reports, Categories (missing User Profile page)
 - **FAB**: Currently positioned at `bottom-6 right-6` with z-index 50
@@ -13,7 +15,9 @@ Transform the current burger menu mobile navigation into a bottom tab bar with 5
 ## Implementation Steps
 
 ### Step 1: Create Mock Profile Page
+
 **AI Agent Prompt:**
+
 ```
 Create a simple mock Profile page component at `/src/pages/Profile.tsx`. The page should:
 1. Be a basic placeholder component with minimal content
@@ -25,13 +29,16 @@ Create a simple mock Profile page component at `/src/pages/Profile.tsx`. The pag
 ```
 
 **Files to create/modify:**
+
 - `src/pages/Profile.tsx` (new mock page)
 - Update route in `src/App.tsx`
 
 ---
 
 ### Step 2: Create Bottom Tab Bar Component
+
 **AI Agent Prompt:**
+
 ```
 Create a new BottomTabBar component at `/src/components/ui/bottom-tab-bar.tsx`. The component should:
 1. Display 5 tabs: Dashboard, Transactions, Categories, Reports, Profile
@@ -47,19 +54,23 @@ Create a new BottomTabBar component at `/src/components/ui/bottom-tab-bar.tsx`. 
 ```
 
 **Tab Configuration:**
+
 - Dashboard: `/dashboard` - LayoutDashboard icon
-- Transactions: `/transactions` - Receipt icon  
+- Transactions: `/transactions` - Receipt icon
 - Categories: `/categories` - Settings icon
 - Reports: `/reports` - PieChart icon
 - Profile: `/profile` - User icon
 
 **Files to create:**
+
 - `src/components/ui/bottom-tab-bar.tsx` (new)
 
 ---
 
 ### Step 3: Update DashboardLayout for Bottom Navigation
+
 **AI Agent Prompt:**
+
 ```
 Modify the DashboardLayout component at `/src/components/layouts/DashboardLayout.tsx` to:
 1. Hide the mobile burger menu and sidebar overlay on mobile devices
@@ -72,18 +83,22 @@ Modify the DashboardLayout component at `/src/components/layouts/DashboardLayout
 ```
 
 **Key changes:**
+
 - Hide mobile burger menu button and overlay
 - Add BottomTabBar component
 - Adjust `pb-20` class on main content for mobile spacing
 - Keep desktop layout unchanged
 
 **Files to modify:**
+
 - `src/components/layouts/DashboardLayout.tsx`
 
 ---
 
 ### Step 4: Adjust FAB Positioning
+
 **AI Agent Prompt:**
+
 ```
 Update the FloatingActionButton component at `/src/components/ui/floating-action-button.tsx` to:
 1. Adjust positioning to float above the bottom tab bar on mobile
@@ -95,17 +110,21 @@ Update the FloatingActionButton component at `/src/components/ui/floating-action
 ```
 
 **Positioning:**
+
 - Mobile: `bottom-20 right-6` (above bottom tab bar)
 - Desktop: `bottom-6 right-6` (current position)
 - Z-index: 50 (above bottom tab bar's z-30)
 
 **Files to modify:**
+
 - `src/components/ui/floating-action-button.tsx`
 
 ---
 
 ### Step 5: Update App Routes
+
 **AI Agent Prompt:**
+
 ```
 Update the App.tsx file to:
 1. Add import for the new Profile page component
@@ -116,12 +135,15 @@ Update the App.tsx file to:
 ```
 
 **Files to modify:**
+
 - `src/App.tsx`
 
 ---
 
 ### Step 6: Automated Testing Suite
+
 **AI Agent Prompt:**
+
 ```
 Create comprehensive automated tests for the mobile navigation implementation. Create test files:
 
@@ -136,7 +158,7 @@ Create comprehensive automated tests for the mobile navigation implementation. C
 
 2. `src/components/ui/floating-action-button.test.tsx` - Test FAB positioning:
    - Renders at correct mobile position (bottom-20)
-   - Renders at correct desktop position (bottom-6) 
+   - Renders at correct desktop position (bottom-6)
    - Has proper z-index above bottom tab bar
    - Modal opens/closes correctly
    - Responsive positioning works
@@ -163,12 +185,14 @@ Use Vitest and React Testing Library. Include:
 ```
 
 **Files to create:**
+
 - `src/components/ui/bottom-tab-bar.test.tsx` (new)
-- `src/components/ui/floating-action-button.test.tsx` (new) 
+- `src/components/ui/floating-action-button.test.tsx` (new)
 - `src/components/layouts/DashboardLayout.test.tsx` (new)
 - `src/pages/Profile.test.tsx` (new)
 
 **Test Categories:**
+
 - Unit tests for each component
 - Integration tests for navigation flow
 - Responsive behavior tests
@@ -178,12 +202,14 @@ Use Vitest and React Testing Library. Include:
 ---
 
 ### Step 7: Clean Up Old Mobile Navigation
+
 **AI Agent Prompt:**
+
 ```
 Remove or hide the old mobile burger menu system:
 1. In DashboardLayout.tsx, hide/remove mobile burger menu button
 2. Hide/remove mobile sidebar overlay
-3. Keep desktop sidebar functionality intact  
+3. Keep desktop sidebar functionality intact
 4. Clean up unused state variables if any
 5. Remove unused imports related to mobile menu
 6. Ensure no layout shifts or broken styling
@@ -191,6 +217,7 @@ Remove or hide the old mobile burger menu system:
 ```
 
 **Files to modify:**
+
 - `src/components/layouts/DashboardLayout.tsx`
 
 ---
@@ -198,29 +225,34 @@ Remove or hide the old mobile burger menu system:
 ## Technical Considerations
 
 ### Z-Index Hierarchy
+
 - FAB: z-50 (highest)
-- Bottom Tab Bar: z-30 
+- Bottom Tab Bar: z-30
 - Mobile Sidebar Overlay: z-40 (to be removed)
 - Header: z-10
 
 ### Responsive Breakpoints
+
 - Mobile: `< lg` (< 1024px) - Show bottom tab bar
 - Desktop: `>= lg` (>= 1024px) - Show sidebar, hide bottom tab bar
 
 ### Spacing Adjustments
+
 - Mobile main content: `pb-20` (80px bottom padding for tab bar)
 - Desktop main content: `pb-6` (existing spacing)
 - FAB mobile position: `bottom-20` (above tab bar)
 - FAB desktop position: `bottom-6` (existing)
 
 ### Icons Used
+
 - Dashboard: `LayoutDashboard` from lucide-react
 - Transactions: `Receipt` from lucide-react
-- Categories: `Settings` from lucide-react  
+- Categories: `Settings` from lucide-react
 - Reports: `PieChart` from lucide-react
 - Profile: `User` from lucide-react
 
 ### Accessibility
+
 - Proper ARIA labels for tab navigation
 - Keyboard navigation support
 - Screen reader compatibility
@@ -229,19 +261,22 @@ Remove or hide the old mobile burger menu system:
 ## Files Summary
 
 ### New Files:
+
 1. `src/pages/Profile.tsx` - User profile page
 2. `src/components/ui/bottom-tab-bar.tsx` - Bottom tab navigation component
 
 ### Modified Files:
+
 1. `src/App.tsx` - Add profile route
 2. `src/components/layouts/DashboardLayout.tsx` - Integrate bottom tab bar, remove burger menu
 3. `src/components/ui/floating-action-button.tsx` - Adjust positioning for mobile
 
 ### Testing Files:
+
 - All mobile responsiveness testing should be done in browser dev tools
 - Test on actual mobile devices if possible
 - Verify desktop functionality remains unchanged
 
 ---
 
-*This implementation plan ensures a smooth transition from burger menu to bottom tab navigation while maintaining desktop functionality and proper mobile UX patterns.*
+_This implementation plan ensures a smooth transition from burger menu to bottom tab navigation while maintaining desktop functionality and proper mobile UX patterns._

@@ -133,8 +133,7 @@ const Categories: React.FC = () => {
       setEditingCategory(undefined);
       // No manual refresh needed - mutation hooks invalidate cache automatically
     } catch (error: unknown) {
-      // Error toast already shown by mutation hook
-      console.error('Category operation failed:', error);
+      // Error toast and logging already handled by mutation hook
     }
   };
 
@@ -153,8 +152,7 @@ const Categories: React.FC = () => {
         await deleteCategory.mutateAsync(categoryId);
         // Toast and cache invalidation handled by mutation hook
       } catch (error: unknown) {
-        // Error toast already shown by mutation hook
-        console.error('Delete category failed:', error);
+        // Error toast and logging already handled by mutation hook
       }
     }
   };

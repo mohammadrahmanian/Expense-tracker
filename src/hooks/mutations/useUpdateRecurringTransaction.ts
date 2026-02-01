@@ -3,6 +3,7 @@ import { recurringTransactionsService } from '@/services/api';
 import { queryKeys } from '@/lib/query-keys';
 import { toast } from 'sonner';
 import type { RecurringTransaction } from '@/types';
+import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
 
 /**
  * Hook for updating an existing recurring transaction
@@ -31,13 +32,9 @@ export function useUpdateRecurringTransaction() {
       queryClient.invalidateQueries({ queryKey: queryKeys.recurringTransactions.all });
       toast.success('Recurring transaction updated successfully');
     },
-    onError: (error) => {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Failed to update recurring transaction'
-      );
-      console.error('Update recurring transaction error:', error);
-    },
+    onError: createMutationErrorHandler({
+      action: 'update recurring transaction',
+      feature: 'RECURRING',
+    }),
   });
 }

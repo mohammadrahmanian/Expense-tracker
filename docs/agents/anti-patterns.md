@@ -10,11 +10,11 @@ This file documents patterns that should NOT be used in this codebase.
 
 ```typescript
 // ❌ WRONG
-const token = localStorage.getItem('authToken');
-localStorage.setItem('authToken', token);
+const token = localStorage.getItem("authToken");
+localStorage.setItem("authToken", token);
 
 // ✅ CORRECT - Use AuthContext
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/AuthContext";
 const { user, login, logout } = useAuth();
 ```
 
@@ -40,7 +40,7 @@ useEffect(() => {
 }, []);
 
 // ✅ CORRECT - Use TanStack Query
-import { useTransactions } from '@/hooks/queries/useTransactions';
+import { useTransactions } from "@/hooks/queries/useTransactions";
 
 const { data: transactions, isLoading, error } = useTransactions();
 ```
@@ -54,7 +54,7 @@ const { data: transactions, isLoading, error } = useTransactions();
 ```typescript
 // ❌ WRONG - Never hardcode user IDs
 const transactionData = {
-  userId: '1',  // SECURITY ISSUE
+  userId: "1", // SECURITY ISSUE
   title: data.title,
   amount: data.amount,
 };
@@ -76,7 +76,7 @@ const transactionData = {
 ```typescript
 // ❌ WRONG - Fetching all data and filtering client-side
 const allTransactions = await transactionsService.getAll();
-const filtered = allTransactions.filter(t => t.categoryId === categoryId);
+const filtered = allTransactions.filter((t) => t.categoryId === categoryId);
 
 // ✅ CORRECT - Use server-side filtering
 const transactions = await transactionsService.getAll({ categoryId });
@@ -91,14 +91,14 @@ const transactions = await transactionsService.getAll({ categoryId });
 ```typescript
 // ❌ WRONG - Inline query keys
 useQuery({
-  queryKey: ['transactions'],
+  queryKey: ["transactions"],
   queryFn: () => transactionsService.getAll(),
 });
 
-queryClient.invalidateQueries({ queryKey: ['transactions'] });
+queryClient.invalidateQueries({ queryKey: ["transactions"] });
 
 // ✅ CORRECT - Use centralized query keys
-import { queryKeys } from '@/lib/query-keys';
+import { queryKeys } from "@/lib/query-keys";
 
 useQuery({
   queryKey: queryKeys.transactions.all,
@@ -124,8 +124,8 @@ const schema = z.object({
 // ✅ CORRECT - Reusable schema (or colocate with form component)
 // Define once, import where needed
 export const transactionFormSchema = z.object({
-  amount: z.number().positive('Amount must be positive'),
-  title: z.string().min(1, 'Title is required'),
+  amount: z.number().positive("Amount must be positive"),
+  title: z.string().min(1, "Title is required"),
 });
 ```
 
@@ -137,8 +137,8 @@ export const transactionFormSchema = z.object({
 
 ```typescript
 // ❌ WRONG
-const recent = transactions.slice(0, 5);  // Why 5?
-setTimeout(refetch, 10000);  // Why 10 seconds?
+const recent = transactions.slice(0, 5); // Why 5?
+setTimeout(refetch, 10000); // Why 10 seconds?
 
 // ✅ CORRECT - Use named constants
 const DASHBOARD_RECENT_LIMIT = 5;
@@ -188,6 +188,7 @@ setTimeout(refetch, REFETCH_INTERVAL_MS);
 ```
 
 **Rules:**
+
 - Don't add features beyond what was requested
 - Don't refactor unrelated code
 - Don't add "improvements" not asked for
@@ -201,9 +202,9 @@ setTimeout(refetch, REFETCH_INTERVAL_MS);
 
 ```typescript
 // ❌ WRONG - Keeping unused code "just in case"
-const _oldVariable = null;  // renamed to keep "backwards compatible"
+const _oldVariable = null; // renamed to keep "backwards compatible"
 // removed: const deprecatedFunction = () => {};
-export { oldType as LegacyType };  // re-export for backwards compat
+export { oldType as LegacyType }; // re-export for backwards compat
 
 // ✅ CORRECT - Delete unused code completely
 // Git has history. If something is unused, remove it.
@@ -217,17 +218,17 @@ export { oldType as LegacyType };  // re-export for backwards compat
 
 ```typescript
 // ❌ WRONG - Direct axios call in component
-import axios from 'axios';
+import axios from "axios";
 
 function MyComponent() {
   const fetchData = async () => {
-    const response = await axios.get('/api/transactions');
+    const response = await axios.get("/api/transactions");
     // ...
   };
 }
 
 // ✅ CORRECT - Use service layer
-import { transactionsService } from '@/services/api';
+import { transactionsService } from "@/services/api";
 
 function MyComponent() {
   const { data } = useQuery({
@@ -245,14 +246,14 @@ function MyComponent() {
 
 ```typescript
 // ❌ WRONG - All pages loaded upfront
-import Dashboard from './pages/Dashboard';
-import Transactions from './pages/Transactions';
-import Reports from './pages/Reports';
+import Dashboard from "./pages/Dashboard";
+import Transactions from "./pages/Transactions";
+import Reports from "./pages/Reports";
 
 // ✅ CORRECT - Lazy load pages (when implemented)
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Transactions = lazy(() => import('./pages/Transactions'));
-const Reports = lazy(() => import('./pages/Reports'));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Transactions = lazy(() => import("./pages/Transactions"));
+const Reports = lazy(() => import("./pages/Reports"));
 ```
 
 **Note:** Code splitting is not yet implemented but should be used when adding new pages.
@@ -261,13 +262,13 @@ const Reports = lazy(() => import('./pages/Reports'));
 
 ## Quick Reference: Do vs Don't
 
-| Do | Don't |
-| ---- | ------- |
+| Do                              | Don't                                 |
+| ------------------------------- | ------------------------------------- |
 | Use TanStack Query for API data | Use useState + useEffect for API data |
-| Use centralized query keys | Inline query key strings |
-| Use service layer for API calls | Call axios directly in components |
-| Include dark mode variants | Hardcode light-only colors |
-| Delete unused code | Keep "just in case" code |
-| Use named constants | Magic numbers/strings |
-| Keep changes focused | Over-engineer solutions |
-| Use AuthContext for auth | Access localStorage directly |
+| Use centralized query keys      | Inline query key strings              |
+| Use service layer for API calls | Call axios directly in components     |
+| Include dark mode variants      | Hardcode light-only colors            |
+| Delete unused code              | Keep "just in case" code              |
+| Use named constants             | Magic numbers/strings                 |
+| Keep changes focused            | Over-engineer solutions               |
+| Use AuthContext for auth        | Access localStorage directly          |

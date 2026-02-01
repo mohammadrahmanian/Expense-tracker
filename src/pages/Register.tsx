@@ -43,7 +43,7 @@ const Register: React.FC = () => {
       toast.success("Account created successfully!");
       navigate("/dashboard");
     } catch (error) {
-      toast.error("Registration failed. Please try again.");
+      // Error toast already shown by AuthContext via handleApiError
     }
   };
 

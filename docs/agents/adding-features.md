@@ -15,14 +15,14 @@ Before writing code, complete these steps:
 
 ## Page-Specific Starting Points
 
-| Feature Area | Read First |
-|--------------|------------|
-| Dashboard changes | `src/pages/Dashboard.tsx` |
-| Transaction management | `src/pages/Transactions.tsx` |
-| Reporting/analytics | `src/pages/Reports.tsx` |
-| Category management | `src/pages/Categories.tsx` |
+| Feature Area           | Read First                            |
+| ---------------------- | ------------------------------------- |
+| Dashboard changes      | `src/pages/Dashboard.tsx`             |
+| Transaction management | `src/pages/Transactions.tsx`          |
+| Reporting/analytics    | `src/pages/Reports.tsx`               |
+| Category management    | `src/pages/Categories.tsx`            |
 | Recurring transactions | `src/pages/RecurringTransactions.tsx` |
-| Navigation/menu | `src/pages/More.tsx` |
+| Navigation/menu        | `src/pages/More.tsx`                  |
 
 ---
 
@@ -48,14 +48,17 @@ Location: `src/services/api.ts`
 ```typescript
 export const newFeatureService = {
   getAll: async (): Promise<NewFeature[]> => {
-    const response = await apiClient.get('/new-features');
+    const response = await apiClient.get("/new-features");
     return response.data;
   },
   create: async (data: CreateNewFeatureDto): Promise<NewFeature> => {
-    const response = await apiClient.post('/new-features', data);
+    const response = await apiClient.post("/new-features", data);
     return response.data;
   },
-  update: async (id: string, data: UpdateNewFeatureDto): Promise<NewFeature> => {
+  update: async (
+    id: string,
+    data: UpdateNewFeatureDto,
+  ): Promise<NewFeature> => {
     const response = await apiClient.put(`/new-features/${id}`, data);
     return response.data;
   },
@@ -73,10 +76,11 @@ Location: `src/lib/query-keys.ts`
 export const queryKeys = {
   // ... existing keys
   newFeatures: {
-    all: ['newFeatures'] as const,
-    lists: () => [...queryKeys.newFeatures.all, 'list'] as const,
-    list: (filters: NewFeatureFilters) => [...queryKeys.newFeatures.lists(), filters] as const,
-    details: () => [...queryKeys.newFeatures.all, 'detail'] as const,
+    all: ["newFeatures"] as const,
+    lists: () => [...queryKeys.newFeatures.all, "list"] as const,
+    list: (filters: NewFeatureFilters) =>
+      [...queryKeys.newFeatures.lists(), filters] as const,
+    details: () => [...queryKeys.newFeatures.all, "detail"] as const,
     detail: (id: string) => [...queryKeys.newFeatures.details(), id] as const,
   },
 };
@@ -87,9 +91,9 @@ export const queryKeys = {
 Location: `src/hooks/queries/useNewFeatures.ts`
 
 ```typescript
-import { useQuery } from '@tanstack/react-query';
-import { newFeatureService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
+import { useQuery } from "@tanstack/react-query";
+import { newFeatureService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
 
 export function useNewFeatures() {
   return useQuery({
@@ -112,10 +116,10 @@ export function useNewFeature(id: string) {
 Location: `src/hooks/mutations/useCreateNewFeature.ts`
 
 ```typescript
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { newFeatureService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
-import { toast } from 'sonner';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { newFeatureService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
+import { toast } from "sonner";
 
 export function useCreateNewFeature() {
   const queryClient = useQueryClient();
@@ -124,11 +128,11 @@ export function useCreateNewFeature() {
     mutationFn: (data: CreateNewFeatureDto) => newFeatureService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.newFeatures.all });
-      toast.success('Created successfully');
+      toast.success("Created successfully");
     },
     onError: (error) => {
-      toast.error('Failed to create');
-      console.error('Create error:', error);
+      toast.error("Failed to create");
+      console.error("Create error:", error);
     },
   });
 }
@@ -189,6 +193,7 @@ import NewFeaturePage from './pages/NewFeature';
 ## Complete Example: "Duplicate Transaction" Feature
 
 ### 1. API Service Method
+
 ```typescript
 // src/services/api.ts - add to transactionsService
 duplicate: async (id: string): Promise<Transaction> => {
@@ -198,12 +203,13 @@ duplicate: async (id: string): Promise<Transaction> => {
 ```
 
 ### 2. Mutation Hook
+
 ```typescript
 // src/hooks/mutations/useDuplicateTransaction.ts
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { transactionsService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
-import { toast } from 'sonner';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { transactionsService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
+import { toast } from "sonner";
 
 export function useDuplicateTransaction() {
   const queryClient = useQueryClient();
@@ -213,16 +219,17 @@ export function useDuplicateTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
-      toast.success('Transaction duplicated');
+      toast.success("Transaction duplicated");
     },
     onError: () => {
-      toast.error('Failed to duplicate transaction');
+      toast.error("Failed to duplicate transaction");
     },
   });
 }
 ```
 
 ### 3. Usage in Component
+
 ```typescript
 // In Transactions.tsx or TransactionCard.tsx
 import { useDuplicateTransaction } from '@/hooks/mutations/useDuplicateTransaction';

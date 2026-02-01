@@ -6,15 +6,15 @@
 
 ### Required (Build Time)
 
-| Variable | Description | Example |
-|----------|-------------|---------|
+| Variable            | Description     | Example                        |
+| ------------------- | --------------- | ------------------------------ |
 | `VITE_API_BASE_URL` | Backend API URL | `https://api.expensio.com/api` |
 
 ### For UI Testing
 
-| Variable | Description |
-|----------|-------------|
-| `UI_TEST_EMAIL` | Test account email |
+| Variable           | Description           |
+| ------------------ | --------------------- |
+| `UI_TEST_EMAIL`    | Test account email    |
 | `UI_TEST_PASSWORD` | Test account password |
 
 ### Local Development
@@ -26,6 +26,7 @@ cp .env.example .env.local
 ```
 
 Edit `.env.local`:
+
 ```bash
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
@@ -123,6 +124,7 @@ fly deploy
 File: `Dockerfile`
 
 The app is containerized with:
+
 1. Node.js for building
 2. Nginx for serving static files
 
@@ -166,7 +168,9 @@ fly deploy --image <previous-image>
 ## Monitoring
 
 ### Browser Console
+
 Check for:
+
 - JavaScript errors
 - Network request failures
 - Console warnings

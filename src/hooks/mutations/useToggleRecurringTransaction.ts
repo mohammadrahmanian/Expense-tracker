@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { recurringTransactionsService } from '@/services/api';
 import { queryKeys } from '@/lib/query-keys';
 import { toast } from 'sonner';
+import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
 
 /**
  * Hook for toggling a recurring transaction's active status
@@ -34,13 +35,9 @@ export function useToggleRecurringTransaction() {
           : 'Recurring transaction deactivated'
       );
     },
-    onError: (error) => {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Failed to toggle recurring transaction'
-      );
-      console.error('Toggle recurring transaction error:', error);
-    },
+    onError: createMutationErrorHandler({
+      action: 'toggle recurring transaction',
+      feature: 'RECURRING',
+    }),
   });
 }

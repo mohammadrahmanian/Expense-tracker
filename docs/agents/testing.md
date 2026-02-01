@@ -4,17 +4,18 @@
 
 ## Testing Stack
 
-| Tool | Purpose |
-|------|---------|
-| Vitest | Test runner |
+| Tool            | Purpose           |
+| --------------- | ----------------- |
+| Vitest          | Test runner       |
 | Testing Library | Component testing |
-| jsdom | DOM environment |
+| jsdom           | DOM environment   |
 
 ---
 
 ## What Requires Tests
 
 ### Mandatory Tests
+
 - Utility functions in `src/lib/`
 - Custom hooks in `src/hooks/`
 - Data transformations
@@ -22,6 +23,7 @@
 - Form validation schemas
 
 ### Optional Tests (Based on Complexity)
+
 - Complex components with significant logic
 - Multi-step user flows
 - Critical paths (if any)
@@ -40,12 +42,14 @@
 ## File Naming & Location
 
 ### Convention
+
 ```
 {filename}.test.ts   # For TypeScript files
 {filename}.test.tsx  # For React components
 ```
 
 ### Location
+
 Co-locate tests with source files:
 
 ```
@@ -79,59 +83,59 @@ npm run test:coverage
 
 ```typescript
 // src/lib/amount-utils.test.ts
-import { describe, it, expect } from 'vitest';
-import { normalizeAmount, parseAmount, isValidAmount } from './amount-utils';
+import { describe, it, expect } from "vitest";
+import { normalizeAmount, parseAmount, isValidAmount } from "./amount-utils";
 
-describe('normalizeAmount', () => {
-  it('replaces comma with period', () => {
-    expect(normalizeAmount('1234,56')).toBe('1234.56');
+describe("normalizeAmount", () => {
+  it("replaces comma with period", () => {
+    expect(normalizeAmount("1234,56")).toBe("1234.56");
   });
 
-  it('keeps period unchanged', () => {
-    expect(normalizeAmount('1234.56')).toBe('1234.56');
+  it("keeps period unchanged", () => {
+    expect(normalizeAmount("1234.56")).toBe("1234.56");
   });
 
-  it('handles empty string', () => {
-    expect(normalizeAmount('')).toBe('');
+  it("handles empty string", () => {
+    expect(normalizeAmount("")).toBe("");
   });
 
-  it('handles multiple commas', () => {
-    expect(normalizeAmount('1,234,56')).toBe('1.234.56');
-  });
-});
-
-describe('parseAmount', () => {
-  it('parses valid decimal', () => {
-    expect(parseAmount('123.45')).toBe(123.45);
-  });
-
-  it('parses integer', () => {
-    expect(parseAmount('100')).toBe(100);
-  });
-
-  it('returns null for invalid input', () => {
-    expect(parseAmount('abc')).toBeNull();
-  });
-
-  it('returns null for empty string', () => {
-    expect(parseAmount('')).toBeNull();
+  it("handles multiple commas", () => {
+    expect(normalizeAmount("1,234,56")).toBe("1.234.56");
   });
 });
 
-describe('isValidAmount', () => {
-  it('returns true for positive number', () => {
+describe("parseAmount", () => {
+  it("parses valid decimal", () => {
+    expect(parseAmount("123.45")).toBe(123.45);
+  });
+
+  it("parses integer", () => {
+    expect(parseAmount("100")).toBe(100);
+  });
+
+  it("returns null for invalid input", () => {
+    expect(parseAmount("abc")).toBeNull();
+  });
+
+  it("returns null for empty string", () => {
+    expect(parseAmount("")).toBeNull();
+  });
+});
+
+describe("isValidAmount", () => {
+  it("returns true for positive number", () => {
     expect(isValidAmount(100)).toBe(true);
   });
 
-  it('returns false for zero', () => {
+  it("returns false for zero", () => {
     expect(isValidAmount(0)).toBe(false);
   });
 
-  it('returns false for negative', () => {
+  it("returns false for negative", () => {
     expect(isValidAmount(-50)).toBe(false);
   });
 
-  it('returns false for NaN', () => {
+  it("returns false for NaN", () => {
     expect(isValidAmount(NaN)).toBe(false);
   });
 });
@@ -264,6 +268,7 @@ describe('AmountInput', () => {
 ## Testing Patterns
 
 ### Arrange-Act-Assert
+
 ```typescript
 it('should create transaction', async () => {
   // Arrange
@@ -287,6 +292,7 @@ it('should create transaction', async () => {
 ```
 
 ### Testing Async Operations
+
 ```typescript
 import { waitFor } from '@testing-library/react';
 
@@ -304,9 +310,10 @@ it('shows loading then data', async () => {
 ```
 
 ### Mocking
+
 ```typescript
 // Mock module
-vi.mock('@/services/api', () => ({
+vi.mock("@/services/api", () => ({
   transactionsService: {
     getAll: vi.fn(),
   },
@@ -347,6 +354,7 @@ export function renderWithProviders(ui: React.ReactElement) {
 ```
 
 Usage:
+
 ```typescript
 import { renderWithProviders } from '@/test/test-utils';
 

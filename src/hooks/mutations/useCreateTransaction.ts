@@ -3,6 +3,7 @@ import { transactionsService } from '@/services/api';
 import { queryKeys } from '@/lib/query-keys';
 import { toast } from 'sonner';
 import type { Transaction } from '@/types';
+import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
 
 /**
  * Hook for creating a new transaction
@@ -39,9 +40,9 @@ export function useCreateTransaction() {
       queryClient.invalidateQueries({ queryKey: queryKeys.reports.all });
       toast.success('Transaction created successfully');
     },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Failed to create transaction');
-      console.error('Create transaction error:', error);
-    },
+    onError: createMutationErrorHandler({
+      action: 'create transaction',
+      feature: 'TRANSACTIONS',
+    }),
   });
 }

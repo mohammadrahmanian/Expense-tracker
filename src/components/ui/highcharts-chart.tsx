@@ -28,17 +28,21 @@ const HighchartsContainer = React.forwardRef<
 
   // Helper function to merge axis defaults
   const mergeAxisDefaults = (axis: any, isYAxis = false) => {
-    const defaultColors = isYAxis ? {
-      gridLineColor: "hsl(var(--border))",
-      lineColor: "hsl(var(--border))",
-      tickColor: "hsl(var(--border))",
-    } : {
-      gridLineColor: "#E2E8F0", // Explicit fallback color (slate-200)
-      lineColor: "#CBD5E1", // Explicit fallback color (slate-300)
-      tickColor: "#CBD5E1",
-    };
+    const defaultColors = isYAxis
+      ? {
+          gridLineColor: "hsl(var(--border))",
+          lineColor: "hsl(var(--border))",
+          tickColor: "hsl(var(--border))",
+        }
+      : {
+          gridLineColor: "#E2E8F0", // Explicit fallback color (slate-200)
+          lineColor: "#CBD5E1", // Explicit fallback color (slate-300)
+          tickColor: "#CBD5E1",
+        };
 
-    const defaultLabelColor = isYAxis ? "hsl(var(--muted-foreground))" : "#64748B";
+    const defaultLabelColor = isYAxis
+      ? "hsl(var(--muted-foreground))"
+      : "#64748B";
 
     return {
       ...axis,
@@ -66,7 +70,9 @@ const HighchartsContainer = React.forwardRef<
     // Handle xAxis - can be array or object
     let processedXAxis;
     if (Array.isArray(options.xAxis)) {
-      processedXAxis = options.xAxis.map(axis => mergeAxisDefaults(axis, false));
+      processedXAxis = options.xAxis.map((axis) =>
+        mergeAxisDefaults(axis, false),
+      );
     } else if (options.xAxis) {
       processedXAxis = mergeAxisDefaults(options.xAxis, false);
     } else {
@@ -76,7 +82,9 @@ const HighchartsContainer = React.forwardRef<
     // Handle yAxis - can be array or object
     let processedYAxis;
     if (Array.isArray(options.yAxis)) {
-      processedYAxis = options.yAxis.map(axis => mergeAxisDefaults(axis, true));
+      processedYAxis = options.yAxis.map((axis) =>
+        mergeAxisDefaults(axis, true),
+      );
     } else if (options.yAxis) {
       processedYAxis = mergeAxisDefaults(options.yAxis, true);
     } else {

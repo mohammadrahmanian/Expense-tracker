@@ -1,23 +1,23 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useCurrency, Currency } from '@/contexts/CurrencyContext';
-import { ChevronDown } from 'lucide-react';
+} from "@/components/ui/dropdown-menu";
+import { useCurrency, Currency } from "@/contexts/CurrencyContext";
+import { ChevronDown } from "lucide-react";
 
 export const CurrencySwitcher: React.FC = () => {
   const { currency, setCurrency } = useCurrency();
 
   const currencies: { code: Currency; symbol: string; name: string }[] = [
-    { code: 'USD', symbol: '$', name: 'US Dollar' },
-    { code: 'EUR', symbol: '€', name: 'Euro' },
+    { code: "USD", symbol: "$", name: "US Dollar" },
+    { code: "EUR", symbol: "€", name: "Euro" },
   ];
 
-  const currentCurrency = currencies.find(c => c.code === currency);
+  const currentCurrency = currencies.find((c) => c.code === currency);
 
   return (
     <DropdownMenu>
@@ -35,7 +35,7 @@ export const CurrencySwitcher: React.FC = () => {
           <DropdownMenuItem
             key={curr.code}
             onClick={() => setCurrency(curr.code)}
-            className={currency === curr.code ? 'bg-accent' : ''}
+            className={currency === curr.code ? "bg-accent" : ""}
           >
             <span className="font-medium mr-2">{curr.symbol}</span>
             <span className="text-sm">{curr.name}</span>

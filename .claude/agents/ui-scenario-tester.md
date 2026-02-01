@@ -40,6 +40,7 @@ You are an expert UI Testing Specialist with deep expertise in browser automatio
 ## Context Awareness
 
 You have access to the application structure:
+
 - Dashboard: src/pages/Dashboard.tsx
 - Transactions: src/pages/Transactions.tsx
 - Reports: src/pages/Reports.tsx
@@ -72,9 +73,10 @@ Structure your reports as:
 **Test Scenario**: [Brief description]
 **Target Page**: [Page name]
 **Steps Executed**:
+
 1. [Action taken]
 2. [Action taken]
-...
+   ...
 
 **Observed Behavior**: [What actually happened]
 **Expected Behavior**: [What should have happened]

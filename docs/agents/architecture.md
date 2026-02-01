@@ -61,22 +61,28 @@ src/
 ## Key Architectural Patterns
 
 ### 1. Centralized API Layer
+
 All API calls go through `src/services/api.ts`. Each domain has a service object:
 
 ```typescript
 // src/services/api.ts
 export const transactionsService = {
-  getAll: (params) => apiClient.get('/transactions', { params }),
-  create: (data) => apiClient.post('/transactions', data),
+  getAll: (params) => apiClient.get("/transactions", { params }),
+  create: (data) => apiClient.post("/transactions", data),
   update: (id, data) => apiClient.put(`/transactions/${id}`, data),
   delete: (id) => apiClient.delete(`/transactions/${id}`),
 };
 
-export const categoriesService = { /* similar */ };
-export const dashboardService = { /* similar */ };
+export const categoriesService = {
+  /* similar */
+};
+export const dashboardService = {
+  /* similar */
+};
 ```
 
 ### 2. Query/Mutation Hooks Pattern
+
 Custom hooks wrap TanStack Query for type safety and consistency:
 
 ```
@@ -92,35 +98,38 @@ src/hooks/
 ```
 
 ### 3. Centralized Query Keys
+
 All query keys defined in `src/lib/query-keys.ts`:
 
 ```typescript
 export const queryKeys = {
   transactions: {
-    all: ['transactions'] as const,
-    lists: () => [...queryKeys.transactions.all, 'list'] as const,
+    all: ["transactions"] as const,
+    lists: () => [...queryKeys.transactions.all, "list"] as const,
     list: (filters) => [...queryKeys.transactions.lists(), filters] as const,
   },
   categories: {
-    all: ['categories'] as const,
+    all: ["categories"] as const,
   },
   dashboard: {
-    all: ['dashboard'] as const,
+    all: ["dashboard"] as const,
   },
   // etc.
 };
 ```
 
 ### 4. Context for Global UI State
+
 Three contexts manage app-wide state:
 
-| Context | Location | Purpose |
-|---------|----------|---------|
-| AuthContext | `src/contexts/AuthContext.tsx` | User auth, login/logout |
-| CurrencyContext | `src/contexts/CurrencyContext.tsx` | Currency formatting |
-| SidebarContext | `src/contexts/SidebarContext.tsx` | Sidebar collapsed state |
+| Context         | Location                           | Purpose                 |
+| --------------- | ---------------------------------- | ----------------------- |
+| AuthContext     | `src/contexts/AuthContext.tsx`     | User auth, login/logout |
+| CurrencyContext | `src/contexts/CurrencyContext.tsx` | Currency formatting     |
+| SidebarContext  | `src/contexts/SidebarContext.tsx`  | Sidebar collapsed state |
 
 ### 5. Protected Routes
+
 Authentication wrapper for private pages:
 
 ```typescript
@@ -158,13 +167,13 @@ Success → invalidateQueries → UI updates automatically
 
 ## File Locations by Task
 
-| Task | Primary File(s) |
-|------|-----------------|
-| Add API endpoint | `src/services/api.ts` |
-| Add query hook | `src/hooks/queries/useXxx.ts` |
-| Add mutation hook | `src/hooks/mutations/useXxx.ts` |
-| Add query keys | `src/lib/query-keys.ts` |
-| Add type | `src/types/index.ts` |
-| Add page | `src/pages/Xxx.tsx` + route in `src/App.tsx` |
-| Add shared component | `src/components/ui/xxx.tsx` |
-| Add feature component | `src/components/{feature}/xxx.tsx` |
+| Task                  | Primary File(s)                              |
+| --------------------- | -------------------------------------------- |
+| Add API endpoint      | `src/services/api.ts`                        |
+| Add query hook        | `src/hooks/queries/useXxx.ts`                |
+| Add mutation hook     | `src/hooks/mutations/useXxx.ts`              |
+| Add query keys        | `src/lib/query-keys.ts`                      |
+| Add type              | `src/types/index.ts`                         |
+| Add page              | `src/pages/Xxx.tsx` + route in `src/App.tsx` |
+| Add shared component  | `src/components/ui/xxx.tsx`                  |
+| Add feature component | `src/components/{feature}/xxx.tsx`           |

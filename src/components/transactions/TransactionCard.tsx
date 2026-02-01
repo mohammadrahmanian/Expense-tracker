@@ -58,7 +58,7 @@ export function TransactionCard({
                   "text-lg font-bold mt-2",
                   transaction.type === "INCOME"
                     ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
+                    : "text-red-600 dark:text-red-400",
                 )}
               >
                 {transaction.type === "INCOME" ? "+" : "-"}

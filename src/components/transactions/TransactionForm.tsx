@@ -4,7 +4,7 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   ResponsiveDialogFooter as DialogFooter,
   ResponsiveDialogHeader as DialogHeader,
-  ResponsiveDialogTitle as DialogTitle
+  ResponsiveDialogTitle as DialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,14 +62,14 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 }) => {
   const { currency } = useCurrency();
   const [amount, setAmount] = React.useState<string>(
-    transaction?.amount?.toString() || ""
+    transaction?.amount?.toString() || "",
   );
 
   // Fetch categories using TanStack Query
   const {
     data: categories = [],
     isLoading: categoriesLoading,
-    isError: categoriesError
+    isError: categoriesError,
   } = useCategories();
 
   // Mutation hooks for create and update
@@ -129,7 +129,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           </AlertDescription>
         </Alert>
         <DialogFooter>
-          <Button variant="outline" onClick={onCancel}>Close</Button>
+          <Button variant="outline" onClick={onCancel}>
+            Close
+          </Button>
         </DialogFooter>
       </>
     );
@@ -138,14 +140,14 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   const onSubmit = async (data: TransactionFormData) => {
     // Validate amount
     if (!amount) {
-      toast.error('Please enter an amount');
+      toast.error("Please enter an amount");
       return;
     }
 
     const normalizedAmount = normalizeAmount(amount.trim());
     const numericAmount = parseFloat(normalizedAmount);
     if (isNaN(numericAmount) || numericAmount <= 0) {
-      toast.error('Please enter a valid amount');
+      toast.error("Please enter a valid amount");
       return;
     }
 
@@ -174,8 +176,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             reset();
             setAmount("");
             onSuccess();
-          }
-        }
+          },
+        },
       );
     } else {
       createTransaction.mutate(transactionData, {
@@ -183,7 +185,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
           reset();
           setAmount("");
           onSuccess();
-        }
+        },
       });
     }
   };
@@ -213,7 +215,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount ({currency === 'USD' ? '$' : '€'})</Label>
+              <Label htmlFor="amount">
+                Amount ({currency === "USD" ? "$" : "€"})
+              </Label>
               <Input
                 id="amount"
                 type="text"
@@ -359,7 +363,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             variant="outline"
             onClick={onCancel}
             className="flex-1"
-            disabled={createTransaction.isPending || updateTransaction.isPending}
+            disabled={
+              createTransaction.isPending || updateTransaction.isPending
+            }
           >
             Cancel
           </Button>

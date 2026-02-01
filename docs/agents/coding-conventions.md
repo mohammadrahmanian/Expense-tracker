@@ -4,13 +4,13 @@
 
 ## File Naming
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | PascalCase | `TransactionForm.tsx` |
-| Pages | PascalCase | `Dashboard.tsx` |
-| Hooks | camelCase with `use` prefix | `useTransactions.ts` |
-| Utilities | kebab-case | `amount-utils.ts` |
-| Types | PascalCase in `index.ts` | `Transaction`, `Category` |
+| Type       | Convention                  | Example                   |
+| ---------- | --------------------------- | ------------------------- |
+| Components | PascalCase                  | `TransactionForm.tsx`     |
+| Pages      | PascalCase                  | `Dashboard.tsx`           |
+| Hooks      | camelCase with `use` prefix | `useTransactions.ts`      |
+| Utilities  | kebab-case                  | `amount-utils.ts`         |
+| Types      | PascalCase in `index.ts`    | `Transaction`, `Category` |
 
 ---
 
@@ -18,14 +18,14 @@
 
 ### Naming
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Interfaces | PascalCase, no prefix | `TransactionFormProps` |
-| Context types | `*ContextValue` suffix | `AuthContextValue` |
-| Union types | `*Type` suffix | `TransactionType` |
-| Constants | UPPER_SNAKE_CASE | `MAX_AMOUNT`, `API_TIMEOUT` |
-| Variables/functions | camelCase | `handleSubmit`, `formatAmount` |
-| Booleans | `is*`, `has*`, `should*` prefix | `isLoading`, `hasError` |
+| Type                | Convention                      | Example                        |
+| ------------------- | ------------------------------- | ------------------------------ |
+| Interfaces          | PascalCase, no prefix           | `TransactionFormProps`         |
+| Context types       | `*ContextValue` suffix          | `AuthContextValue`             |
+| Union types         | `*Type` suffix                  | `TransactionType`              |
+| Constants           | UPPER_SNAKE_CASE                | `MAX_AMOUNT`, `API_TIMEOUT`    |
+| Variables/functions | camelCase                       | `handleSubmit`, `formatAmount` |
+| Booleans            | `is*`, `has*`, `should*` prefix | `isLoading`, `hasError`        |
 
 ### Strict Typing Rules
 
@@ -36,7 +36,9 @@ function calculateTotal(transactions: Transaction[]): number {
 }
 
 // ❌ DON'T: Use 'any'
-function processData(data: any) { /* bad */ }
+function processData(data: any) {
+  /* bad */
+}
 
 // ✅ DO: Use 'unknown' when type is truly unknown
 function processData(data: unknown) {
@@ -58,6 +60,7 @@ someFunction(validArg as ExpectedType);
 ## Component Conventions
 
 ### Structure
+
 ```typescript
 // 1. Imports (React first, then third-party, then internal)
 import React, { useState, useEffect } from 'react';
@@ -103,6 +106,7 @@ export default function TransactionList({ categoryId, onSelect }: TransactionLis
 ```
 
 ### Export Rules
+
 - **Pages:** `export default`
 - **Reusable components:** Named export
 - **Hooks:** Named export
@@ -111,10 +115,10 @@ export default function TransactionList({ categoryId, onSelect }: TransactionLis
 
 ## Event Handler Naming
 
-| Location | Prefix | Example |
-|----------|--------|---------|
-| Props | `on*` | `onClick`, `onSubmit`, `onChange` |
-| Internal handlers | `handle*` | `handleClick`, `handleSubmit` |
+| Location          | Prefix    | Example                           |
+| ----------------- | --------- | --------------------------------- |
+| Props             | `on*`     | `onClick`, `onSubmit`, `onChange` |
+| Internal handlers | `handle*` | `handleClick`, `handleSubmit`     |
 
 ```typescript
 interface ButtonProps {
@@ -138,19 +142,19 @@ Order imports in this sequence:
 
 ```typescript
 // 1. React
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 // 2. Third-party libraries
-import { useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 // 3. Internal modules (using @/ alias)
-import { DashboardLayout } from '@/components/layouts/DashboardLayout';
-import { transactionsService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { transactionsService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
 
 // 4. Types (if importing separately)
-import type { Transaction, Category } from '@/types';
+import type { Transaction, Category } from "@/types";
 ```
 
 ---
@@ -158,6 +162,7 @@ import type { Transaction, Category } from '@/types';
 ## Styling with Tailwind CSS
 
 ### Mobile-First Approach
+
 ```typescript
 // Base styles for mobile, then responsive overrides
 <div className="p-2 md:p-4 lg:p-6">
@@ -166,6 +171,7 @@ import type { Transaction, Category } from '@/types';
 ```
 
 ### Dark Mode Support (Required)
+
 ```typescript
 // ✅ Always include dark mode variants
 <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
@@ -179,14 +185,16 @@ import type { Transaction, Category } from '@/types';
 ```
 
 ### Breakpoints Reference
-| Breakpoint | Min Width | Usage |
-|------------|-----------|-------|
-| `sm:` | 640px | Small tablets |
-| `md:` | 768px | Tablets, switches to desktop nav |
-| `lg:` | 1024px | Desktop |
-| `xl:` | 1280px | Large desktop |
+
+| Breakpoint | Min Width | Usage                            |
+| ---------- | --------- | -------------------------------- |
+| `sm:`      | 640px     | Small tablets                    |
+| `md:`      | 768px     | Tablets, switches to desktop nav |
+| `lg:`      | 1024px    | Desktop                          |
+| `xl:`      | 1280px    | Large desktop                    |
 
 ### Class Merging
+
 Use `cn()` utility from `src/lib/utils.ts` for conditional classes:
 
 ```typescript
@@ -206,11 +214,13 @@ import { cn } from '@/lib/utils';
 ## Comments
 
 ### When to Comment
+
 - Explain **why**, not **what**
 - Document non-obvious business logic
 - Add JSDoc for exported functions
 
 ### Examples
+
 ```typescript
 // ❌ Bad - explains what (obvious from code)
 // Set loading to true
@@ -226,11 +236,12 @@ setIsSubmitting(true);
  * Supports European (1.234,56) and US (1,234.56) formats.
  */
 export function normalizeAmount(value: string): string {
-  return value.replace(',', '.');
+  return value.replace(",", ".");
 }
 ```
 
 ### What NOT to Comment
+
 - Don't use TODO comments without issue numbers
 - Don't leave commented-out code (use git history)
 - Don't add obvious comments

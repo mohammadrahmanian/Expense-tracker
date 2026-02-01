@@ -29,15 +29,12 @@ export function TransactionTypeIcon({
         sizeClasses[size],
         type === "INCOME"
           ? "bg-green-100 dark:bg-green-900"
-          : "bg-red-100 dark:bg-red-900"
+          : "bg-red-100 dark:bg-red-900",
       )}
     >
       {type === "INCOME" ? (
         <ArrowUpRight
-          className={cn(
-            iconSizes[size],
-            "text-green-600 dark:text-green-400"
-          )}
+          className={cn(iconSizes[size], "text-green-600 dark:text-green-400")}
         />
       ) : (
         <ArrowDownLeft

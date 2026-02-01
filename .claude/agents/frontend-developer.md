@@ -2,11 +2,13 @@
 name: frontend-engineer
 description: Writing high quality Frontend React code with following best practices and conventions. Use this skill when user asks for creating new components, refactoring old components, bug fixing components. The mentioned conventions and best practices should be followed with respect to the project structure and purpose.
 ---
+
 # React Frontend Development SKILL
 
 ## Stack Overview
 
 This project uses:
+
 - **React 18** with **TypeScript**
 - **React Router 6** for routing
 - **Vite** for bundling
@@ -39,11 +41,13 @@ app/
 ### Component File Patterns
 
 **Single Component:**
+
 ```
 ComponentName.tsx
 ```
 
 **Complex Component with Tests:**
+
 ```
 ComponentName/
 ├── index.ts                    # Barrel export
@@ -55,9 +59,11 @@ ComponentName/
 ### Component Design Principles
 
 #### 1. Single Responsibility
+
 Each component should have one clear purpose. Keep components under 200 lines.
 
 **Bad:**
+
 ```typescript
 function UserDashboard() {
   // Handles auth, fetching, profile, stats, activities, settings...
@@ -66,6 +72,7 @@ function UserDashboard() {
 ```
 
 **Good:**
+
 ```typescript
 // UserDashboard only orchestrates layout - each child handles its own concerns
 function UserDashboard() {
@@ -81,9 +88,9 @@ function UserDashboard() {
 // Each component is responsible for its own data fetching and logic
 function UserProfile() {
   const { data: user, isLoading } = useUser();
-  
+
   if (isLoading) return <Skeleton className="h-32" />;
-  
+
   return (
     <Card>
       <CardHeader>
@@ -96,7 +103,7 @@ function UserProfile() {
 
 function UserStats() {
   const { data: stats } = useUserStats();
-  
+
   return (
     <Card>
       <CardHeader>
@@ -111,7 +118,7 @@ function UserStats() {
 
 function RecentActivity() {
   const { data: activities } = useActivities();
-  
+
   return (
     <Card>
       <CardHeader>
@@ -141,6 +148,7 @@ function ActivityList({ items }: { items: Activity[] }) {
 ```
 
 #### 2. Props-First Design
+
 Always define clear TypeScript interfaces:
 
 ```typescript
@@ -153,7 +161,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
 }
 
-export function Button({ 
+export function Button({
   variant = 'default',
   size = 'default',
   isLoading = false,
@@ -178,12 +186,14 @@ export function Button({
 ```
 
 #### 3. Composition Over Configuration
+
 Favor compound components over complex prop APIs:
 
 **Bad - Configuration with many props:**
+
 ```typescript
 // Too many props makes the component inflexible and hard to maintain
-<Dialog 
+<Dialog
   isOpen={isOpen}
   onClose={onClose}
   title="Delete User"
@@ -209,6 +219,7 @@ Favor compound components over complex prop APIs:
 ```
 
 **Good - Composition with flexible structure:**
+
 ```typescript
 // Flexible, composable, and easy to customize
 <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -219,14 +230,14 @@ Favor compound components over complex prop APIs:
         Are you sure you want to delete this user? This action cannot be undone.
       </DialogDescription>
     </DialogHeader>
-    
+
     {/* You can add any custom content here */}
     <div className="py-4">
       <p className="text-sm text-muted-foreground">
         User: <strong>{user.name}</strong>
       </p>
     </div>
-    
+
     <DialogFooter>
       <Button variant="outline" onClick={onClose}>
         Cancel
@@ -247,12 +258,12 @@ Favor compound components over complex prop APIs:
         <DialogTitle>Warning</DialogTitle>
       </div>
     </DialogHeader>
-    
+
     {/* Completely custom body */}
     <form onSubmit={handleSubmit}>
       <Input name="confirmation" placeholder="Type DELETE to confirm" />
     </form>
-    
+
     {/* Custom footer with three buttons */}
     <DialogFooter className="sm:justify-between">
       <Button variant="ghost" onClick={handleSkip}>
@@ -274,6 +285,7 @@ Favor compound components over complex prop APIs:
 ## Routing Patterns
 
 ### Route Component Structure
+
 Place all page components in `app/pages/`:
 
 ```typescript
@@ -283,7 +295,7 @@ import { UserProfile } from '@/components/features/UserProfile';
 
 export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>();
-  
+
   return (
     <div className="container mx-auto py-6">
       <UserProfile userId={id!} />
@@ -293,6 +305,7 @@ export default function UserDetailPage() {
 ```
 
 ### Route Registration
+
 Add routes in `app/App.tsx`:
 
 ```typescript
@@ -312,6 +325,7 @@ import NotFound from '@/pages/NotFound';
 ```
 
 ### Navigation Components
+
 - **Desktop**: Side menu navigation
 - **Mobile**: Bottom sheet navigation
 
@@ -320,6 +334,7 @@ Both should use `<Link>` from `react-router-dom`:
 ## Styling System
 
 ### TailwindCSS Usage
+
 Use Tailwind utility classes as the primary styling method:
 
 ```typescript
@@ -330,6 +345,7 @@ Use Tailwind utility classes as the primary styling method:
 ```
 
 ### The `cn` Utility
+
 Always use `cn` from `@/lib/utils` to combine class names:
 
 ```typescript
@@ -357,6 +373,7 @@ function Card({ className, children, variant = 'default' }: CardProps) {
 ```
 
 ### Design System Tokens
+
 Modify `tailwind.config.ts` to customize the design system:
 
 ```typescript
@@ -381,6 +398,7 @@ export default {
 ```
 
 ### Dark Mode Support
+
 Use CSS variables for theme colors in `app.css`:
 
 ```css
@@ -400,6 +418,7 @@ Use CSS variables for theme colors in `app.css`:
 ```
 
 Access in components:
+
 ```typescript
 <div className="bg-background text-foreground">
   <h1 className="text-primary">Heading</h1>
@@ -409,17 +428,18 @@ Access in components:
 ## Component Patterns
 
 ### Container/Presenter Pattern
+
 Separate data fetching from presentation:
 
 ```typescript
 // features/UserProfile/UserProfileContainer.tsx
 export function UserProfileContainer({ userId }: { userId: string }) {
   const { data: user, isLoading, error } = useUser(userId);
-  
+
   if (isLoading) return <UserProfileSkeleton />;
   if (error) return <ErrorMessage error={error} />;
   if (!user) return <NotFound />;
-  
+
   return <UserProfile user={user} />;
 }
 
@@ -444,6 +464,7 @@ export function UserProfile({ user }: UserProfileProps) {
 ```
 
 ### Custom Hooks
+
 Extract reusable logic into custom hooks in `app/hooks/`:
 
 ```typescript
@@ -468,18 +489,19 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
 function SearchBar() {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query);
-  
+
   useEffect(() => {
     if (debouncedQuery) {
       searchAPI(debouncedQuery);
     }
   }, [debouncedQuery]);
-  
+
   return <Input value={query} onChange={(e) => setQuery(e.target.value)} />;
 }
 ```
 
 ### Form Handling
+
 Use controlled components with proper validation:
 
 ```typescript
@@ -496,12 +518,12 @@ function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     const newErrors: Record<string, string> = {};
     if (!email) newErrors.email = 'Email is required';
     if (!password) newErrors.password = 'Password is required';
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -532,7 +554,7 @@ function LoginForm() {
           <p className="text-sm text-destructive">{errors.email}</p>
         )}
       </div>
-      
+
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
         <Input
@@ -562,12 +584,13 @@ function LoginForm() {
 ## State Management
 
 ### Local State First
+
 Start with `useState` for component-specific state:
 
 ```typescript
 function Accordion() {
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
-  
+
   const toggle = (id: string) => {
     setOpenItems(prev => {
       const next = new Set(prev);
@@ -579,32 +602,33 @@ function Accordion() {
       return next;
     });
   };
-  
+
   return (/* ... */);
 }
 ```
 
 ### Lift State Only When Needed
+
 Lift state to the nearest common ancestor:
 
 ```typescript
 function ProductPage() {
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  
+
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <ProductImages variant={selectedVariant} />
       <div className="space-y-4">
         <ProductInfo />
-        <VariantSelector 
-          value={selectedVariant} 
-          onChange={setSelectedVariant} 
+        <VariantSelector
+          value={selectedVariant}
+          onChange={setSelectedVariant}
         />
         <QuantitySelector value={quantity} onChange={setQuantity} />
-        <AddToCartButton 
-          variant={selectedVariant} 
-          quantity={quantity} 
+        <AddToCartButton
+          variant={selectedVariant}
+          quantity={quantity}
         />
       </div>
     </div>
@@ -613,6 +637,7 @@ function ProductPage() {
 ```
 
 ### Context for Global State
+
 Use React Context sparingly for truly global state:
 
 ```typescript
@@ -630,7 +655,7 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('system');
-  
+
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
@@ -650,37 +675,39 @@ export function useTheme() {
 ## Performance Optimization
 
 ### Memoization
+
 Use `useMemo` for expensive computations:
 
 ```typescript
 function DataTable({ data, filters }: Props) {
   const filteredData = useMemo(() => {
-    return data.filter(item => 
-      Object.entries(filters).every(([key, value]) => 
+    return data.filter(item =>
+      Object.entries(filters).every(([key, value]) =>
         item[key] === value
       )
     );
   }, [data, filters]);
-  
+
   return <Table data={filteredData} />;
 }
 ```
 
 ### Callback Memoization
+
 Use `useCallback` for functions passed to children:
 
 ```typescript
 function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  
+
   const handleToggle = useCallback((id: string) => {
-    setTodos(prev => 
-      prev.map(todo => 
+    setTodos(prev =>
+      prev.map(todo =>
         todo.id === id ? { ...todo, done: !todo.done } : todo
       )
     );
   }, []);
-  
+
   return (
     <ul className="space-y-2">
       {todos.map(todo => (
@@ -692,6 +719,7 @@ function TodoList() {
 ```
 
 ### Avoid Inline Object/Array Creation
+
 ```typescript
 // Bad - creates new object on every render
 <Component style={{ padding: 16 }} />
@@ -701,6 +729,7 @@ function TodoList() {
 ```
 
 ### React.memo for Pure Components
+
 ```typescript
 interface TodoItemProps {
   todo: Todo;
@@ -710,9 +739,9 @@ interface TodoItemProps {
 export const TodoItem = React.memo(({ todo, onToggle }: TodoItemProps) => {
   return (
     <li className="flex items-center gap-2">
-      <Checkbox 
-        checked={todo.done} 
-        onCheckedChange={() => onToggle(todo.id)} 
+      <Checkbox
+        checked={todo.done}
+        onCheckedChange={() => onToggle(todo.id)}
       />
       <span className={cn(todo.done && "line-through text-muted-foreground")}>
         {todo.text}
@@ -725,6 +754,7 @@ export const TodoItem = React.memo(({ todo, onToggle }: TodoItemProps) => {
 ## Error Handling
 
 ### Error Boundaries
+
 Implement in `app/root.tsx`:
 
 ```typescript
@@ -732,7 +762,7 @@ import { useRouteError, isRouteErrorResponse } from 'react-router-dom';
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  
+
   if (isRouteErrorResponse(error)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -743,7 +773,7 @@ export function ErrorBoundary() {
       </div>
     );
   }
-  
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
@@ -756,12 +786,13 @@ export function ErrorBoundary() {
 ```
 
 ### Graceful Degradation
+
 Always handle loading and error states:
 
 ```typescript
 function UserProfile({ userId }: Props) {
   const { data, isLoading, error } = useUser(userId);
-  
+
   if (isLoading) {
     return (
       <Card>
@@ -772,7 +803,7 @@ function UserProfile({ userId }: Props) {
       </Card>
     );
   }
-  
+
   if (error) {
     return (
       <Alert variant="destructive">
@@ -784,7 +815,7 @@ function UserProfile({ userId }: Props) {
       </Alert>
     );
   }
-  
+
   return <div>{/* Success state */}</div>;
 }
 ```
@@ -792,6 +823,7 @@ function UserProfile({ userId }: Props) {
 ## Accessibility
 
 ### Semantic HTML
+
 Use proper HTML elements:
 
 ```typescript
@@ -806,11 +838,12 @@ Use proper HTML elements:
 ```
 
 ### ARIA Attributes
+
 Add ARIA labels when semantic HTML isn't enough:
 
 ```typescript
-<Button 
-  variant="ghost" 
+<Button
+  variant="ghost"
   size="icon"
   onClick={onClose}
   aria-label="Close dialog"
@@ -820,19 +853,20 @@ Add ARIA labels when semantic HTML isn't enough:
 ```
 
 ### Keyboard Navigation
+
 Ensure all interactive elements are keyboard accessible:
 
 ```typescript
 function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  
+
   useEffect(() => {
     if (!isOpen) {
       buttonRef.current?.focus();
     }
   }, [isOpen]);
-  
+
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
@@ -848,6 +882,7 @@ function Menu() {
 ```
 
 ### Focus Management
+
 Use the `focus-visible` utility for better UX:
 
 ```typescript
@@ -859,6 +894,7 @@ Use the `focus-visible` utility for better UX:
 ## Testing with Vitest
 
 ### Component Tests
+
 Place tests next to components with `.spec.tsx` suffix:
 
 ```typescript
@@ -872,20 +908,20 @@ describe('Button', () => {
     render(<Button>Click me</Button>);
     expect(screen.getByText('Click me')).toBeInTheDocument();
   });
-  
+
   it('calls onClick when clicked', () => {
     const handleClick = vi.fn();
     render(<Button onClick={handleClick}>Click</Button>);
-    
+
     fireEvent.click(screen.getByText('Click'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
-  
+
   it('is disabled when disabled prop is true', () => {
     render(<Button disabled>Click</Button>);
     expect(screen.getByText('Click')).toBeDisabled();
   });
-  
+
   it('shows loading state', () => {
     render(<Button isLoading>Submit</Button>);
     expect(screen.getByRole('button')).toBeDisabled();
@@ -894,30 +930,31 @@ describe('Button', () => {
 ```
 
 ### Utility Tests
+
 Test utility functions in `lib/`:
 
 ```typescript
 // lib/utils.spec.ts
-import { describe, it, expect } from 'vitest';
-import { cn } from './utils';
+import { describe, it, expect } from "vitest";
+import { cn } from "./utils";
 
-describe('cn', () => {
-  it('merges class names', () => {
-    expect(cn('px-4', 'py-2')).toBe('px-4 py-2');
+describe("cn", () => {
+  it("merges class names", () => {
+    expect(cn("px-4", "py-2")).toBe("px-4 py-2");
   });
-  
-  it('handles conditional classes', () => {
-    expect(cn('base', { 'active': true, 'disabled': false }))
-      .toBe('base active');
+
+  it("handles conditional classes", () => {
+    expect(cn("base", { active: true, disabled: false })).toBe("base active");
   });
-  
-  it('resolves Tailwind conflicts', () => {
-    expect(cn('px-4 px-6')).toBe('px-6');
+
+  it("resolves Tailwind conflicts", () => {
+    expect(cn("px-4 px-6")).toBe("px-6");
   });
 });
 ```
 
 ### Test User Behavior
+
 Focus on testing what users see and do:
 
 ```typescript
@@ -925,18 +962,19 @@ Focus on testing what users see and do:
 expect(component.state.isOpen).toBe(true);
 
 // Good - testing user-visible behavior
-expect(screen.getByRole('dialog')).toBeVisible();
-expect(screen.getByText('Delete User')).toBeInTheDocument();
+expect(screen.getByRole("dialog")).toBeVisible();
+expect(screen.getByText("Delete User")).toBeInTheDocument();
 ```
 
 ## TypeScript Best Practices
 
 ### Strict Type Safety
+
 Avoid `any` extremely, use proper types:
 
 ```typescript
 // Bad
-function handleData(data: any) { }
+function handleData(data: any) {}
 
 // Good
 interface ApiResponse {
@@ -944,25 +982,27 @@ interface ApiResponse {
   total: number;
 }
 
-function handleData(response: ApiResponse) { }
+function handleData(response: ApiResponse) {}
 ```
 
 ### Utility Types
+
 Use TypeScript utility types:
 
 ```typescript
 type PartialUser = Partial<User>;
 type UserKeys = keyof User;
-type UserWithoutId = Omit<User, 'id'>;
-type UserNameAndEmail = Pick<User, 'name' | 'email'>;
+type UserWithoutId = Omit<User, "id">;
+type UserNameAndEmail = Pick<User, "name" | "email">;
 type ReadonlyUser = Readonly<User>;
 ```
 
 ### Discriminated Unions
+
 Use for complex state:
 
 ```typescript
-type AsyncState<T> = 
+type AsyncState<T> =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'success'; data: T }
@@ -970,16 +1010,16 @@ type AsyncState<T> =
 
 function UserProfile() {
   const [state, setState] = useState<AsyncState<User>>({ status: 'idle' });
-  
+
   // TypeScript narrows the type based on status
   if (state.status === 'success') {
     return <div>{state.data.name}</div>; // data is available
   }
-  
+
   if (state.status === 'error') {
     return <div>{state.error.message}</div>; // error is available
   }
-  
+
   return <Skeleton />;
 }
 ```
@@ -987,6 +1027,7 @@ function UserProfile() {
 ## Code Style
 
 ### Naming Conventions
+
 - **Components**: PascalCase (`UserProfile`, `NavigationBar`)
 - **Hooks**: camelCase with `use` prefix (`useAuth`, `useDebounce`)
 - **Utilities**: camelCase (`formatDate`, `cn`)
@@ -994,27 +1035,29 @@ function UserProfile() {
 - **Types/Interfaces**: PascalCase (`User`, `ButtonProps`)
 
 ### Import Organization
+
 ```typescript
 // 1. React and routing
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 // 2. UI components
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 // 3. Custom hooks and utilities
-import { useAuth } from '@/hooks/useAuth';
-import { cn } from '@/lib/utils';
+import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 
 // 4. Types
-import type { User } from '@/types';
+import type { User } from "@/types";
 
 // 5. Relative imports
-import { UserProfile } from './UserProfile';
+import { UserProfile } from "./UserProfile";
 ```
 
 ### File Structure
+
 Organize imports, types, component, and exports:
 
 ```typescript
@@ -1032,7 +1075,7 @@ interface UserCardProps {
 // Component
 export function UserCard({ user, onEdit }: UserCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  
+
   return (
     <Card
       onMouseEnter={() => setIsHovered(true)}
@@ -1067,6 +1110,7 @@ export type { UserCardProps };
 ## Pre-Commit Checklist
 
 Before committing, verify:
+
 - [ ] Component has single, clear responsibility
 - [ ] TypeScript types are defined (no `any`)
 - [ ] Uses `cn` utility for className logic
@@ -1085,11 +1129,13 @@ Before committing, verify:
 ### Common UI Patterns
 
 **Loading State:**
+
 ```typescript
 {isLoading && <Skeleton className="h-20 w-full" />}
 ```
 
 **Error State:**
+
 ```typescript
 {error && (
   <Alert variant="destructive">
@@ -1101,6 +1147,7 @@ Before committing, verify:
 ```
 
 **Empty State:**
+
 ```typescript
 {data.length === 0 && (
   <div className="text-center text-muted-foreground">
@@ -1110,6 +1157,7 @@ Before committing, verify:
 ```
 
 **Conditional Classes:**
+
 ```typescript
 className={cn(
   "base-classes",

@@ -3,6 +3,7 @@ import { categoriesService } from '@/services/api';
 import { queryKeys } from '@/lib/query-keys';
 import { toast } from 'sonner';
 import type { Category } from '@/types';
+import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
 
 /**
  * Hook for creating a new category
@@ -35,9 +36,9 @@ export function useCreateCategory() {
       queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
       toast.success('Category created successfully');
     },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Failed to create category');
-      console.error('Create category error:', error);
-    },
+    onError: createMutationErrorHandler({
+      action: 'create category',
+      feature: 'CATEGORIES',
+    }),
   });
 }

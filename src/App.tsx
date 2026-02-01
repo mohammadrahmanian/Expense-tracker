@@ -125,10 +125,10 @@ const App = () => (
           </TooltipProvider>
         </SidebarContextProvider>
       </CurrencyProvider>
-    {/* React Query DevTools - only in development */}
-    {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-  </AuthProvider>
-</QueryClientProvider>
+      {/* React Query DevTools - only in development */}
+      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+    </AuthProvider>
+  </QueryClientProvider>
 );
 
 export default App;
