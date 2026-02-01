@@ -24,6 +24,6 @@ dev-dist
 *.sln
 *.sw?
 
-tsconfig.app.tsbuildinfo
+*.tsbuildinfo
 
 plan.md
