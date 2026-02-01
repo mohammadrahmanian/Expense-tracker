@@ -10,7 +10,6 @@ export interface Category {
   name: string;
   color: string;
   type: "INCOME" | "EXPENSE";
-  userId: string;
 }
 
 export interface Transaction {
