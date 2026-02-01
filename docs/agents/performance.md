@@ -14,6 +14,7 @@
 ## React.memo
 
 Use for components that:
+
 - Render frequently
 - Have expensive render logic
 - Receive props that rarely change
@@ -33,6 +34,7 @@ export const TransactionCard = React.memo(function TransactionCard({
 ```
 
 **Don't use when:**
+
 - Component is simple/cheap to render
 - Props change on every render anyway
 - Component renders infrequently
@@ -65,6 +67,7 @@ function TransactionsList({ transactions }: Props) {
 ```
 
 **Don't use when:**
+
 - Calculation is trivial
 - Dependencies change on every render
 
@@ -98,6 +101,7 @@ const MemoizedList = React.memo(function MemoizedList({
 ```
 
 **Don't use when:**
+
 - Child component isn't memoized
 - Callback has many dependencies that change often
 
@@ -135,17 +139,19 @@ function App() {
 ## TanStack Query Optimization
 
 ### Stale Time
+
 Data is fresh for a period, avoiding unnecessary refetches:
 
 ```typescript
 useQuery({
-  queryKey: ['transactions'],
+  queryKey: ["transactions"],
   queryFn: fetchTransactions,
   staleTime: 5 * 60 * 1000, // Fresh for 5 minutes
 });
 ```
 
 ### Selective Refetching
+
 Only refetch when necessary:
 
 ```typescript
@@ -153,13 +159,14 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false, // Don't refetch on tab focus
-      refetchOnReconnect: false,   // Don't refetch on network reconnect
+      refetchOnReconnect: false, // Don't refetch on network reconnect
     },
   },
 });
 ```
 
 ### Optimistic Updates
+
 Update UI immediately, roll back on error:
 
 ```typescript
@@ -167,13 +174,13 @@ useMutation({
   mutationFn: updateTransaction,
   onMutate: async (newData) => {
     // Cancel outgoing refetches
-    await queryClient.cancelQueries({ queryKey: ['transactions'] });
+    await queryClient.cancelQueries({ queryKey: ["transactions"] });
 
     // Snapshot current data
-    const previous = queryClient.getQueryData(['transactions']);
+    const previous = queryClient.getQueryData(["transactions"]);
 
     // Optimistically update
-    queryClient.setQueryData(['transactions'], (old) => ({
+    queryClient.setQueryData(["transactions"], (old) => ({
       ...old,
       ...newData,
     }));
@@ -182,11 +189,11 @@ useMutation({
   },
   onError: (err, newData, context) => {
     // Roll back on error
-    queryClient.setQueryData(['transactions'], context?.previous);
+    queryClient.setQueryData(["transactions"], context?.previous);
   },
   onSettled: () => {
     // Refetch to ensure consistency
-    queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    queryClient.invalidateQueries({ queryKey: ["transactions"] });
   },
 });
 ```
@@ -237,23 +244,25 @@ const STATIC_ITEMS = [1, 2, 3];
 ## Bundle Size
 
 ### Check bundle size
+
 ```bash
 npm run build
 # Look at output for chunk sizes
 ```
 
 ### Reduce bundle size
+
 - Remove unused dependencies
 - Use tree-shaking friendly imports
 - Lazy load heavy libraries (charts, date libraries)
 
 ```typescript
 // ❌ Bad - imports entire library
-import _ from 'lodash';
+import _ from "lodash";
 _.map(items, fn);
 
 // ✅ Good - imports only what's needed
-import map from 'lodash/map';
+import map from "lodash/map";
 map(items, fn);
 ```
 

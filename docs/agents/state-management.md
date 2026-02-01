@@ -28,11 +28,12 @@ Is this data from an API?
 **Use for:** All API data (fetching, caching, mutations)
 
 ### Query Hook Pattern
+
 ```typescript
 // src/hooks/queries/useTransactions.ts
-import { useQuery } from '@tanstack/react-query';
-import { transactionsService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
+import { useQuery } from "@tanstack/react-query";
+import { transactionsService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
 
 export function useTransactions(filters?: TransactionFilters) {
   return useQuery({
@@ -43,12 +44,13 @@ export function useTransactions(filters?: TransactionFilters) {
 ```
 
 ### Mutation Hook Pattern
+
 ```typescript
 // src/hooks/mutations/useCreateTransaction.ts
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { transactionsService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
-import { toast } from 'sonner';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { transactionsService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
+import { toast } from "sonner";
 
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
@@ -60,17 +62,18 @@ export function useCreateTransaction() {
       // Invalidate related queries
       queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
-      toast.success('Transaction created');
+      toast.success("Transaction created");
     },
     onError: (error) => {
-      toast.error('Failed to create transaction');
-      console.error('Create transaction error:', error);
+      toast.error("Failed to create transaction");
+      console.error("Create transaction error:", error);
     },
   });
 }
 ```
 
 ### Usage in Component
+
 ```typescript
 function TransactionsPage() {
   // Query
@@ -95,16 +98,17 @@ function TransactionsPage() {
 ```
 
 ### Query Configuration
+
 Default configuration in `src/main.tsx`:
 
 ```typescript
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,      // Data fresh for 5 minutes
-      gcTime: 10 * 60 * 1000,         // Cache kept for 10 minutes
-      refetchOnWindowFocus: false,    // Don't refetch on tab focus
-      retry: 2,                        // Retry failed requests twice
+      staleTime: 5 * 60 * 1000, // Data fresh for 5 minutes
+      gcTime: 10 * 60 * 1000, // Cache kept for 10 minutes
+      refetchOnWindowFocus: false, // Don't refetch on tab focus
+      retry: 2, // Retry failed requests twice
     },
   },
 });
@@ -118,13 +122,14 @@ const queryClient = new QueryClient({
 
 ### Existing Contexts
 
-| Context | Location | Purpose |
-|---------|----------|---------|
-| AuthContext | `src/contexts/AuthContext.tsx` | User, login, logout |
+| Context         | Location                           | Purpose                       |
+| --------------- | ---------------------------------- | ----------------------------- |
+| AuthContext     | `src/contexts/AuthContext.tsx`     | User, login, logout           |
 | CurrencyContext | `src/contexts/CurrencyContext.tsx` | Currency code, formatAmount() |
-| SidebarContext | `src/contexts/SidebarContext.tsx` | Sidebar collapsed state |
+| SidebarContext  | `src/contexts/SidebarContext.tsx`  | Sidebar collapsed state       |
 
 ### Context Pattern
+
 ```typescript
 // 1. Define types
 interface ThemeContextValue {
@@ -160,6 +165,7 @@ export function useTheme() {
 ```
 
 ### Context Best Practices
+
 - **Memoize context value** to prevent re-renders
 - **Split large contexts** into smaller focused ones
 - **Always provide custom hook** for consuming
@@ -172,6 +178,7 @@ export function useTheme() {
 **Use for:** UI state specific to one component or a small component tree
 
 ### Examples
+
 ```typescript
 function TransactionForm() {
   // Form UI state
@@ -188,7 +195,9 @@ function TransactionForm() {
 ```
 
 ### When to Lift State Up
+
 If two sibling components need the same state:
+
 1. Move state to their common parent
 2. Pass down as props
 
@@ -217,6 +226,7 @@ function Parent() {
 All invalidations use `src/lib/query-keys.ts`:
 
 ### After Transaction Changes
+
 ```typescript
 queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
 queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
@@ -224,26 +234,30 @@ queryClient.invalidateQueries({ queryKey: queryKeys.reports.all });
 ```
 
 ### After Category Changes
+
 ```typescript
 queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
 queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all }); // Transactions include category
 ```
 
 ### After Recurring Transaction Changes
+
 ```typescript
-queryClient.invalidateQueries({ queryKey: queryKeys.recurringTransactions.all });
+queryClient.invalidateQueries({
+  queryKey: queryKeys.recurringTransactions.all,
+});
 ```
 
 ---
 
 ## Quick Reference
 
-| Data Type | Solution | Example |
-|-----------|----------|---------|
-| API data | TanStack Query | Transactions, categories |
-| Auth state | AuthContext | User, login/logout |
-| Currency format | CurrencyContext | formatAmount() |
-| Sidebar state | SidebarContext | collapsed state |
-| Modal open/close | useState | `const [isOpen, setIsOpen] = useState(false)` |
-| Form data | React Hook Form | `useForm()` |
-| Selected item | useState or lift up | `const [selectedId, setSelectedId] = useState()` |
+| Data Type        | Solution            | Example                                          |
+| ---------------- | ------------------- | ------------------------------------------------ |
+| API data         | TanStack Query      | Transactions, categories                         |
+| Auth state       | AuthContext         | User, login/logout                               |
+| Currency format  | CurrencyContext     | formatAmount()                                   |
+| Sidebar state    | SidebarContext      | collapsed state                                  |
+| Modal open/close | useState            | `const [isOpen, setIsOpen] = useState(false)`    |
+| Form data        | React Hook Form     | `useForm()`                                      |
+| Selected item    | useState or lift up | `const [selectedId, setSelectedId] = useState()` |

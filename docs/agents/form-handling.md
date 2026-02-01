@@ -7,9 +7,9 @@ All forms in this codebase use **React Hook Form + Zod**. No exceptions.
 ## Required Libraries
 
 ```typescript
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 ```
 
 ---
@@ -17,26 +17,31 @@ import { z } from 'zod';
 ## Standard Form Pattern
 
 ### 1. Define Zod Schema
+
 ```typescript
 const transactionFormSchema = z.object({
-  title: z.string()
-    .min(1, 'Title is required')
-    .max(100, 'Title must be less than 100 characters'),
-  amount: z.number()
-    .positive('Amount must be positive')
-    .max(999999999.99, 'Amount too large'),
-  type: z.enum(['INCOME', 'EXPENSE']),
-  categoryId: z.string().min(1, 'Category is required'),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(100, "Title must be less than 100 characters"),
+  amount: z
+    .number()
+    .positive("Amount must be positive")
+    .max(999999999.99, "Amount too large"),
+  type: z.enum(["INCOME", "EXPENSE"]),
+  categoryId: z.string().min(1, "Category is required"),
   date: z.date(),
 });
 ```
 
 ### 2. Infer TypeScript Type
+
 ```typescript
 type TransactionFormData = z.infer<typeof transactionFormSchema>;
 ```
 
 ### 3. Use in Component
+
 ```typescript
 function TransactionForm({ onSubmit, defaultValues }: TransactionFormProps) {
   const {
@@ -121,6 +126,7 @@ return (
 Amount fields need special handling for decimal separator support.
 
 ### Using Amount Utilities
+
 ```typescript
 import { normalizeAmount, createAmountChangeHandler } from '@/lib/amount-utils';
 
@@ -146,6 +152,7 @@ function AmountField() {
 ```
 
 ### Accepted Formats
+
 - `1234.56` (US format)
 - `1234,56` (European format)
 
@@ -179,6 +186,7 @@ function MyForm() {
 ## Error Handling
 
 ### Validation Errors
+
 Shown inline via `<FormMessage />`:
 
 ```typescript
@@ -197,6 +205,7 @@ Shown inline via `<FormMessage />`:
 ```
 
 ### API Errors
+
 Handled in mutation hooks with toast:
 
 ```typescript
@@ -205,9 +214,9 @@ onError: (error) => {
   toast.error(
     error instanceof Error
       ? error.message
-      : 'Failed to save. Please try again.'
+      : "Failed to save. Please try again.",
   );
-}
+};
 ```
 
 ---
@@ -215,46 +224,51 @@ onError: (error) => {
 ## Common Zod Patterns
 
 ### Required String
+
 ```typescript
-z.string().min(1, 'Field is required')
+z.string().min(1, "Field is required");
 ```
 
 ### Optional String
+
 ```typescript
-z.string().optional()
+z.string().optional();
 // or
-z.string().nullable()
+z.string().nullable();
 ```
 
 ### Positive Number
+
 ```typescript
-z.number().positive('Must be positive')
+z.number().positive("Must be positive");
 ```
 
 ### Enum/Select
+
 ```typescript
-z.enum(['INCOME', 'EXPENSE'], {
-  required_error: 'Please select a type',
-})
+z.enum(["INCOME", "EXPENSE"], {
+  required_error: "Please select a type",
+});
 ```
 
 ### Date
+
 ```typescript
 z.date({
-  required_error: 'Date is required',
-})
+  required_error: "Date is required",
+});
 ```
 
 ### Email
+
 ```typescript
-z.string().email('Invalid email address')
+z.string().email("Invalid email address");
 ```
 
 ### Password
+
 ```typescript
-z.string()
-  .min(8, 'Password must be at least 8 characters')
-  .max(100)
+z.string().min(8, "Password must be at least 8 characters").max(100);
 ```
 
 ---

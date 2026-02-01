@@ -54,12 +54,12 @@ const ResponsiveDialogContent = React.forwardRef<
     >
       {/* Mobile drag indicator */}
       <div className="mx-auto w-12 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-2 mb-4 sm:hidden" />
-      
+
       {/* Scrollable content area */}
       <div className="flex-auto min-h-0 overflow-y-auto px-6 sm:pt-6 sm:max-h-[90vh]">
         {children}
       </div>
-      
+
       <DialogPrimitive.Close className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 bg-background/80 backdrop-blur-sm transition-all hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none sm:right-4 sm:top-4">
         <X className="h-5 w-5" />
         <span className="sr-only">Close</span>
@@ -122,8 +122,18 @@ const ResponsiveDialogDescription = React.forwardRef<
     {...props}
   />
 ));
-ResponsiveDialogDescription.displayName = DialogPrimitive.Description.displayName;
+ResponsiveDialogDescription.displayName =
+  DialogPrimitive.Description.displayName;
 
 export {
-  ResponsiveDialog, ResponsiveDialogClose, ResponsiveDialogContent, ResponsiveDialogDescription, ResponsiveDialogFooter, ResponsiveDialogHeader, ResponsiveDialogOverlay, ResponsiveDialogPortal, ResponsiveDialogTitle, ResponsiveDialogTrigger
+  ResponsiveDialog,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogOverlay,
+  ResponsiveDialogPortal,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
 };

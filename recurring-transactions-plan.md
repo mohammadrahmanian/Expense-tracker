@@ -1,9 +1,11 @@
 # Recurring Transactions Page - Implementation Plan
 
 ## Overview
+
 Create a dedicated page to manage all recurring transactions with the ability to view, edit, deactivate, and delete them. Each transaction shows when it will next occur based on its recurrence frequency.
 
 ## Page Information
+
 - **Route**: `/recurring-transactions`
 - **Navigation**: Add to sidebar navigation menu
 - **Layout**: Uses `DashboardLayout` component
@@ -14,6 +16,7 @@ Create a dedicated page to manage all recurring transactions with the ability to
 ## UI/UX Design (Low-Fidelity Mockup)
 
 ### Desktop View
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │  Recurring Transactions                                                  │
@@ -73,6 +76,7 @@ Create a dedicated page to manage all recurring transactions with the ability to
 ```
 
 ### Mobile View
+
 ```
 ┌─────────────────────────────────┐
 │ Recurring Transactions          │
@@ -117,6 +121,7 @@ Create a dedicated page to manage all recurring transactions with the ability to
 ```
 
 ### Dropdown Menu (Actions)
+
 ```
 ┌────────────────────────┐
 │ [Edit icon] Edit       │
@@ -130,6 +135,7 @@ Create a dedicated page to manage all recurring transactions with the ability to
 ## Features & Functionality
 
 ### 1. **Display Recurring Transactions**
+
 - Show all recurring transactions grouped by status (Active/Inactive)
 - Display transaction information:
   - Title
@@ -142,18 +148,22 @@ Create a dedicated page to manage all recurring transactions with the ability to
   - For inactive: Show "Deactivated" instead of next date
 
 ### 2. **Search & Filter**
+
 - **Search**: Real-time search by transaction title
 - **Type Filter**: Filter by All/Income/Expense
 - **Category Filter**: Filter by specific category
 - **Status Filter**: Show All/Active/Inactive only
 
 ### 3. **Actions**
+
 Each recurring transaction has three actions via dropdown menu:
+
 - **Edit**: Open transaction form pre-filled with current data
 - **Toggle Status**: Activate/Deactivate the recurring schedule
 - **Delete**: Remove the recurring transaction (with confirmation)
 
 ### 4. **Add New Recurring Transaction**
+
 - Button in header ("+ Add New")
 - Floating Action Button (FAB) on mobile
 - Opens a form (can reuse/adapt TransactionForm) with recurring-specific fields:
@@ -169,20 +179,24 @@ Each recurring transaction has three actions via dropdown menu:
 - Uses `POST /api/transactions` endpoint with recurring payload
 
 ### 5. **Next Occurrence Display**
+
 The `nextOccurrence` field is provided by the API - no calculation needed.
 
 Display the date with relative time formatting:
+
 - "Tomorrow", "in 3 days", "in 2 weeks", "in 1 month", etc.
 - Use `date-fns` for formatting and relative time calculation
 - For inactive transactions: Show "Deactivated" instead of next occurrence date
 
 ### 6. **Empty States**
+
 - When no recurring transactions exist at all
 - When no active recurring transactions
 - When no inactive recurring transactions
 - When search/filter returns no results
 
 ### 7. **Loading States**
+
 - Skeleton loaders while fetching data
 - Loading indicators for actions (edit, delete, toggle)
 
@@ -191,16 +205,19 @@ Display the date with relative time formatting:
 ## Technical Implementation
 
 ### 1. **Files to Create**
+
 - `src/pages/RecurringTransactions.tsx` - Main page component
 - (Optional) `src/components/recurring/RecurringTransactionCard.tsx` - Card component for each transaction
 
 ### 2. **Files to Modify**
+
 - `src/App.tsx` - Add new route
 - `src/components/layouts/DashboardLayout.tsx` - Add navigation item
 - `src/services/api.ts` - Add API methods for recurring transactions
 - `src/types/index.ts` - Add RecurringTransaction type
 
 ### 3. **New Type Additions**
+
 Based on the Swagger API schema:
 
 ```typescript
@@ -224,9 +241,11 @@ export interface RecurringTransaction {
 **Note**: The API returns ISO date-time strings, so we'll need to convert them to Date objects in the frontend.
 
 ### 4. **API Methods to Add**
+
 Based on the Swagger documentation:
 
 **Existing Endpoints:**
+
 - `GET /api/recurring-transactions` - Returns object with `recurringTransactions` array
 - `POST /api/transactions` - Create transaction (can create recurring by passing `isRecurring: true` and `recurrenceFrequency`)
 - `PUT /api/recurring-transactions/{id}` - Update recurring transaction (204 response)
@@ -234,14 +253,15 @@ Based on the Swagger documentation:
 - `POST /api/recurring-transactions/{id}/toggle` - Toggle active/inactive status (204 response, requires `active` in body)
 
 **API Methods to Implement in Frontend:**
+
 ```typescript
 // New service: recurringTransactionsService
 export const recurringTransactionsService = {
   // Get all recurring transactions
   getAll: async (): Promise<RecurringTransaction[]> => {
-    const response = await apiClient.get<{ recurringTransactions: RecurringTransaction[] }>(
-      "/recurring-transactions"
-    );
+    const response = await apiClient.get<{
+      recurringTransactions: RecurringTransaction[];
+    }>("/recurring-transactions");
     return response.data.recurringTransactions;
   },
 
@@ -252,12 +272,18 @@ export const recurringTransactionsService = {
       isRecurring: true, // Mark as recurring
       recurrenceFrequency: data.recurrenceFrequency, // Required for recurring
     };
-    const response = await apiClient.post<Transaction>("/transactions", payload);
+    const response = await apiClient.post<Transaction>(
+      "/transactions",
+      payload,
+    );
     return response.data;
   },
 
   // Update recurring transaction (dedicated endpoint)
-  update: async (id: string, data: Partial<RecurringTransaction>): Promise<void> => {
+  update: async (
+    id: string,
+    data: Partial<RecurringTransaction>,
+  ): Promise<void> => {
     await apiClient.put(`/recurring-transactions/${id}`, data);
     // Returns 204 No Content
   },
@@ -278,6 +304,7 @@ export const recurringTransactionsService = {
 ```
 
 **Notes:**
+
 - **READ**: GET returns `{ recurringTransactions: RecurringTransaction[] }` object, not array directly
 - **CREATE**: Uses `POST /api/transactions` with `isRecurring: true` and `recurrenceFrequency` in payload
 - **UPDATE**: Uses dedicated `PUT /api/recurring-transactions/{id}` endpoint (204 response)
@@ -285,6 +312,7 @@ export const recurringTransactionsService = {
 - **TOGGLE**: Uses dedicated `POST /api/recurring-transactions/{id}/toggle` endpoint with `{ active: boolean }` body (204 response)
 
 ### 5. **Component Structure**
+
 ```
 RecurringTransactions (Page)
 ├── DashboardLayout
@@ -303,19 +331,29 @@ RecurringTransactions (Page)
 ```
 
 ### 6. **State Management**
+
 ```typescript
-const [recurringTransactions, setRecurringTransactions] = useState<RecurringTransaction[]>([]);
+const [recurringTransactions, setRecurringTransactions] = useState<
+  RecurringTransaction[]
+>([]);
 const [categories, setCategories] = useState<Category[]>([]);
 const [searchTerm, setSearchTerm] = useState("");
-const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">("all");
+const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">(
+  "all",
+);
 const [categoryFilter, setCategoryFilter] = useState<string>("all");
-const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
+const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">(
+  "all",
+);
 const [isFormOpen, setIsFormOpen] = useState(false);
-const [editingTransaction, setEditingTransaction] = useState<RecurringTransaction | undefined>();
+const [editingTransaction, setEditingTransaction] = useState<
+  RecurringTransaction | undefined
+>();
 const [isLoading, setIsLoading] = useState(false);
 ```
 
 ### 7. **Helper Functions**
+
 ```typescript
 // Get relative time string from nextOccurrence date (provided by API)
 const getRelativeTime = (date: Date): string // "in 3 days", "tomorrow", etc.
@@ -333,6 +371,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 ## UI Components to Use
 
 ### Existing Components
+
 - `DashboardLayout` - Page wrapper
 - `Card`, `CardHeader`, `CardContent` - Transaction cards
 - `Badge` - Type and status badges
@@ -346,6 +385,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 - Iconify icons for categories
 
 ### New Components (if needed)
+
 - `RecurringTransactionCard` - Optional dedicated card component
 
 ---
@@ -353,14 +393,17 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 ## Color Coding
 
 ### Type Badges
+
 - **Income**: Green background (`bg-green-100 text-green-800`)
 - **Expense**: Red background (`bg-red-100 text-red-800`)
 
 ### Status Badges
+
 - **Active**: Blue background (`bg-blue-100 text-blue-800`)
 - **Inactive**: Gray background (`bg-gray-100 text-gray-800`)
 
 ### Icons
+
 - Income: `ArrowUpRight` (Lucide)
 - Expense: `ArrowDownLeft` (Lucide)
 - Category icons: Use Iconify icons based on category
@@ -370,6 +413,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 ## User Interactions
 
 ### 1. **Toggle Status Flow**
+
 1. User clicks "Deactivate" from dropdown
 2. Show confirmation dialog: "Deactivate this recurring transaction? It will stop creating new transactions."
 3. If confirmed, update `isActive = false`
@@ -377,6 +421,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 5. Show success toast: "Recurring transaction deactivated"
 
 ### 2. **Delete Flow**
+
 1. User clicks "Delete" from dropdown
 2. Show confirmation dialog: "Delete this recurring transaction? This cannot be undone."
 3. If confirmed, call delete API
@@ -384,6 +429,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 5. Show success toast: "Recurring transaction deleted"
 
 ### 3. **Edit Flow**
+
 1. User clicks "Edit" from dropdown
 2. Open TransactionForm dialog with pre-filled data
 3. User makes changes and saves
@@ -395,18 +441,21 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 ## Responsive Design
 
 ### Desktop (lg+)
+
 - Two-column layout with sidebar
 - Full-width search and filters in a row
 - Cards displayed with full details
 - Dropdown menu for actions
 
 ### Tablet (md)
+
 - Sidebar collapses
 - Search and filters stack vertically
 - Cards maintain full details
 - Dropdown menu for actions
 
 ### Mobile (sm)
+
 - Bottom tab bar navigation
 - Search and filters stack vertically
 - Compact card layout with essential info
@@ -418,11 +467,13 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 ## Error Handling
 
 ### API Errors
+
 - Failed to load: Show error toast + retry button
 - Failed to update: Show error toast + keep previous state
 - Failed to delete: Show error toast + keep item in list
 
 ### Empty States
+
 - No recurring transactions:
   ```
   [Icon] No Recurring Transactions
@@ -431,6 +482,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
   ```
 
 ### Search/Filter No Results
+
 - Show: "No recurring transactions match your filters"
 - Provide "Clear Filters" button
 
@@ -481,6 +533,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 ## Implementation Checklist
 
 ### Phase 1: Setup
+
 - [ ] Add RecurringTransaction type to types/index.ts
 - [ ] Add recurringTransactionsService to services/api.ts
 - [ ] Add route to App.tsx
@@ -488,6 +541,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 - [ ] Create RecurringTransactions.tsx page file
 
 ### Phase 2: Core UI
+
 - [ ] Implement page layout with DashboardLayout
 - [ ] Create search and filter UI
 - [ ] Implement transaction card display
@@ -495,6 +549,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 - [ ] Style with Tailwind classes
 
 ### Phase 3: Functionality
+
 - [ ] Load recurring transactions from API
 - [ ] Implement search filtering
 - [ ] Implement type/category/status filtering
@@ -502,6 +557,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 - [ ] Add empty states
 
 ### Phase 4: Actions
+
 - [ ] Create RecurringTransactionForm component (or adapt TransactionForm)
 - [ ] Implement edit action (uses PUT /recurring-transactions/{id})
 - [ ] Implement toggle status with confirmation (uses POST /recurring-transactions/{id}/toggle with { active: boolean })
@@ -510,6 +566,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 - [ ] Add FloatingActionButton for mobile
 
 ### Phase 5: Polish
+
 - [ ] Add loading states
 - [ ] Add error handling
 - [ ] Test responsive design
@@ -532,6 +589,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 ## API Schema Analysis (from Swagger)
 
 **Recurring Transaction Schema** (`def-1`):
+
 ```json
 {
   "id": "string",
@@ -550,6 +608,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 ```
 
 **Available Endpoints:**
+
 - `GET /api/recurring-transactions` - Returns `{ recurringTransactions: RecurringTransaction[] }` (200 response)
 - `POST /api/transactions` - Create transaction (pass `isRecurring: true` + `recurrenceFrequency` for recurring)
 - `PUT /api/recurring-transactions/{id}` - Update recurring transaction (204 response)
@@ -557,6 +616,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 - `POST /api/recurring-transactions/{id}/toggle` - Toggle status (204 response, body: `{ active: boolean }`)
 
 **CRUD Strategy:**
+
 - **READ**: `GET /api/recurring-transactions` returns `{ recurringTransactions: [] }`
 - **CREATE**: `POST /api/transactions` with `isRecurring: true` and `recurrenceFrequency`
 - **UPDATE**: `PUT /api/recurring-transactions/{id}` (dedicated endpoint, 204 response)
@@ -568,6 +628,7 @@ const inactiveTransactions = recurringTransactions.filter(t => t.isActive === fa
 ## Summary
 
 This implementation creates a comprehensive Recurring Transactions management page with:
+
 - ✅ Clear visualization of all recurring transactions
 - ✅ Active/Inactive status management
 - ✅ Next occurrence date calculation and display

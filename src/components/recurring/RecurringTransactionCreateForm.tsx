@@ -22,7 +22,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { createAmountChangeHandler, normalizeAmount } from "@/lib/amount-utils";
-import { categoriesService, recurringTransactionsService } from "@/services/api";
+import {
+  categoriesService,
+  recurringTransactionsService,
+} from "@/services/api";
 import { Category } from "@/types";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,13 +39,19 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const recurringTransactionCreateSchema = z
   .object({
-    title: z.string().min(1, "Title is required").max(40, "Title must be 40 characters or less"),
+    title: z
+      .string()
+      .min(1, "Title is required")
+      .max(40, "Title must be 40 characters or less"),
     type: z.enum(["INCOME", "EXPENSE"]),
     categoryId: z.string().min(1, "Category is required"),
     recurrenceFrequency: z.enum(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"]),
     startDate: z.date(),
     endDate: z.date().optional().nullable(),
-    description: z.string().max(256, "Description must be 256 characters or less").optional(),
+    description: z
+      .string()
+      .max(256, "Description must be 256 characters or less")
+      .optional(),
   })
   .refine(
     (data) => {
@@ -55,20 +64,21 @@ const recurringTransactionCreateSchema = z
     {
       message: "End date must be after start date",
       path: ["endDate"],
-    }
+    },
   );
 
-type RecurringTransactionCreateFormData = z.infer<typeof recurringTransactionCreateSchema>;
+type RecurringTransactionCreateFormData = z.infer<
+  typeof recurringTransactionCreateSchema
+>;
 
 interface RecurringTransactionCreateFormProps {
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreateFormProps> = ({
-  onSuccess,
-  onCancel,
-}) => {
+export const RecurringTransactionCreateForm: React.FC<
+  RecurringTransactionCreateFormProps
+> = ({ onSuccess, onCancel }) => {
   const { currency } = useCurrency();
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -146,7 +156,9 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
 
       // Convert end date to UTC if provided
       const utcEndDate = data.endDate
-        ? new Date(data.endDate.getTime() - data.endDate.getTimezoneOffset() * 60000)
+        ? new Date(
+            data.endDate.getTime() - data.endDate.getTimezoneOffset() * 60000,
+          )
         : null;
 
       // Build create payload
@@ -210,7 +222,8 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="amount">
-                Amount ({currency === "USD" ? "$" : "€"}) <span className="text-red-500">*</span>
+                Amount ({currency === "USD" ? "$" : "€"}){" "}
+                <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
@@ -247,7 +260,9 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
                   <SelectItem value="INCOME">Income</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.type && <p className="text-sm text-red-500">{errors.type.message}</p>}
+              {errors.type && (
+                <p className="text-sm text-red-500">{errors.type.message}</p>
+              )}
             </div>
           </div>
 
@@ -260,7 +275,9 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
               value={watch("categoryId")}
               onValueChange={(value) => setValue("categoryId", value)}
             >
-              <SelectTrigger className={errors.categoryId ? "border-red-500" : ""}>
+              <SelectTrigger
+                className={errors.categoryId ? "border-red-500" : ""}
+              >
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
@@ -278,7 +295,9 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
               </SelectContent>
             </Select>
             {errors.categoryId && (
-              <p className="text-sm text-red-500">{errors.categoryId.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.categoryId.message}
+              </p>
             )}
           </div>
 
@@ -294,7 +313,9 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
               rows={2}
             />
             {errors.description && (
-              <p className="text-sm text-red-500">{errors.description.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.description.message}
+              </p>
             )}
           </div>
         </div>
@@ -312,11 +333,13 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
             </Label>
             <Select
               value={watch("recurrenceFrequency")}
-              onValueChange={(value: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY") =>
-                setValue("recurrenceFrequency", value)
-              }
+              onValueChange={(
+                value: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY",
+              ) => setValue("recurrenceFrequency", value)}
             >
-              <SelectTrigger className={errors.recurrenceFrequency ? "border-red-500" : ""}>
+              <SelectTrigger
+                className={errors.recurrenceFrequency ? "border-red-500" : ""}
+              >
                 <SelectValue placeholder="Select frequency" />
               </SelectTrigger>
               <SelectContent>
@@ -327,7 +350,9 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
               </SelectContent>
             </Select>
             {errors.recurrenceFrequency && (
-              <p className="text-sm text-red-500">{errors.recurrenceFrequency.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.recurrenceFrequency.message}
+              </p>
             )}
           </div>
 
@@ -336,14 +361,17 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
             <Label>
               Start Date <span className="text-red-500">*</span>
             </Label>
-            <Popover open={startCalendarOpen} onOpenChange={setStartCalendarOpen}>
+            <Popover
+              open={startCalendarOpen}
+              onOpenChange={setStartCalendarOpen}
+            >
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal",
                     !watchStartDate && "text-muted-foreground",
-                    errors.startDate && "border-red-500"
+                    errors.startDate && "border-red-500",
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -381,11 +409,15 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
                   className={cn(
                     "w-full justify-start text-left font-normal",
                     !watchEndDate && "text-muted-foreground",
-                    errors.endDate && "border-red-500"
+                    errors.endDate && "border-red-500",
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {watchEndDate ? format(watchEndDate, "PPP") : <span>Select end date...</span>}
+                  {watchEndDate ? (
+                    format(watchEndDate, "PPP")
+                  ) : (
+                    <span>Select end date...</span>
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -412,7 +444,9 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
                 Clear end date
               </Button>
             )}
-            {errors.endDate && <p className="text-sm text-red-500">{errors.endDate.message}</p>}
+            {errors.endDate && (
+              <p className="text-sm text-red-500">{errors.endDate.message}</p>
+            )}
             <p className="text-xs text-gray-500 dark:text-gray-400">
               Leave empty for indefinite recurrence
             </p>
@@ -422,8 +456,8 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription className="text-xs">
-              This will create a recurring schedule that automatically generates transactions based
-              on the frequency you selected.
+              This will create a recurring schedule that automatically generates
+              transactions based on the frequency you selected.
             </AlertDescription>
           </Alert>
         </div>
@@ -439,7 +473,11 @@ export const RecurringTransactionCreateForm: React.FC<RecurringTransactionCreate
           >
             Cancel
           </Button>
-          <Button type="submit" className="flex-1" disabled={isSubmitting || isLoading}>
+          <Button
+            type="submit"
+            className="flex-1"
+            disabled={isSubmitting || isLoading}
+          >
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
