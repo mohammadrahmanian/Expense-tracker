@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
     mandatory: ["VITE_API_BASE_URL", "VITE_API_PROXY_TARGET"],
     optional: [
       { name: "PORT", defaultValue: "8080" },
-      "SENTRY_DSN",
+      "VITE_SENTRY_DSN",
       "SENTRY_AUTH_TOKEN",
       "SENTRY_ORG",
       "SENTRY_PROJECT",
