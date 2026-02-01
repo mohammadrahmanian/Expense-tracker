@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { recurringTransactionsService } from '@/services/api';
 import { queryKeys } from '@/lib/query-keys';
 import { toast } from 'sonner';
+import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
 
 /**
  * Hook for deleting a recurring transaction
@@ -31,13 +32,9 @@ export function useDeleteRecurringTransaction() {
       queryClient.invalidateQueries({ queryKey: queryKeys.recurringTransactions.all });
       toast.success('Recurring transaction deleted successfully');
     },
-    onError: (error) => {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Failed to delete recurring transaction'
-      );
-      console.error('Delete recurring transaction error:', error);
-    },
+    onError: createMutationErrorHandler({
+      action: 'delete recurring transaction',
+      feature: 'RECURRING',
+    }),
   });
 }

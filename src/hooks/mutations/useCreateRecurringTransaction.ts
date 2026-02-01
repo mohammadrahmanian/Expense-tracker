@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { recurringTransactionsService } from '@/services/api';
 import { queryKeys } from '@/lib/query-keys';
 import { toast } from 'sonner';
+import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
 
 /**
  * Hook for creating a new recurring transaction
@@ -47,13 +48,9 @@ export function useCreateRecurringTransaction() {
       queryClient.invalidateQueries({ queryKey: queryKeys.recurringTransactions.all });
       toast.success('Recurring transaction created successfully');
     },
-    onError: (error) => {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Failed to create recurring transaction'
-      );
-      console.error('Create recurring transaction error:', error);
-    },
+    onError: createMutationErrorHandler({
+      action: 'create recurring transaction',
+      feature: 'RECURRING',
+    }),
   });
 }

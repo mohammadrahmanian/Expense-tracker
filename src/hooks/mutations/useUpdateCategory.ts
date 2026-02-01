@@ -3,6 +3,7 @@ import { categoriesService } from '@/services/api';
 import { queryKeys } from '@/lib/query-keys';
 import { toast } from 'sonner';
 import type { Category } from '@/types';
+import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
 
 /**
  * Hook for updating an existing category
@@ -33,9 +34,9 @@ export function useUpdateCategory() {
       queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
       toast.success('Category updated successfully');
     },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Failed to update category');
-      console.error('Update category error:', error);
-    },
+    onError: createMutationErrorHandler({
+      action: 'update category',
+      feature: 'CATEGORIES',
+    }),
   });
 }

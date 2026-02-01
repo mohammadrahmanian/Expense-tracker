@@ -3,6 +3,7 @@ import { transactionsService } from '@/services/api';
 import { queryKeys } from '@/lib/query-keys';
 import { toast } from 'sonner';
 import type { Transaction } from '@/types';
+import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
 
 /**
  * Hook for updating an existing transaction
@@ -33,9 +34,9 @@ export function useUpdateTransaction() {
       queryClient.invalidateQueries({ queryKey: queryKeys.reports.all });
       toast.success('Transaction updated successfully');
     },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Failed to update transaction');
-      console.error('Update transaction error:', error);
-    },
+    onError: createMutationErrorHandler({
+      action: 'update transaction',
+      feature: 'TRANSACTIONS',
+    }),
   });
 }

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { transactionsService } from '@/services/api';
 import { queryKeys } from '@/lib/query-keys';
 import { toast } from 'sonner';
+import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
 
 /**
  * Hook for deleting a transaction
@@ -33,9 +34,9 @@ export function useDeleteTransaction() {
       queryClient.invalidateQueries({ queryKey: queryKeys.reports.all });
       toast.success('Transaction deleted successfully');
     },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Failed to delete transaction');
-      console.error('Delete transaction error:', error);
-    },
+    onError: createMutationErrorHandler({
+      action: 'delete transaction',
+      feature: 'TRANSACTIONS',
+    }),
   });
 }
