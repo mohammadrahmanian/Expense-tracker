@@ -1,7 +1,10 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { MobileSortControls } from "@/components/transactions/MobileSortControls";
+import { TransactionCard } from "@/components/transactions/TransactionCard";
 import { TransactionForm } from "@/components/transactions/TransactionForm";
+import { TransactionTableHeaders } from "@/components/transactions/TransactionTableHeaders";
+import { TransactionTableRow } from "@/components/transactions/TransactionTableRow";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,12 +13,6 @@ import {
   ResponsiveDialogContent as DialogContent,
   ResponsiveDialogTrigger as DialogTrigger
 } from "@/components/ui/responsive-dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -29,14 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { Transaction } from "@/types";
 import { format } from "date-fns";
@@ -45,18 +35,12 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Calendar as CalendarIcon,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ChevronsUpDown,
-  ChevronUp,
-  Edit,
   Filter,
   Loader2,
-  MoreHorizontal,
   Plus,
   Search,
-  Trash2,
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { useCurrency } from "@/contexts/CurrencyContext";
@@ -209,17 +193,6 @@ const Transactions: React.FC = () => {
       setSortOrder("desc");
     }
     setCurrentPage(1); // Reset to first page when sorting changes
-  };
-
-  const getSortIcon = (field: "date" | "amount") => {
-    if (sortField !== field) {
-      return <ChevronsUpDown className="ml-1 h-3.5 w-3.5 text-muted-foreground/60" />;
-    }
-    return sortOrder === "asc" ? (
-      <ChevronUp className="ml-1 h-3.5 w-3.5 text-primary/80" />
-    ) : (
-      <ChevronDown className="ml-1 h-3.5 w-3.5 text-primary/80" />
-    );
   };
 
   const totalIncome = transactions
@@ -471,138 +444,69 @@ const Transactions: React.FC = () => {
                 </p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>
-                        <button
-                          type="button"
-                          onClick={() => handleSort("date")}
-                          className={cn(
-                            "inline-flex items-center h-8 px-2 hover:bg-muted/50 rounded-md transition-colors -ml-2",
-                            sortField === "date" && "font-semibold"
-                          )}
-                        >
-                          Date
-                          {getSortIcon("date")}
-                        </button>
-                      </TableHead>
-                      <TableHead className="text-right">
-                        <button
-                          type="button"
-                          onClick={() => handleSort("amount")}
-                          className={cn(
-                            "inline-flex items-center h-8 px-2 hover:bg-muted/50 rounded-md transition-colors float-right",
-                            sortField === "amount" && "font-semibold"
-                          )}
-                        >
-                          Amount
-                          {getSortIcon("amount")}
-                        </button>
-                      </TableHead>
-                      <TableHead className="w-[50px]"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {transactions.map((transaction) => {
-                      const category = getCategoryById(transaction.categoryId);
-                      return (
-                        <TableRow key={transaction.id}>
-                          <TableCell className="font-medium">
-                            <div className="flex items-center space-x-2">
-                              <div
-                                className={cn(
-                                  "w-8 h-8 rounded-full flex items-center justify-center",
-                                  transaction.type === "INCOME"
-                                    ? "bg-green-100 dark:bg-green-900"
-                                    : "bg-red-100 dark:bg-red-900",
-                                )}
-                              >
-                                {transaction.type === "INCOME" ? (
-                                  <ArrowUpRight className="h-4 w-4 text-green-600 dark:text-green-400" />
-                                ) : (
-                                  <ArrowDownLeft className="h-4 w-4 text-red-600 dark:text-red-400" />
-                                )}
-                              </div>
-                              <span>{transaction.title}</span>
-                              {transaction.isRecurring && (
-                                <Badge variant="secondary" className="text-xs">
-                                  Recurring
-                                </Badge>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant="secondary"
-                              style={{
-                                backgroundColor: category?.color + "20",
-                                color: category?.color,
-                              }}
-                            >
-                              {category?.name}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                transaction.type === "INCOME"
-                                  ? "default"
-                                  : "destructive"
-                              }
-                            >
-                              {transaction.type}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {format(new Date(transaction.date), "MMM dd, yyyy")}
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              "text-right font-semibold",
-                              transaction.type === "INCOME"
-                                ? "text-green-600"
-                                : "text-red-600",
-                            )}
-                          >
-                            {transaction.type === "INCOME" ? "+" : "-"}{formatAmount(transaction.amount)}
-                          </TableCell>
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  onClick={() => handleEdit(transaction)}
-                                  disabled={deleteTransaction.isPending}
-                                >
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => handleDelete(transaction.id)}
-                                  className="text-red-600"
-                                  disabled={deleteTransaction.isPending}
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
+              <>
+                {/* Mobile Sort Controls */}
+                <MobileSortControls
+                  sortField={sortField}
+                  sortOrder={sortOrder}
+                  onSort={handleSort}
+                />
+
+                {/* Mobile: Card List */}
+                <div className="md:hidden space-y-3">
+                  {transactions.map((transaction) => {
+                    const category = getCategoryById(transaction.categoryId);
+                    if (!category) return null; // Should not happen, but TypeScript safety
+
+                    return (
+                      <TransactionCard
+                        key={transaction.id}
+                        transaction={transaction}
+                        category={category}
+                        formatAmount={formatAmount}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        isDeleting={
+                          deleteTransaction.isPending &&
+                          deleteTransaction.variables === transaction.id
+                        }
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* Desktop: Table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TransactionTableHeaders
+                      sortField={sortField}
+                      sortOrder={sortOrder}
+                      onSort={handleSort}
+                    />
+                    <TableBody>
+                      {transactions.map((transaction) => {
+                        const category = getCategoryById(transaction.categoryId);
+                        if (!category) return null; // Should not happen, but TypeScript safety
+
+                        return (
+                          <TransactionTableRow
+                            key={transaction.id}
+                            transaction={transaction}
+                            category={category}
+                            formatAmount={formatAmount}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                            isDeleting={
+                              deleteTransaction.isPending &&
+                              deleteTransaction.variables === transaction.id
+                            }
+                          />
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
 
             {/* Pagination Controls */}

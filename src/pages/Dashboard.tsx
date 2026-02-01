@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { TransactionTypeIcon } from "@/components/transactions/TransactionTypeIcon";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,8 +11,6 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { format } from "date-fns";
 import {
   AlertCircle,
-  ArrowDownLeft,
-  ArrowUpRight,
   PiggyBank,
   TrendingDown,
   TrendingUp,
@@ -352,20 +351,7 @@ const Dashboard: React.FC = () => {
                       className="flex items-center justify-between p-3 rounded-lg border"
                     >
                       <div className="flex items-center space-x-3">
-                        <div
-                          className={cn(
-                            "w-10 h-10 rounded-full flex items-center justify-center",
-                            transaction.type === "INCOME"
-                              ? "bg-green-100 dark:bg-green-900"
-                              : "bg-red-100 dark:bg-red-900",
-                          )}
-                        >
-                          {transaction.type === "INCOME" ? (
-                            <ArrowUpRight className="h-5 w-5 text-green-600 dark:text-green-400" />
-                          ) : (
-                            <ArrowDownLeft className="h-5 w-5 text-red-600 dark:text-red-400" />
-                          )}
-                        </div>
+                        <TransactionTypeIcon type={transaction.type} size="md" />
                         <div>
                           <p className="font-medium">{transaction.title}</p>
                           <div className="flex items-center space-x-2">
