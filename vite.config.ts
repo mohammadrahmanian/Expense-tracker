@@ -23,6 +23,10 @@ export default defineConfig(({ mode }) => {
     ],
   });
 
+  // Check if Sentry configuration is complete
+  const hasSentryConfig =
+    env.SENTRY_AUTH_TOKEN && env.SENTRY_ORG && env.SENTRY_PROJECT;
+
   // Validate and normalize the proxy target
   let rawProxyTarget = env.VITE_API_PROXY_TARGET;
 
@@ -193,11 +197,16 @@ export default defineConfig(({ mode }) => {
           ],
         },
       }),
-      sentryVitePlugin({
-        authToken: env.SENTRY_AUTH_TOKEN,
-        org: env.SENTRY_ORG,
-        project: env.SENTRY_PROJECT,
-      }),
+      // Only include Sentry plugin if all required env vars are present
+      ...(hasSentryConfig
+        ? [
+            sentryVitePlugin({
+              authToken: env.SENTRY_AUTH_TOKEN,
+              org: env.SENTRY_ORG,
+              project: env.SENTRY_PROJECT,
+            }),
+          ]
+        : []),
     ],
     resolve: {
       alias: {
