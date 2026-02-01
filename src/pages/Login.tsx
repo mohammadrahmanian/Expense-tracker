@@ -36,7 +36,7 @@ const Login: React.FC = () => {
       toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (error) {
-      toast.error("Invalid credentials. Please try again.");
+      // Error toast already shown by AuthContext via handleApiError
       return;
     }
   };
