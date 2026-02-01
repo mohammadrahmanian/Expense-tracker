@@ -455,8 +455,12 @@ const Transactions: React.FC = () => {
                 {/* Mobile: Card List */}
                 <div className="md:hidden space-y-3">
                   {transactions.map((transaction) => {
-                    const category = getCategoryById(transaction.categoryId);
-                    if (!category) return null; // Should not happen, but TypeScript safety
+                    const category = getCategoryById(transaction.categoryId) ?? {
+                      id: "missing",
+                      name: "Uncategorized",
+                      color: "#6b7280",
+                      type: transaction.type,
+                    };
 
                     return (
                       <TransactionCard
@@ -485,8 +489,12 @@ const Transactions: React.FC = () => {
                     />
                     <TableBody>
                       {transactions.map((transaction) => {
-                        const category = getCategoryById(transaction.categoryId);
-                        if (!category) return null; // Should not happen, but TypeScript safety
+                        const category = getCategoryById(transaction.categoryId) ?? {
+                          id: "missing",
+                          name: "Uncategorized",
+                          color: "#6b7280",
+                          type: transaction.type,
+                        };
 
                         return (
                           <TransactionTableRow

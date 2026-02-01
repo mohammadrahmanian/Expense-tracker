@@ -35,7 +35,7 @@ export function ActionsMenu({
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => onDelete(transaction.id)}
-          className="text-red-600 focus:text-red-600"
+          className="text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400"
           disabled={isDeleting}
         >
           {isDeleting ? (
