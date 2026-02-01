@@ -10,7 +10,7 @@ When a prompt asks to add a feature, fix a bug, or add tests:
 6. Use git convention naming for branches (e.g., `feat/add-export`, `fix/login-error`)
 7. Never commit `plan.md` to the repository
 8. Once done with a task implementation, run the typecheck command to ensure no type errors: `npm run typecheck:all`
-9. Make sure to clean up the unused imports, variables, and code
+9. Make sure to clean up the unused imports, variables, and code and leave no tech debts behind when the task is done.
 
 Use the **frontend-developer** subagent for frontend development tasks.
 
@@ -24,6 +24,7 @@ The codebase documentation is modular. Load only what you need:
 |---------------------|------|
 | Understand the project | `docs/agents/overview.md` |
 | Find where code belongs | `docs/agents/architecture.md` |
+| Error / Exception Tracking | `docs/agents/error-exception-tracking.md` |
 | Add a new feature | `docs/agents/adding-features.md` |
 | Follow code style | `docs/agents/coding-conventions.md` |
 | Avoid common mistakes | `docs/agents/anti-patterns.md` |

@@ -74,6 +74,7 @@ axios.get('/api/transactions');
 |-------|------|--------------|
 | App overview & tech stack | [overview.md](docs/agents/overview.md) | Understanding the project |
 | Project structure | [architecture.md](docs/agents/architecture.md) | Finding where code belongs |
+| Error / Exception Tracking | [error-exception-tracking.md](docs/agents/error-exception-tracking.md) | Handling errors and exceptions |
 | Adding features workflow | [adding-features.md](docs/agents/adding-features.md) | Implementing new features |
 | Code style & naming | [coding-conventions.md](docs/agents/coding-conventions.md) | Writing consistent code |
 | What NOT to do | [anti-patterns.md](docs/agents/anti-patterns.md) | Avoiding common mistakes |
