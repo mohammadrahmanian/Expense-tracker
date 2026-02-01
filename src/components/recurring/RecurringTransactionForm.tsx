@@ -22,12 +22,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { createAmountChangeHandler, normalizeAmount } from "@/lib/amount-utils";
-import {
-  categoriesService,
-  recurringTransactionsService,
-} from "@/services/api";
-import { Category, RecurringTransaction } from "@/types";
+import { RecurringTransaction } from "@/types";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCategories } from "@/hooks/queries/useCategories";
+import { useUpdateRecurringTransaction } from "@/hooks/mutations/useUpdateRecurringTransaction";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, Info, Loader2 } from "lucide-react";
@@ -74,29 +72,16 @@ export const RecurringTransactionForm: React.FC<
   RecurringTransactionFormProps
 > = ({ transaction, onSuccess, onCancel }) => {
   const { currency } = useCurrency();
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [amount, setAmount] = React.useState<string>(
     transaction.amount.toString(),
   );
   const [endCalendarOpen, setEndCalendarOpen] = React.useState(false);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setIsLoading(true);
-        const allCategories = await categoriesService.getAll();
-        setCategories(allCategories);
-      } catch (error) {
-        toast.error("Failed to load categories. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Fetch categories with TanStack Query
+  const { data: categories = [], isLoading } = useCategories();
 
-    fetchCategories();
-  }, []);
+  // Update recurring transaction mutation
+  const updateRecurringTransaction = useUpdateRecurringTransaction();
 
   const handleAmountChange = createAmountChangeHandler(setAmount);
 
@@ -123,89 +108,80 @@ export const RecurringTransactionForm: React.FC<
   const filteredCategories = categories.filter((cat) => cat.type === watchType);
 
   const onSubmit = async (data: RecurringTransactionFormData) => {
-    try {
-      setIsSubmitting(true);
-
-      // Validate amount manually
-      if (!amount) {
-        toast.error("Please enter an amount");
-        setIsSubmitting(false);
-        return;
-      }
-
-      const normalizedAmount = normalizeAmount(amount.trim());
-      const numericAmount = parseFloat(normalizedAmount);
-      if (isNaN(numericAmount) || numericAmount <= 0) {
-        toast.error("Please enter a valid amount");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Validate end date is after start date
-      if (data.endDate) {
-        const startDate = new Date(transaction.startDate);
-        if (data.endDate <= startDate) {
-          toast.error("End date must be after start date");
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      // Build update payload - only send changed fields
-      const updatePayload: any = {};
-
-      if (data.title !== transaction.title) {
-        updatePayload.title = data.title;
-      }
-
-      if (numericAmount !== transaction.amount) {
-        updatePayload.amount = numericAmount;
-      }
-
-      if (data.type !== transaction.type) {
-        updatePayload.type = data.type;
-      }
-
-      if (data.categoryId !== transaction.categoryId) {
-        updatePayload.categoryId = data.categoryId;
-      }
-
-      if (data.description !== transaction.description) {
-        updatePayload.description = data.description || undefined;
-      }
-
-      // Handle endDate changes (including removal)
-      const currentEndDate = transaction.endDate
-        ? new Date(transaction.endDate).getTime()
-        : null;
-      const newEndDate = data.endDate ? data.endDate.getTime() : null;
-
-      if (currentEndDate !== newEndDate) {
-        updatePayload.endDate = data.endDate
-          ? data.endDate.toISOString()
-          : null;
-      }
-
-      // Check if anything changed
-      if (Object.keys(updatePayload).length === 0) {
-        toast.info("No changes to save");
-        setIsSubmitting(false);
-        return;
-      }
-
-      await recurringTransactionsService.update(transaction.id, updatePayload);
-
-      toast.success("Recurring transaction updated successfully!");
-      onSuccess();
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to update recurring transaction. Please try again.";
-      toast.error(errorMessage);
-    } finally {
-      setIsSubmitting(false);
+    // Validate amount manually
+    if (!amount) {
+      toast.error("Please enter an amount");
+      return;
     }
+
+    const normalizedAmount = normalizeAmount(amount.trim());
+    const numericAmount = parseFloat(normalizedAmount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+
+    // Validate end date is after start date
+    if (data.endDate) {
+      const startDate = new Date(transaction.startDate);
+      if (data.endDate <= startDate) {
+        toast.error("End date must be after start date");
+        return;
+      }
+    }
+
+    // Build update payload - only send changed fields
+    const updatePayload: any = {};
+
+    if (data.title !== transaction.title) {
+      updatePayload.title = data.title;
+    }
+
+    if (numericAmount !== transaction.amount) {
+      updatePayload.amount = numericAmount;
+    }
+
+    if (data.type !== transaction.type) {
+      updatePayload.type = data.type;
+    }
+
+    if (data.categoryId !== transaction.categoryId) {
+      updatePayload.categoryId = data.categoryId;
+    }
+
+    if (data.description !== transaction.description) {
+      updatePayload.description = data.description || undefined;
+    }
+
+    // Handle endDate changes (including removal)
+    const currentEndDate = transaction.endDate
+      ? new Date(transaction.endDate).getTime()
+      : null;
+    const newEndDate = data.endDate ? data.endDate.getTime() : null;
+
+    if (currentEndDate !== newEndDate) {
+      updatePayload.endDate = data.endDate ? data.endDate.toISOString() : null;
+    }
+
+    // Check if anything changed
+    if (Object.keys(updatePayload).length === 0) {
+      toast.info("No changes to save");
+      return;
+    }
+
+    // Use TanStack Query mutation
+    updateRecurringTransaction.mutate(
+      {
+        id: transaction.id,
+        updates: updatePayload,
+      },
+      {
+        onSuccess: () => {
+          onSuccess();
+        },
+        // Error handling is done by the mutation hook
+      },
+    );
   };
 
   return (
@@ -444,16 +420,16 @@ export const RecurringTransactionForm: React.FC<
             variant="outline"
             onClick={onCancel}
             className="flex-1"
-            disabled={isSubmitting}
+            disabled={updateRecurringTransaction.isPending}
           >
             Cancel
           </Button>
           <Button
             type="submit"
             className="flex-1"
-            disabled={isSubmitting || isLoading}
+            disabled={updateRecurringTransaction.isPending || isLoading}
           >
-            {isSubmitting ? (
+            {updateRecurringTransaction.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Saving...
