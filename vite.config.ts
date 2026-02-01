@@ -1,7 +1,9 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { defineConfig, loadEnv } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { validateEnv } from "./src/utils/validateEnv";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -9,16 +11,20 @@ export default defineConfig(({ mode }) => {
   // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
   const env = loadEnv(mode, process.cwd(), "");
 
+  // Validate environment variables - will throw if mandatory vars missing
+  validateEnv(env, {
+    mandatory: ["VITE_API_BASE_URL", "VITE_API_PROXY_TARGET"],
+    optional: [
+      { name: "PORT", defaultValue: "8080" },
+      "SENTRY_DSN",
+      "SENTRY_AUTH_TOKEN",
+      "SENTRY_ORG",
+      "SENTRY_PROJECT",
+    ],
+  });
+
   // Validate and normalize the proxy target
   let rawProxyTarget = env.VITE_API_PROXY_TARGET;
-
-  // Provide sensible default for local development
-  if (!rawProxyTarget) {
-    rawProxyTarget = "http://localhost:4000";
-    console.warn(
-      "VITE_API_PROXY_TARGET not set, using default: http://localhost:4000"
-    );
-  }
 
   // Normalize the proxy target:
   // 1. Strip trailing "/api" to avoid duplication (proxy already adds /api)
@@ -35,16 +41,19 @@ export default defineConfig(({ mode }) => {
   proxyTarget = proxyTarget.replace(/\/+$/, "");
 
   // Ensure protocol is present
-  if (!proxyTarget.startsWith("http://") && !proxyTarget.startsWith("https://")) {
+  if (
+    !proxyTarget.startsWith("http://") &&
+    !proxyTarget.startsWith("https://")
+  ) {
     throw new Error(
-      `VITE_API_PROXY_TARGET must include protocol (http:// or https://). Got: ${rawProxyTarget}`
+      `VITE_API_PROXY_TARGET must include protocol (http:// or https://). Got: ${rawProxyTarget}`,
     );
   }
 
   return {
     server: {
       host: "::",
-      port: 8080,
+      port: env.PORT ? parseInt(env.PORT) : 8080,
       proxy: {
         "/api": {
           target: proxyTarget,
@@ -52,6 +61,9 @@ export default defineConfig(({ mode }) => {
           secure: false,
         },
       },
+    },
+    build: {
+      sourcemap: true,
     },
     plugins: [
       react(),
@@ -180,6 +192,11 @@ export default defineConfig(({ mode }) => {
             },
           ],
         },
+      }),
+      sentryVitePlugin({
+        authToken: env.SENTRY_AUTH_TOKEN,
+        org: env.SENTRY_ORG,
+        project: env.SENTRY_PROJECT,
       }),
     ],
     resolve: {
