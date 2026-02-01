@@ -1,5 +1,6 @@
 import { Budget, Category, CategorySpending, DashboardStats, RecurringTransaction, ReportsResponse, Transaction } from "@/types";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { handleApiError } from "@/lib/error-handling";
 
 // Navigation singleton for use outside React components
 let navigationCallback: ((path: string) => void) | null = null;
@@ -63,20 +64,6 @@ apiClient.interceptors.response.use(
   },
 );
 
-// API Error handling utility
-const handleApiError = (error: any): never => {
-  if (error.response) {
-    // Server responded with error status
-    const message = error.response.data?.message || "An error occurred";
-    throw new Error(`${error.response.status}: ${message}`);
-  } else if (error.request) {
-    // Request was made but no response received
-    throw new Error("Network error: No response from server");
-  } else {
-    // Something else happened
-    throw new Error(error.message || "An unexpected error occurred");
-  }
-};
 
 // Transactions Service
 export const transactionsService = {
@@ -112,7 +99,11 @@ export const transactionsService = {
       const response = await apiClient.get<{ items: Transaction[]; total: number; count: number }>(url);
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'fetch transactions',
+        feature: 'TRANSACTIONS',
+      });
+      throw error;
     }
   },
 
@@ -121,7 +112,12 @@ export const transactionsService = {
       const response = await apiClient.get<Transaction>(`/transactions/${id}`);
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'fetch transaction',
+        feature: 'TRANSACTIONS',
+        metadata: { transactionId: id },
+      });
+      throw error;
     }
   },
 
@@ -135,7 +131,11 @@ export const transactionsService = {
       );
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'create transaction',
+        feature: 'TRANSACTIONS',
+      });
+      throw error;
     }
   },
 
@@ -150,7 +150,12 @@ export const transactionsService = {
       );
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'update transaction',
+        feature: 'TRANSACTIONS',
+        metadata: { transactionId: id },
+      });
+      throw error;
     }
   },
 
@@ -158,7 +163,12 @@ export const transactionsService = {
     try {
       await apiClient.delete(`/transactions/${id}`);
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'delete transaction',
+        feature: 'TRANSACTIONS',
+        metadata: { transactionId: id },
+      });
+      throw error;
     }
   },
 
@@ -172,7 +182,12 @@ export const transactionsService = {
       );
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'fetch transactions by date range',
+        feature: 'TRANSACTIONS',
+        metadata: { startDate, endDate },
+      });
+      throw error;
     }
   },
 };
@@ -184,7 +199,11 @@ export const categoriesService = {
       const response = await apiClient.get<Category[]>("/categories");
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'fetch categories',
+        feature: 'CATEGORIES',
+      });
+      throw error;
     }
   },
 
@@ -193,7 +212,12 @@ export const categoriesService = {
       const response = await apiClient.get<Category>(`/categories/${id}`);
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'fetch category',
+        feature: 'CATEGORIES',
+        metadata: { categoryId: id },
+      });
+      throw error;
     }
   },
 
@@ -204,7 +228,11 @@ export const categoriesService = {
       const response = await apiClient.post<Category>("/categories", category);
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'create category',
+        feature: 'CATEGORIES',
+      });
+      throw error;
     }
   },
 
@@ -216,7 +244,12 @@ export const categoriesService = {
       );
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'update category',
+        feature: 'CATEGORIES',
+        metadata: { categoryId: id },
+      });
+      throw error;
     }
   },
 
@@ -224,7 +257,12 @@ export const categoriesService = {
     try {
       await apiClient.delete(`/categories/${id}`);
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'delete category',
+        feature: 'CATEGORIES',
+        metadata: { categoryId: id },
+      });
+      throw error;
     }
   },
 };
@@ -236,7 +274,11 @@ export const budgetsService = {
       const response = await apiClient.get<Budget[]>("/budgets");
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'fetch budgets',
+        feature: 'BUDGETS',
+      });
+      throw error;
     }
   },
 
@@ -245,7 +287,12 @@ export const budgetsService = {
       const response = await apiClient.get<Budget>(`/budgets/${id}`);
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'fetch budget',
+        feature: 'BUDGETS',
+        metadata: { budgetId: id },
+      });
+      throw error;
     }
   },
 
@@ -254,7 +301,11 @@ export const budgetsService = {
       const response = await apiClient.post<Budget>("/budgets", budget);
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'create budget',
+        feature: 'BUDGETS',
+      });
+      throw error;
     }
   },
 
@@ -263,7 +314,12 @@ export const budgetsService = {
       const response = await apiClient.put<Budget>(`/budgets/${id}`, updates);
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'update budget',
+        feature: 'BUDGETS',
+        metadata: { budgetId: id },
+      });
+      throw error;
     }
   },
 
@@ -271,7 +327,12 @@ export const budgetsService = {
     try {
       await apiClient.delete(`/budgets/${id}`);
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'delete budget',
+        feature: 'BUDGETS',
+        metadata: { budgetId: id },
+      });
+      throw error;
     }
   },
 };
@@ -283,7 +344,11 @@ export const dashboardService = {
       const response = await apiClient.get<DashboardStats>("/dashboard/stats");
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'fetch stats',
+        feature: 'DASHBOARD',
+      });
+      throw error;
     }
   },
 
@@ -297,7 +362,12 @@ export const dashboardService = {
       );
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'fetch monthly stats',
+        feature: 'DASHBOARD',
+        metadata: { year, month },
+      });
+      throw error;
     }
   },
 
@@ -308,7 +378,12 @@ export const dashboardService = {
       );
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'fetch reports',
+        feature: 'REPORTS',
+        metadata: { startDate, endDate },
+      });
+      throw error;
     }
   },
 
@@ -389,9 +464,11 @@ export const dashboardService = {
 
       return result;
     } catch (error) {
-      console.error('Error fetching category expenses:', error);
-      handleApiError(error);
-      return []; // Return empty array on error
+      handleApiError(error, {
+        action: 'fetch category expenses',
+        feature: 'DASHBOARD',
+      });
+      throw error;
     }
   },
 };
@@ -412,7 +489,11 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'login',
+        feature: 'AUTH',
+      });
+      throw error;
     }
   },
 
@@ -432,7 +513,11 @@ export const authService = {
       }
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'register',
+        feature: 'AUTH',
+      });
+      throw error;
     }
   },
 
@@ -441,7 +526,12 @@ export const authService = {
       await apiClient.post("/users/logout");
     } catch (error) {
       // Even if logout fails on server, clear local token
-      console.error("Logout error:", error);
+      handleApiError(error, {
+        action: 'logout',
+        feature: 'AUTH',
+      }, {
+        showToast: false,
+      });
     } finally {
       localStorage.removeItem("authToken");
     }
@@ -452,7 +542,11 @@ export const authService = {
       const response = await apiClient.get("/users/me");
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'get current user',
+        feature: 'AUTH',
+      });
+      throw error;
     }
   },
 };
@@ -466,7 +560,11 @@ export const recurringTransactionsService = {
       );
       return response.data.recurringTransactions;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'fetch recurring transactions',
+        feature: 'RECURRING',
+      });
+      throw error;
     }
   },
 
@@ -489,7 +587,11 @@ export const recurringTransactionsService = {
       );
       return response.data;
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'create recurring transaction',
+        feature: 'RECURRING',
+      });
+      throw error;
     }
   },
 
@@ -500,7 +602,12 @@ export const recurringTransactionsService = {
     try {
       await apiClient.put(`/recurring-transactions/${id}`, data);
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'update recurring transaction',
+        feature: 'RECURRING',
+        metadata: { recurringTransactionId: id },
+      });
+      throw error;
     }
   },
 
@@ -508,7 +615,12 @@ export const recurringTransactionsService = {
     try {
       await apiClient.delete(`/recurring-transactions/${id}`);
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'delete recurring transaction',
+        feature: 'RECURRING',
+        metadata: { recurringTransactionId: id },
+      });
+      throw error;
     }
   },
 
@@ -516,7 +628,12 @@ export const recurringTransactionsService = {
     try {
       await apiClient.post(`/recurring-transactions/${id}/toggle`, { active });
     } catch (error) {
-      return handleApiError(error);
+      handleApiError(error, {
+        action: 'toggle recurring transaction',
+        feature: 'RECURRING',
+        metadata: { recurringTransactionId: id, active },
+      });
+      throw error;
     }
   },
 };
