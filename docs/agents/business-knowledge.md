@@ -11,7 +11,7 @@ This document describes the domain entities and business logic in Expensio.
 A single financial record (income or expense).
 
 | Field | Type | Description |
-|-------|------|-------------|
+| ------- | ------ | ------------- |
 | id | string | Unique identifier |
 | title | string | Description of the transaction |
 | amount | number | Always positive (type determines income/expense) |
@@ -31,7 +31,7 @@ A single financial record (income or expense).
 Organizes transactions into groups.
 
 | Field | Type | Description |
-|-------|------|-------------|
+| ------- | ------ | ------------- |
 | id | string | Unique identifier |
 | name | string | Category display name |
 | type | 'INCOME' \| 'EXPENSE' | What type of transactions it's for |
@@ -48,7 +48,7 @@ Organizes transactions into groups.
 Automated transactions on a schedule.
 
 | Field | Type | Description |
-|-------|------|-------------|
+| ------- | ------ | ------------- |
 | id | string | Unique identifier |
 | title | string | Description |
 | amount | number | Transaction amount |
@@ -76,7 +76,7 @@ Provides fast expense entry for common categories.
 ### Predefined Categories
 
 | Category | Icon | Color | Behavior |
-|----------|------|-------|----------|
+| ---------- | ------ | ------- | ---------- |
 | Food | UtensilsCrossed | #f97316 (orange) | Creates EXPENSE category if missing |
 | Health | HeartPulse | #ef4444 (red) | Creates EXPENSE category if missing |
 | Household | Home | #3b82f6 (blue) | Creates EXPENSE category if missing |
@@ -96,12 +96,12 @@ Provides fast expense entry for common categories.
 Location: `src/pages/Dashboard.tsx`
 
 ### Current Balance
-```
+```text
 Current Balance = Total Income (all time) - Total Expenses (all time)
 ```
 
 ### Monthly Summary
-```
+```text
 Monthly Income = Sum of INCOME transactions in current month
 Monthly Expenses = Sum of EXPENSE transactions in current month
 Monthly Savings = Monthly Income - Monthly Expenses
@@ -172,7 +172,7 @@ normalizeAmount("1234.56") → "1234.56"
 
 ## Entity Relationships
 
-```
+```text
 User (from JWT)
   │
   ├── has many → Categories
@@ -191,7 +191,7 @@ User (from JWT)
 When data changes, related caches must be invalidated:
 
 | After | Invalidate |
-|-------|------------|
+| ------- | ------------ |
 | Create/Update/Delete Transaction | `transactions.all`, `dashboard.all`, `reports.all` |
 | Create/Update/Delete Category | `categories.all`, `transactions.all` |
 | Create/Update/Delete Recurring Transaction | `recurringTransactions.all` |

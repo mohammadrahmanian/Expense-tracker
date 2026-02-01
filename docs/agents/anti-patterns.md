@@ -262,7 +262,7 @@ const Reports = lazy(() => import('./pages/Reports'));
 ## Quick Reference: Do vs Don't
 
 | Do | Don't |
-|----|-------|
+| ---- | ------- |
 | Use TanStack Query for API data | Use useState + useEffect for API data |
 | Use centralized query keys | Inline query key strings |
 | Use service layer for API calls | Call axios directly in components |
