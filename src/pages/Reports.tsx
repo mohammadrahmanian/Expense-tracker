@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { ComponentErrorBoundary } from "@/components/ErrorBoundary";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -306,100 +307,102 @@ const Reports: React.FC = () => {
         {/* Main Charts - 3 Column Layout */}
         <div className="grid gap-3 md:grid-cols-3">
           {/* Income vs Expenses Trend */}
-          <Card>
-            <CardHeader className="p-4">
-              <CardTitle className="text-base font-semibold">Income vs Expenses</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              {monthlyData.length > 0 ? (
-                <HighchartsContainer
-                  className="w-full"
-                  options={{
-                    chart: {
-                      type: "spline",
-                    },
-                    title: {
-                      text: undefined,
-                    },
-                    xAxis: {
-                      categories: monthlyData.map((d) => d.monthLabel || d.month),
-                      labels: {
-                        style: {
-                          fontSize: '10px',
-                        },
+          <ComponentErrorBoundary name="IncomeVsExpensesChart">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold">Income vs Expenses</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                {monthlyData.length > 0 ? (
+                  <HighchartsContainer
+                    className="w-full"
+                    options={{
+                      chart: {
+                        type: "spline",
                       },
-                    },
-                    yAxis: {
                       title: {
                         text: undefined,
                       },
-                      labels: {
-                        style: {
-                          fontSize: '10px',
-                        },
-                      },
-                    },
-                    series: [
-                      {
-                        name: "Income",
-                        type: "spline",
-                        data: monthlyData.map((d) => d.income.total),
-                        color: "#00B894",
-                        lineWidth: 3,
-                      },
-                      {
-                        name: "Expenses",
-                        type: "spline",
-                        data: monthlyData.map((d) => d.expenses.total),
-                        color: "#FF6B6B",
-                        lineWidth: 3,
-                      },
-                      {
-                        name: "Savings",
-                        type: "spline",
-                        data: monthlyData.map((d) => d.savings),
-                        color: "#6C5CE7",
-                        lineWidth: 3,
-                      },
-                    ],
-                    tooltip: {
-                      formatter: function () {
-                        return `<b>${this.series.name}</b><br/>${formatAmount(this.y || 0)}`;
-                      },
-                    },
-                    legend: {
-                      enabled: true,
-                      itemStyle: {
-                        fontSize: '10px',
-                      },
-                    },
-                    plotOptions: {
-                      spline: {
-                        lineWidth: 3,
-                        marker: {
-                          enabled: true,
-                          radius: 4,
-                          lineWidth: 2,
-                          lineColor: "#FFFFFF",
-                        },
-                        states: {
-                          hover: {
-                            lineWidth: 4,
+                      xAxis: {
+                        categories: monthlyData.map((d) => d.monthLabel || d.month),
+                        labels: {
+                          style: {
+                            fontSize: '10px',
                           },
                         },
                       },
-                    },
-                  }}
-                />
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-gray-500 dark:text-gray-400">
-                    No data available for the selected time range.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                      yAxis: {
+                        title: {
+                          text: undefined,
+                        },
+                        labels: {
+                          style: {
+                            fontSize: '10px',
+                          },
+                        },
+                      },
+                      series: [
+                        {
+                          name: "Income",
+                          type: "spline",
+                          data: monthlyData.map((d) => d.income.total),
+                          color: "#00B894",
+                          lineWidth: 3,
+                        },
+                        {
+                          name: "Expenses",
+                          type: "spline",
+                          data: monthlyData.map((d) => d.expenses.total),
+                          color: "#FF6B6B",
+                          lineWidth: 3,
+                        },
+                        {
+                          name: "Savings",
+                          type: "spline",
+                          data: monthlyData.map((d) => d.savings),
+                          color: "#6C5CE7",
+                          lineWidth: 3,
+                        },
+                      ],
+                      tooltip: {
+                        formatter: function () {
+                          return `<b>${this.series.name}</b><br/>${formatAmount(this.y || 0)}`;
+                        },
+                      },
+                      legend: {
+                        enabled: true,
+                        itemStyle: {
+                          fontSize: '10px',
+                        },
+                      },
+                      plotOptions: {
+                        spline: {
+                          lineWidth: 3,
+                          marker: {
+                            enabled: true,
+                            radius: 4,
+                            lineWidth: 2,
+                            lineColor: "#FFFFFF",
+                          },
+                          states: {
+                            hover: {
+                              lineWidth: 4,
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No data available for the selected time range.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </ComponentErrorBoundary>
 
           {/* Category Breakdown Over Time */}
           <Card>

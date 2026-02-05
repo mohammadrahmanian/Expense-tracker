@@ -8,17 +8,17 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  ResponsiveDialog as Dialog,
-  ResponsiveDialogContent as DialogContent,
-  ResponsiveDialogTrigger as DialogTrigger
-} from "@/components/ui/responsive-dialog";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  ResponsiveDialog as Dialog,
+  ResponsiveDialogContent as DialogContent,
+  ResponsiveDialogTrigger as DialogTrigger
+} from "@/components/ui/responsive-dialog";
 import {
   Select,
   SelectContent,
@@ -27,6 +27,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Table, TableBody } from "@/components/ui/table";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { useDeleteTransaction } from "@/hooks/mutations/useDeleteTransaction";
+import { useCategories } from "@/hooks/queries/useCategories";
+import { useTransactions } from "@/hooks/queries/useTransactions";
 import { cn } from "@/lib/utils";
 import { Transaction } from "@/types";
 import { format } from "date-fns";
@@ -43,10 +47,6 @@ import {
   Search,
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { useTransactions } from "@/hooks/queries/useTransactions";
-import { useCategories } from "@/hooks/queries/useCategories";
-import { useDeleteTransaction } from "@/hooks/mutations/useDeleteTransaction";
 
 const Transactions: React.FC = () => {
   const { formatAmount } = useCurrency();
