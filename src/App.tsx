@@ -1,4 +1,5 @@
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import ErrorBoundary, { PageErrorBoundary } from "@/components/ErrorBoundary";
 import { setNavigationCallback } from "@/services/api";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -48,6 +49,20 @@ const NavigationSetup = () => {
   return null;
 };
 
+const PageBoundary: React.FC<{ name: string; children: React.ReactNode }> = ({
+  name,
+  children,
+}) => {
+  const navigate = useNavigate();
+
+  return (
+    <PageErrorBoundary name={name} onGoHome={() => navigate("/dashboard")}
+    >
+      {children}
+    </PageErrorBoundary>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -58,69 +73,85 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <NavigationSetup />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/transactions"
-                  element={
-                    <ProtectedRoute>
-                      <Transactions />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/categories"
-                  element={
-                    <ProtectedRoute>
-                      <Categories />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/recurring-transactions"
-                  element={
-                    <ProtectedRoute>
-                      <RecurringTransactions />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/reports"
-                  element={
-                    <ProtectedRoute>
-                      <Reports />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/more"
-                  element={
-                    <ProtectedRoute>
-                      <More />
-                    </ProtectedRoute>
-                  }
-                />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <ErrorBoundary name="AppShell" variant="app">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <PageBoundary name="DashboardPage">
+                          <Dashboard />
+                        </PageBoundary>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/transactions"
+                    element={
+                      <ProtectedRoute>
+                        <PageBoundary name="TransactionsPage">
+                          <Transactions />
+                        </PageBoundary>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/categories"
+                    element={
+                      <ProtectedRoute>
+                        <PageBoundary name="CategoriesPage">
+                          <Categories />
+                        </PageBoundary>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/recurring-transactions"
+                    element={
+                      <ProtectedRoute>
+                        <PageBoundary name="RecurringTransactionsPage">
+                          <RecurringTransactions />
+                        </PageBoundary>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/reports"
+                    element={
+                      <ProtectedRoute>
+                        <PageBoundary name="ReportsPage">
+                          <Reports />
+                        </PageBoundary>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <PageBoundary name="ProfilePage">
+                          <Profile />
+                        </PageBoundary>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/more"
+                    element={
+                      <ProtectedRoute>
+                        <PageBoundary name="MorePage">
+                          <More />
+                        </PageBoundary>
+                      </ProtectedRoute>
+                    }
+                  />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ErrorBoundary>
             </BrowserRouter>
           </TooltipProvider>
         </SidebarContextProvider>
