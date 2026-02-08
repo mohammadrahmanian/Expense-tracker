@@ -1,16 +1,5 @@
 ## Agent Workflow
 
-When a prompt asks to add a feature, fix a bug, or add tests:
-
-1. Review the relevant files and ensure full understanding
-2. For non-trivial tasks, write a plan in `plan.md` before changing code
-3. Break the plan into small, verifiable steps
-4. Ask clarifying questions to remove ambiguities
-5. Share the plan and wait for user approval before implementation
-6. Use git convention naming for branches (e.g., `feat/add-export`, `fix/login-error`)
-7. Never commit `plan.md` to the repository
-8. Once done with a task implementation, run the typecheck command to ensure no type errors: `npm run typecheck:all`
-9. Make sure to clean up the unused imports, variables, and code and leave no tech debts behind when the task is done.
 
 Use the **frontend-developer** subagent for frontend development tasks.
 
@@ -35,4 +24,4 @@ The codebase documentation is modular. Load only what you need:
 | Optimize performance       | `docs/agents/performance.md`              |
 | Deploy the app             | `docs/agents/deployment.md`               |
 
-For quick reference and essential rules, see `AGENTS.md`.
+@AGENTS.md
