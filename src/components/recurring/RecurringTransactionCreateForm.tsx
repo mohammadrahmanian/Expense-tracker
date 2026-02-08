@@ -22,16 +22,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { createAmountChangeHandler, normalizeAmount } from "@/lib/amount-utils";
-import {
-  categoriesService,
-  recurringTransactionsService,
-} from "@/services/api";
-import { Category } from "@/types";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useCategories } from "@/hooks/queries/useCategories";
+import { useCreateRecurringTransaction } from "@/hooks/mutations/useCreateRecurringTransaction";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, Info, Loader2 } from "lucide-react";
-import React, { useEffect } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -80,28 +77,15 @@ export const RecurringTransactionCreateForm: React.FC<
   RecurringTransactionCreateFormProps
 > = ({ onSuccess, onCancel }) => {
   const { currency } = useCurrency();
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [amount, setAmount] = React.useState<string>("");
   const [startCalendarOpen, setStartCalendarOpen] = React.useState(false);
   const [endCalendarOpen, setEndCalendarOpen] = React.useState(false);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setIsLoading(true);
-        const allCategories = await categoriesService.getAll();
-        setCategories(allCategories);
-      } catch (error) {
-        toast.error("Failed to load categories. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Fetch categories with TanStack Query
+  const { data: categories = [], isLoading } = useCategories();
 
-    fetchCategories();
-  }, []);
+  // Create recurring transaction mutation
+  const createRecurringTransaction = useCreateRecurringTransaction();
 
   const handleAmountChange = createAmountChangeHandler(setAmount);
 
@@ -130,62 +114,51 @@ export const RecurringTransactionCreateForm: React.FC<
 
   const filteredCategories = categories.filter((cat) => cat.type === watchType);
 
-  const onSubmit = async (data: RecurringTransactionCreateFormData) => {
-    try {
-      setIsSubmitting(true);
-
-      // Validate amount manually
-      if (!amount) {
-        toast.error("Please enter an amount");
-        setIsSubmitting(false);
-        return;
-      }
-
-      const normalizedAmount = normalizeAmount(amount.trim());
-      const numericAmount = parseFloat(normalizedAmount);
-      if (isNaN(numericAmount) || numericAmount <= 0) {
-        toast.error("Please enter a valid amount");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Convert start date to UTC to avoid timezone issues on the backend
-      const utcStartDate = new Date(
-        data.startDate.getTime() - data.startDate.getTimezoneOffset() * 60000,
-      );
-
-      // Convert end date to UTC if provided
-      const utcEndDate = data.endDate
-        ? new Date(
-            data.endDate.getTime() - data.endDate.getTimezoneOffset() * 60000,
-          )
-        : null;
-
-      // Build create payload
-      const createPayload = {
-        title: data.title,
-        amount: numericAmount,
-        type: data.type,
-        categoryId: data.categoryId,
-        startDate: utcStartDate.toISOString(),
-        endDate: utcEndDate?.toISOString(),
-        description: data.description || undefined,
-        recurrenceFrequency: data.recurrenceFrequency,
-      };
-
-      await recurringTransactionsService.createRecurring(createPayload);
-
-      toast.success("Recurring transaction created successfully!");
-      onSuccess();
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to create recurring transaction. Please try again.";
-      toast.error(errorMessage);
-    } finally {
-      setIsSubmitting(false);
+  const onSubmit = (data: RecurringTransactionCreateFormData) => {
+    // Validate amount manually
+    if (!amount) {
+      toast.error("Please enter an amount");
+      return;
     }
+
+    const normalizedAmount = normalizeAmount(amount.trim());
+    const numericAmount = parseFloat(normalizedAmount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+
+    // Convert start date to UTC to avoid timezone issues on the backend
+    const utcStartDate = new Date(
+      data.startDate.getTime() - data.startDate.getTimezoneOffset() * 60000,
+    );
+
+    // Convert end date to UTC if provided
+    const utcEndDate = data.endDate
+      ? new Date(
+          data.endDate.getTime() - data.endDate.getTimezoneOffset() * 60000,
+        )
+      : null;
+
+    // Build create payload
+    const createPayload = {
+      title: data.title,
+      amount: numericAmount,
+      type: data.type,
+      categoryId: data.categoryId,
+      startDate: utcStartDate.toISOString(),
+      endDate: utcEndDate?.toISOString(),
+      description: data.description || undefined,
+      recurrenceFrequency: data.recurrenceFrequency,
+    };
+
+    // Use TanStack Query mutation
+    createRecurringTransaction.mutate(createPayload, {
+      onSuccess: () => {
+        onSuccess();
+      },
+      // Error handling is done by the mutation hook
+    });
   };
 
   return (
@@ -469,16 +442,16 @@ export const RecurringTransactionCreateForm: React.FC<
             variant="outline"
             onClick={onCancel}
             className="flex-1"
-            disabled={isSubmitting}
+            disabled={createRecurringTransaction.isPending}
           >
             Cancel
           </Button>
           <Button
             type="submit"
             className="flex-1"
-            disabled={isSubmitting || isLoading}
+            disabled={createRecurringTransaction.isPending || isLoading}
           >
-            {isSubmitting ? (
+            {createRecurringTransaction.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Creating...
