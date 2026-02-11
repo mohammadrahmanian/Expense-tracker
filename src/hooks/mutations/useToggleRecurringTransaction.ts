@@ -1,8 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { recurringTransactionsService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
-import { toast } from 'sonner';
-import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { recurringTransactionsService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
+import { toast } from "sonner";
+import { createMutationErrorHandler } from "@/lib/mutation-error-handler";
 
 /**
  * Hook for toggling a recurring transaction's active status
@@ -28,16 +28,18 @@ export function useToggleRecurringTransaction() {
       recurringTransactionsService.toggleStatus(id, active),
     onSuccess: (_, variables) => {
       // Invalidate recurring transactions queries
-      queryClient.invalidateQueries({ queryKey: queryKeys.recurringTransactions.all });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.recurringTransactions.all,
+      });
       toast.success(
         variables.active
-          ? 'Recurring transaction activated'
-          : 'Recurring transaction deactivated'
+          ? "Recurring transaction activated"
+          : "Recurring transaction deactivated",
       );
     },
     onError: createMutationErrorHandler({
-      action: 'toggle recurring transaction',
-      feature: 'RECURRING',
+      action: "toggle recurring transaction",
+      feature: "RECURRING",
     }),
   });
 }

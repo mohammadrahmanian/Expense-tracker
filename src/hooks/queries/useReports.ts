@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { dashboardService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
+import { useQuery } from "@tanstack/react-query";
+import { dashboardService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
 
 export interface UseReportsParams {
   startDate: string;
@@ -30,7 +30,11 @@ export interface UseReportsParams {
  * });
  * ```
  */
-export function useReports({ startDate, endDate, enabled = true }: UseReportsParams) {
+export function useReports({
+  startDate,
+  endDate,
+  enabled = true,
+}: UseReportsParams) {
   return useQuery({
     queryKey: queryKeys.reports.list({ startDate, endDate }),
     queryFn: () => dashboardService.getReports(startDate, endDate),

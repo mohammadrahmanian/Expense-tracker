@@ -14,10 +14,13 @@ interface ErrorFallbackProps {
   variant?: "app" | "page" | "component";
 }
 
-const variantCopy: Record<NonNullable<ErrorFallbackProps["variant"]>, {
-  title: string;
-  subtitle: string;
-}> = {
+const variantCopy: Record<
+  NonNullable<ErrorFallbackProps["variant"]>,
+  {
+    title: string;
+    subtitle: string;
+  }
+> = {
   app: {
     title: "We hit a cosmic pothole",
     subtitle: "The whole caravan paused. Let's get you rolling again.",
@@ -63,13 +66,21 @@ export function ErrorFallback({
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground">
-                  {boundaryName ? `Boundary: ${boundaryName}` : "Error boundary"}
+                  {boundaryName
+                    ? `Boundary: ${boundaryName}`
+                    : "Error boundary"}
                 </p>
-                <h2 className="text-xl font-semibold text-foreground">{resolvedTitle}</h2>
-                <p className="text-sm text-muted-foreground">{resolvedSubtitle}</p>
+                <h2 className="text-xl font-semibold text-foreground">
+                  {resolvedTitle}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {resolvedSubtitle}
+                </p>
               </div>
               <div className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-200">
-                <span className="inline-flex items-center gap-1"><AlertTriangle className="h-3.5 w-3.5" /> Safe mode</span>
+                <span className="inline-flex items-center gap-1">
+                  <AlertTriangle className="h-3.5 w-3.5" /> Safe mode
+                </span>
               </div>
             </div>
 
@@ -87,7 +98,9 @@ export function ErrorFallback({
                 onClick={() => setShowDuckTip((prev) => !prev)}
                 className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500/10 via-sky-500/10 to-indigo-500/10 px-3 py-1 text-xs font-medium text-emerald-700 transition hover:from-emerald-500/20 hover:via-sky-500/20 hover:to-indigo-500/20 dark:text-emerald-200"
               >
-                <span className="text-lg" role="img" aria-label="rubber duck">🦆</span>
+                <span className="text-lg" role="img" aria-label="rubber duck">
+                  🦆
+                </span>
                 Duck debug mode
               </button>
             </div>
@@ -106,7 +119,9 @@ export function ErrorFallback({
                 <summary className="cursor-pointer font-medium text-foreground group-open:mb-2">
                   Dev details
                 </summary>
-                <pre className="whitespace-pre-wrap text-xs leading-relaxed">{detail}</pre>
+                <pre className="whitespace-pre-wrap text-xs leading-relaxed">
+                  {detail}
+                </pre>
                 {errorInfo?.componentStack && (
                   <pre className="mt-2 whitespace-pre-wrap text-xs leading-relaxed">
                     {errorInfo.componentStack}

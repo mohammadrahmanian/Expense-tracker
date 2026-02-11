@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { categoriesService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
-import { useMemo } from 'react';
+import { useQuery } from "@tanstack/react-query";
+import { categoriesService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
+import { useMemo } from "react";
 
 /**
  * Hook for fetching all categories with optional type filtering
@@ -18,7 +18,7 @@ import { useMemo } from 'react';
  * const { data: expenseCategories } = useCategories('EXPENSE');
  * ```
  */
-export function useCategories(type?: 'INCOME' | 'EXPENSE') {
+export function useCategories(type?: "INCOME" | "EXPENSE") {
   const query = useQuery({
     queryKey: queryKeys.categories.all,
     queryFn: () => categoriesService.getAll(),

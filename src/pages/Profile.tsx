@@ -37,7 +37,8 @@ const Profile: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Update your personal information, profile picture, and account details.
+                  Update your personal information, profile picture, and account
+                  details.
                 </p>
                 <Button variant="outline" disabled>
                   Edit Profile
@@ -57,7 +58,8 @@ const Profile: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Manage your account preferences, password, and security settings.
+                  Manage your account preferences, password, and security
+                  settings.
                 </p>
                 <Button variant="outline" disabled>
                   Manage Settings
@@ -77,7 +79,8 @@ const Profile: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Configure email notifications, alerts, and reminder preferences.
+                  Configure email notifications, alerts, and reminder
+                  preferences.
                 </p>
                 <Button variant="outline" disabled>
                   Configure Notifications
@@ -97,7 +100,8 @@ const Profile: React.FC = () => {
             <CardContent>
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Review privacy settings, enable two-factor authentication, and manage data.
+                  Review privacy settings, enable two-factor authentication, and
+                  manage data.
                 </p>
                 <Button variant="outline" disabled>
                   Security Settings
@@ -119,9 +123,9 @@ const Profile: React.FC = () => {
                   Profile Features Coming Soon!
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                  We're working on comprehensive profile management features including 
-                  account customization, security settings, and notification preferences. 
-                  Stay tuned for updates!
+                  We're working on comprehensive profile management features
+                  including account customization, security settings, and
+                  notification preferences. Stay tuned for updates!
                 </p>
               </div>
             </div>

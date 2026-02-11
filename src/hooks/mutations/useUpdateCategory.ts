@@ -1,9 +1,9 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { categoriesService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
-import { toast } from 'sonner';
-import type { Category } from '@/types';
-import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { categoriesService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
+import { toast } from "sonner";
+import type { Category } from "@/types";
+import { createMutationErrorHandler } from "@/lib/mutation-error-handler";
 
 /**
  * Hook for updating an existing category
@@ -32,11 +32,11 @@ export function useUpdateCategory() {
       // Invalidate categories and transactions (since transactions include category data)
       queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
-      toast.success('Category updated successfully');
+      toast.success("Category updated successfully");
     },
     onError: createMutationErrorHandler({
-      action: 'update category',
-      feature: 'CATEGORIES',
+      action: "update category",
+      feature: "CATEGORIES",
     }),
   });
 }

@@ -5,8 +5,8 @@
  * Based on project documentation in docs/agents/error-exception-tracking.md
  */
 
-import * as Sentry from '@sentry/react';
-import { ErrorType, ErrorContext } from '@/types/errors';
+import * as Sentry from "@sentry/react";
+import { ErrorType, ErrorContext } from "@/types/errors";
 
 /**
  * Initialize Sentry for error tracking and performance monitoring
@@ -26,7 +26,7 @@ export function initializeSentry() {
 
   // Only initialize if DSN is provided
   if (!dsn) {
-    console.warn('Sentry DSN not found. Error tracking disabled.');
+    console.warn("Sentry DSN not found. Error tracking disabled.");
     return;
   }
 
@@ -34,19 +34,19 @@ export function initializeSentry() {
     dsn,
     environment: import.meta.env.MODE,
     // Only enable in production by default
-    enabled: import.meta.env.MODE === 'production',
+    enabled: import.meta.env.MODE === "production",
 
     // Enable structured logging
     enableLogs: true,
 
     // Performance monitoring - sample 10% of transactions in production
-    tracesSampleRate: import.meta.env.MODE === 'production' ? 0.1 : 1.0,
+    tracesSampleRate: import.meta.env.MODE === "production" ? 0.1 : 1.0,
 
     // Integrations
     integrations: [
       // Capture console logs as breadcrumbs
       Sentry.consoleLoggingIntegration({
-        levels: ['log', 'warn', 'error'],
+        levels: ["log", "warn", "error"],
       }),
       // Browser tracing for performance monitoring
       Sentry.browserTracingIntegration(),
@@ -59,7 +59,7 @@ export function initializeSentry() {
       const error = hint.originalException;
 
       // Don't send 401 errors (auth redirects are expected and handled)
-      if (error && typeof error === 'object' && 'response' in error) {
+      if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as { response?: { status?: number } };
         if (axiosError.response?.status === 401) {
           return null;
@@ -105,10 +105,10 @@ export function reportErrorToSentry(
   error: unknown,
   context: ErrorContext,
   errorType: ErrorType,
-  statusCode?: number
+  statusCode?: number,
 ) {
   // Set context for this error
-  Sentry.setContext('error_context', {
+  Sentry.setContext("error_context", {
     action: context.action,
     feature: context.feature,
     errorType,
@@ -120,7 +120,7 @@ export function reportErrorToSentry(
   Sentry.captureException(error, {
     level: getSentryLevel(errorType, statusCode),
     tags: {
-      feature: context.feature || 'unknown',
+      feature: context.feature || "unknown",
       errorType,
     },
   });
@@ -135,26 +135,26 @@ export function reportErrorToSentry(
  */
 function getSentryLevel(
   errorType: ErrorType,
-  statusCode?: number
+  statusCode?: number,
 ): Sentry.SeverityLevel {
   // Server errors (5xx) are critical
   if (errorType === ErrorType.SERVER && statusCode && statusCode >= 500) {
-    return 'error';
+    return "error";
   }
 
   // Network errors are warnings (could be user's connection)
   if (errorType === ErrorType.NETWORK) {
-    return 'warning';
+    return "warning";
   }
 
   // Client-side JavaScript errors are errors
   if (errorType === ErrorType.CLIENT) {
-    return 'error';
+    return "error";
   }
 
   // Validation errors are info level (user input issues, not bugs)
   if (errorType === ErrorType.VALIDATION) {
-    return 'info';
+    return "info";
   }
 
   // Authentication/authorization are warnings (expected in some cases)
@@ -162,11 +162,11 @@ function getSentryLevel(
     errorType === ErrorType.AUTHENTICATION ||
     errorType === ErrorType.AUTHORIZATION
   ) {
-    return 'warning';
+    return "warning";
   }
 
   // Default to warning for unknown errors
-  return 'warning';
+  return "warning";
 }
 
 /**
@@ -194,7 +194,7 @@ function getSentryLevel(
 export function createSentrySpan<T>(
   operation: string,
   description: string,
-  fn: () => Promise<T>
+  fn: () => Promise<T>,
 ): Promise<T> {
   return Sentry.startSpan(
     {
@@ -204,13 +204,13 @@ export function createSentrySpan<T>(
     async (span) => {
       try {
         const result = await fn();
-        span?.setStatus({ code: 1, message: 'ok' });
+        span?.setStatus({ code: 1, message: "ok" });
         return result;
       } catch (error) {
-        span?.setStatus({ code: 2, message: 'error' });
+        span?.setStatus({ code: 2, message: "error" });
         throw error;
       }
-    }
+    },
   );
 }
 

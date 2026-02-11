@@ -4,8 +4,8 @@
  * Provides standardized error handling for React Query mutations.
  */
 
-import { handleApiError } from '@/lib/error-handling';
-import { ErrorContext } from '@/types/errors';
+import { handleApiError } from "@/lib/error-handling";
+import { ErrorContext } from "@/types/errors";
 
 /**
  * Creates a standard error handler for React Query mutations

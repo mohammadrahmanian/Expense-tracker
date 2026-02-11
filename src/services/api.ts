@@ -1,4 +1,12 @@
-import { Budget, Category, CategorySpending, DashboardStats, RecurringTransaction, ReportsResponse, Transaction } from "@/types";
+import {
+  Budget,
+  Category,
+  CategorySpending,
+  DashboardStats,
+  RecurringTransaction,
+  ReportsResponse,
+  Transaction,
+} from "@/types";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { handleApiError } from "@/lib/error-handling";
 
@@ -51,7 +59,10 @@ apiClient.interceptors.response.use(
       // Handle unauthorized access
       localStorage.removeItem("authToken");
       // Only redirect if not already on auth pages
-      if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+      if (
+        !window.location.pathname.includes("/login") &&
+        !window.location.pathname.includes("/register")
+      ) {
         if (navigationCallback) {
           navigationCallback("/login");
         } else {
@@ -63,7 +74,6 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-
 
 // Transactions Service
 export const transactionsService = {
@@ -82,26 +92,35 @@ export const transactionsService = {
       const queryParams = new URLSearchParams();
 
       if (params) {
-        if (params.limit !== undefined) queryParams.append("limit", params.limit.toString());
-        if (params.offset !== undefined) queryParams.append("offset", params.offset.toString());
+        if (params.limit !== undefined)
+          queryParams.append("limit", params.limit.toString());
+        if (params.offset !== undefined)
+          queryParams.append("offset", params.offset.toString());
         if (params.sort) queryParams.append("sort", params.sort);
         if (params.order) queryParams.append("order", params.order);
         if (params.type) queryParams.append("type", params.type);
         if (params.fromDate) queryParams.append("fromDate", params.fromDate);
         if (params.toDate) queryParams.append("toDate", params.toDate);
-        if (params.categoryId) queryParams.append("categoryId", params.categoryId);
+        if (params.categoryId)
+          queryParams.append("categoryId", params.categoryId);
         if (params.query) queryParams.append("query", params.query);
       }
 
       const queryString = queryParams.toString();
-      const url = queryString ? `/transactions?${queryString}` : "/transactions";
+      const url = queryString
+        ? `/transactions?${queryString}`
+        : "/transactions";
 
-      const response = await apiClient.get<{ items: Transaction[]; total: number; count: number }>(url);
+      const response = await apiClient.get<{
+        items: Transaction[];
+        total: number;
+        count: number;
+      }>(url);
       return response.data;
     } catch (error) {
       handleApiError(error, {
-        action: 'fetch transactions',
-        feature: 'TRANSACTIONS',
+        action: "fetch transactions",
+        feature: "TRANSACTIONS",
       });
       throw error;
     }
@@ -113,8 +132,8 @@ export const transactionsService = {
       return response.data;
     } catch (error) {
       handleApiError(error, {
-        action: 'fetch transaction',
-        feature: 'TRANSACTIONS',
+        action: "fetch transaction",
+        feature: "TRANSACTIONS",
         metadata: { transactionId: id },
       });
       throw error;
@@ -132,13 +151,17 @@ export const transactionsService = {
       return response.data;
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'create transaction',
-        feature: 'TRANSACTIONS',
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "create transaction",
+          feature: "TRANSACTIONS",
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -155,14 +178,18 @@ export const transactionsService = {
       return response.data;
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'update transaction',
-        feature: 'TRANSACTIONS',
-        metadata: { transactionId: id },
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "update transaction",
+          feature: "TRANSACTIONS",
+          metadata: { transactionId: id },
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -172,14 +199,18 @@ export const transactionsService = {
       await apiClient.delete(`/transactions/${id}`);
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'delete transaction',
-        feature: 'TRANSACTIONS',
-        metadata: { transactionId: id },
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "delete transaction",
+          feature: "TRANSACTIONS",
+          metadata: { transactionId: id },
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -195,8 +226,8 @@ export const transactionsService = {
       return response.data;
     } catch (error) {
       handleApiError(error, {
-        action: 'fetch transactions by date range',
-        feature: 'TRANSACTIONS',
+        action: "fetch transactions by date range",
+        feature: "TRANSACTIONS",
         metadata: { startDate, endDate },
       });
       throw error;
@@ -212,8 +243,8 @@ export const categoriesService = {
       return response.data;
     } catch (error) {
       handleApiError(error, {
-        action: 'fetch categories',
-        feature: 'CATEGORIES',
+        action: "fetch categories",
+        feature: "CATEGORIES",
       });
       throw error;
     }
@@ -225,8 +256,8 @@ export const categoriesService = {
       return response.data;
     } catch (error) {
       handleApiError(error, {
-        action: 'fetch category',
-        feature: 'CATEGORIES',
+        action: "fetch category",
+        feature: "CATEGORIES",
         metadata: { categoryId: id },
       });
       throw error;
@@ -241,13 +272,17 @@ export const categoriesService = {
       return response.data;
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'create category',
-        feature: 'CATEGORIES',
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "create category",
+          feature: "CATEGORIES",
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -261,14 +296,18 @@ export const categoriesService = {
       return response.data;
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'update category',
-        feature: 'CATEGORIES',
-        metadata: { categoryId: id },
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "update category",
+          feature: "CATEGORIES",
+          metadata: { categoryId: id },
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -278,14 +317,18 @@ export const categoriesService = {
       await apiClient.delete(`/categories/${id}`);
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'delete category',
-        feature: 'CATEGORIES',
-        metadata: { categoryId: id },
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "delete category",
+          feature: "CATEGORIES",
+          metadata: { categoryId: id },
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -299,8 +342,8 @@ export const budgetsService = {
       return response.data;
     } catch (error) {
       handleApiError(error, {
-        action: 'fetch budgets',
-        feature: 'BUDGETS',
+        action: "fetch budgets",
+        feature: "BUDGETS",
       });
       throw error;
     }
@@ -312,8 +355,8 @@ export const budgetsService = {
       return response.data;
     } catch (error) {
       handleApiError(error, {
-        action: 'fetch budget',
-        feature: 'BUDGETS',
+        action: "fetch budget",
+        feature: "BUDGETS",
         metadata: { budgetId: id },
       });
       throw error;
@@ -326,13 +369,17 @@ export const budgetsService = {
       return response.data;
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'create budget',
-        feature: 'BUDGETS',
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "create budget",
+          feature: "BUDGETS",
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -343,14 +390,18 @@ export const budgetsService = {
       return response.data;
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'update budget',
-        feature: 'BUDGETS',
-        metadata: { budgetId: id },
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "update budget",
+          feature: "BUDGETS",
+          metadata: { budgetId: id },
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -360,14 +411,18 @@ export const budgetsService = {
       await apiClient.delete(`/budgets/${id}`);
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'delete budget',
-        feature: 'BUDGETS',
-        metadata: { budgetId: id },
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "delete budget",
+          feature: "BUDGETS",
+          metadata: { budgetId: id },
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -381,8 +436,8 @@ export const dashboardService = {
       return response.data;
     } catch (error) {
       handleApiError(error, {
-        action: 'fetch stats',
-        feature: 'DASHBOARD',
+        action: "fetch stats",
+        feature: "DASHBOARD",
       });
       throw error;
     }
@@ -399,15 +454,18 @@ export const dashboardService = {
       return response.data;
     } catch (error) {
       handleApiError(error, {
-        action: 'fetch monthly stats',
-        feature: 'DASHBOARD',
+        action: "fetch monthly stats",
+        feature: "DASHBOARD",
         metadata: { year, month },
       });
       throw error;
     }
   },
 
-  getReports: async (startDate: string, endDate: string): Promise<ReportsResponse> => {
+  getReports: async (
+    startDate: string,
+    endDate: string,
+  ): Promise<ReportsResponse> => {
     try {
       const response = await apiClient.get<ReportsResponse>(
         `/dashboard/reports?startDate=${startDate}&endDate=${endDate}`,
@@ -415,8 +473,8 @@ export const dashboardService = {
       return response.data;
     } catch (error) {
       handleApiError(error, {
-        action: 'fetch reports',
-        feature: 'REPORTS',
+        action: "fetch reports",
+        feature: "REPORTS",
         metadata: { startDate, endDate },
       });
       throw error;
@@ -475,7 +533,8 @@ export const dashboardService = {
 
     // Calculate percentages and sort by amount (descending)
     categorySpending.forEach((spending) => {
-      spending.percentage = totalExpenses > 0 ? (spending.amount / totalExpenses) * 100 : 0;
+      spending.percentage =
+        totalExpenses > 0 ? (spending.amount / totalExpenses) * 100 : 0;
     });
 
     categorySpending.sort((a, b) => b.amount - a.amount);
@@ -487,8 +546,12 @@ export const dashboardService = {
     const result: CategorySpending[] = [...top5Categories];
 
     if (remainingCategories.length > 0) {
-      const othersAmount = remainingCategories.reduce((sum, cat) => sum + cat.amount, 0);
-      const othersPercentage = totalExpenses > 0 ? (othersAmount / totalExpenses) * 100 : 0;
+      const othersAmount = remainingCategories.reduce(
+        (sum, cat) => sum + cat.amount,
+        0,
+      );
+      const othersPercentage =
+        totalExpenses > 0 ? (othersAmount / totalExpenses) * 100 : 0;
 
       result.push({
         categoryId: "others",
@@ -520,13 +583,17 @@ export const authService = {
       return response.data;
     } catch (error) {
       // Log error silently - AuthContext handles user notifications
-      handleApiError(error, {
-        action: 'login',
-        feature: 'AUTH',
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "login",
+          feature: "AUTH",
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -548,13 +615,17 @@ export const authService = {
       return response.data;
     } catch (error) {
       // Log error silently - AuthContext handles user notifications
-      handleApiError(error, {
-        action: 'register',
-        feature: 'AUTH',
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "register",
+          feature: "AUTH",
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -565,13 +636,17 @@ export const authService = {
     } catch (error) {
       // Even if logout fails on server, clear local token
       // Log error silently - AuthContext handles this
-      handleApiError(error, {
-        action: 'logout',
-        feature: 'AUTH',
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "logout",
+          feature: "AUTH",
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
     } finally {
       localStorage.removeItem("authToken");
     }
@@ -583,8 +658,8 @@ export const authService = {
       return response.data;
     } catch (error) {
       handleApiError(error, {
-        action: 'get current user',
-        feature: 'AUTH',
+        action: "get current user",
+        feature: "AUTH",
       });
       throw error;
     }
@@ -595,66 +670,72 @@ export const authService = {
 export const recurringTransactionsService = {
   getAll: async (): Promise<RecurringTransaction[]> => {
     try {
-      const response = await apiClient.get<{ recurringTransactions: RecurringTransaction[] }>(
-        "/recurring-transactions"
-      );
+      const response = await apiClient.get<{
+        recurringTransactions: RecurringTransaction[];
+      }>("/recurring-transactions");
       return response.data.recurringTransactions;
     } catch (error) {
       handleApiError(error, {
-        action: 'fetch recurring transactions',
-        feature: 'RECURRING',
+        action: "fetch recurring transactions",
+        feature: "RECURRING",
       });
       throw error;
     }
   },
 
-  createRecurring: async (
-    data: {
-      title: string;
-      amount: number;
-      type: "INCOME" | "EXPENSE";
-      categoryId: string;
-      startDate: string;
-      endDate?: string;
-      description?: string;
-      recurrenceFrequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
-    }
-  ): Promise<RecurringTransaction> => {
+  createRecurring: async (data: {
+    title: string;
+    amount: number;
+    type: "INCOME" | "EXPENSE";
+    categoryId: string;
+    startDate: string;
+    endDate?: string;
+    description?: string;
+    recurrenceFrequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+  }): Promise<RecurringTransaction> => {
     try {
       const response = await apiClient.post<RecurringTransaction>(
         "/recurring-transactions",
-        data
+        data,
       );
       return response.data;
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'create recurring transaction',
-        feature: 'RECURRING',
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "create recurring transaction",
+          feature: "RECURRING",
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
 
   update: async (
     id: string,
-    data: Partial<RecurringTransaction>
+    data: Partial<RecurringTransaction>,
   ): Promise<void> => {
     try {
       await apiClient.put(`/recurring-transactions/${id}`, data);
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'update recurring transaction',
-        feature: 'RECURRING',
-        metadata: { recurringTransactionId: id },
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "update recurring transaction",
+          feature: "RECURRING",
+          metadata: { recurringTransactionId: id },
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -664,14 +745,18 @@ export const recurringTransactionsService = {
       await apiClient.delete(`/recurring-transactions/${id}`);
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'delete recurring transaction',
-        feature: 'RECURRING',
-        metadata: { recurringTransactionId: id },
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "delete recurring transaction",
+          feature: "RECURRING",
+          metadata: { recurringTransactionId: id },
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },
@@ -681,14 +766,18 @@ export const recurringTransactionsService = {
       await apiClient.post(`/recurring-transactions/${id}/toggle`, { active });
     } catch (error) {
       // Log error silently - mutation hook handles user notifications
-      handleApiError(error, {
-        action: 'toggle recurring transaction',
-        feature: 'RECURRING',
-        metadata: { recurringTransactionId: id, active },
-      }, {
-        showToast: false,
-        reportToSentry: false,
-      });
+      handleApiError(
+        error,
+        {
+          action: "toggle recurring transaction",
+          feature: "RECURRING",
+          metadata: { recurringTransactionId: id, active },
+        },
+        {
+          showToast: false,
+          reportToSentry: false,
+        },
+      );
       throw error;
     }
   },

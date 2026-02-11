@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { recurringTransactionsService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
+import { useQuery } from "@tanstack/react-query";
+import { recurringTransactionsService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
 
 /**
  * Hook for fetching all recurring transactions

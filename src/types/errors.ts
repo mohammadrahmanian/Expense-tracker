@@ -8,13 +8,13 @@
  * Error type categories for classification
  */
 export enum ErrorType {
-  NETWORK = 'NETWORK',           // Network connectivity issues
-  VALIDATION = 'VALIDATION',     // User input validation errors
-  AUTHENTICATION = 'AUTHENTICATION', // Auth failures (401)
-  AUTHORIZATION = 'AUTHORIZATION',   // Permission errors (403)
-  SERVER = 'SERVER',             // Server errors (5xx)
-  CLIENT = 'CLIENT',             // Client-side errors (TypeError, etc.)
-  UNKNOWN = 'UNKNOWN',           // Uncategorized errors
+  NETWORK = "NETWORK", // Network connectivity issues
+  VALIDATION = "VALIDATION", // User input validation errors
+  AUTHENTICATION = "AUTHENTICATION", // Auth failures (401)
+  AUTHORIZATION = "AUTHORIZATION", // Permission errors (403)
+  SERVER = "SERVER", // Server errors (5xx)
+  CLIENT = "CLIENT", // Client-side errors (TypeError, etc.)
+  UNKNOWN = "UNKNOWN", // Uncategorized errors
 }
 
 /**

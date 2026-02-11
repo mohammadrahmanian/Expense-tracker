@@ -56,8 +56,7 @@ const PageBoundary: React.FC<{ name: string; children: React.ReactNode }> = ({
   const navigate = useNavigate();
 
   return (
-    <PageErrorBoundary name={name} onGoHome={() => navigate("/dashboard")}
-    >
+    <PageErrorBoundary name={name} onGoHome={() => navigate("/dashboard")}>
       {children}
     </PageErrorBoundary>
   );
