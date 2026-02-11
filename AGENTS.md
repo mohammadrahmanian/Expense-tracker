@@ -110,6 +110,7 @@ TransactionForm/
 - Sub-components follow the same folder structure recursively
 - Use named exports everywhere (no default exports)
 - Companion files (`*.types.ts`, `*.utils.ts`, `*.styles.tsx`, `*.test.tsx`) are optional — create only when needed
+- **Props types live in the component file**, not in a shared `*.types.ts`. Use `type` (not `interface`) for props. Shared types (schemas, data types used across files) stay in `*.types.ts`.
 
 ```typescript
 // ✅ Correct
