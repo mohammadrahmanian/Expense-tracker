@@ -1,3 +1,4 @@
+import { type FC } from "react";
 import { Button } from "@/components/ui/button";
 import { ResponsiveDialogFooter as DialogFooter } from "@/components/ui/responsive-dialog";
 import { Loader2 } from "lucide-react";
@@ -9,7 +10,7 @@ type TransactionFormFooterProps = {
   onCancel: () => void;
 };
 
-export const TransactionFormFooter: React.FC<TransactionFormFooterProps> = ({
+export const TransactionFormFooter: FC<TransactionFormFooterProps> = ({
   isEditing,
   isPending,
   isCategoriesLoading,
