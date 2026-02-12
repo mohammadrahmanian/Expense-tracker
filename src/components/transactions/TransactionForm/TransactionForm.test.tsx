@@ -274,7 +274,7 @@ describe("TransactionForm", () => {
   describe("Categories Error State", () => {
     it("shows error fallback when categories fail to load", () => {
       vi.mocked(useCategories).mockReturnValue({
-        data: [],
+        data: undefined,
         isLoading: false,
         isError: true,
       } as unknown as ReturnType<typeof useCategories>);
