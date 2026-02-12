@@ -1,3 +1,4 @@
+import { type FC } from "react";
 import { CategorySelect } from "@/components/shared/CategorySelect";
 import { DateSelect } from "@/components/shared/DateSelect";
 import { FormInput } from "@/components/shared/FormInput";
@@ -12,7 +13,7 @@ type BasicInfoFieldsProps = {
   filteredCategories: Category[];
 };
 
-export const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
+export const BasicInfoFields: FC<BasicInfoFieldsProps> = ({
   form,
   currencySymbol,
   filteredCategories,

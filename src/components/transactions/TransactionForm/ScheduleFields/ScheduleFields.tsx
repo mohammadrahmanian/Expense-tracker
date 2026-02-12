@@ -1,3 +1,4 @@
+import { type FC } from "react";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -14,7 +15,7 @@ type ScheduleFieldsProps = {
   form: UseFormReturn<TransactionFormData>;
 };
 
-export const ScheduleFields: React.FC<ScheduleFieldsProps> = ({ form }) => {
+export const ScheduleFields: FC<ScheduleFieldsProps> = ({ form }) => {
   const { watch, setValue } = form;
   const watchIsRecurring = watch("isRecurring");
 

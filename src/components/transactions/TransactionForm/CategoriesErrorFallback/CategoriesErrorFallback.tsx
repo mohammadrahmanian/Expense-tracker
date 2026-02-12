@@ -1,3 +1,4 @@
+import { type FC } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,9 +13,10 @@ type CategoriesErrorFallbackProps = {
   onCancel: () => void;
 };
 
-export const CategoriesErrorFallback: React.FC<
-  CategoriesErrorFallbackProps
-> = ({ isEditing, onCancel }) => {
+export const CategoriesErrorFallback: FC<CategoriesErrorFallbackProps> = ({
+  isEditing,
+  onCancel,
+}) => {
   return (
     <>
       <DialogHeader>

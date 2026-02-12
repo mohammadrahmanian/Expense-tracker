@@ -1,3 +1,4 @@
+import { type FC } from "react";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -14,7 +15,7 @@ interface TypeSelectProps {
   required?: boolean;
 }
 
-export const TypeSelect: React.FC<TypeSelectProps> = ({
+export const TypeSelect: FC<TypeSelectProps> = ({
   value,
   onChange,
   error,
