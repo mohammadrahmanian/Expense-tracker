@@ -51,7 +51,7 @@ apiClient.interceptors.response.use(
       // Handle unauthorized access
       localStorage.removeItem("authToken");
       // Only redirect if not already on auth pages
-      if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+      if (window.location.pathname !== '/' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
         if (navigationCallback) {
           navigationCallback("/login");
         } else {
