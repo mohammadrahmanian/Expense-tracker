@@ -91,6 +91,17 @@ axios.get("/api/transactions");
 
 **Folder structure:** Each component lives in a folder named after itself, with an `index.ts` barrel file using **named exports**.
 
+**React imports:** Always import `FC` type explicitly when using it. Never use `React.FC` without importing React.
+
+```typescript
+// ✅ Correct
+import { type FC } from "react";
+export const MyComponent: FC<MyComponentProps> = ({ ... }) => { ... };
+
+// ❌ Wrong
+export const MyComponent: React.FC<MyComponentProps> = ({ ... }) => { ... };
+```
+
 ```
 TransactionForm/
 ├── index.ts                        # barrel file: export { TransactionForm } from './TransactionForm'
