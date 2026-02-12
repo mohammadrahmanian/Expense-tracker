@@ -1,0 +1,1 @@
+export { CategoriesErrorFallback } from "./CategoriesErrorFallback";
