@@ -27,5 +27,8 @@ dev-dist
 *.tsbuildinfo
 
 plan.md
+# Environment files
+.env
+.env.*
 # Sentry Config File
 .env.sentry-build-plugin
