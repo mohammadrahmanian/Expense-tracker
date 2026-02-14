@@ -3,7 +3,9 @@ import { AuthContextType, User } from "@/types";
 import { handleApiError } from "@/lib/error-handling";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined,
+);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -68,8 +70,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.removeItem("authToken");
     } catch (error: any) {
       handleApiError(error, {
-        action: 'login',
-        feature: 'AUTH',
+        action: "login",
+        feature: "AUTH",
       });
       throw error; // Re-throw for component to handle
     } finally {
@@ -91,8 +93,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.removeItem("authToken");
     } catch (error: any) {
       handleApiError(error, {
-        action: 'register',
-        feature: 'AUTH',
+        action: "register",
+        feature: "AUTH",
       });
       throw error; // Re-throw for component to handle
     } finally {
@@ -104,13 +106,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await authService.logout();
     } catch (error) {
-      handleApiError(error, {
-        action: 'logout',
-        feature: 'AUTH',
-      }, {
-        showToast: false, // Don't show error toast on logout
-        logError: true,
-      });
+      handleApiError(
+        error,
+        {
+          action: "logout",
+          feature: "AUTH",
+        },
+        {
+          showToast: false, // Don't show error toast on logout
+          logError: true,
+        },
+      );
     } finally {
       // Clear local state and storage regardless of API call result
       setUser(null);
@@ -123,7 +129,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading, isInitializingAuth }}>
+    <AuthContext.Provider
+      value={{ user, login, register, logout, isLoading, isInitializingAuth }}
+    >
       {children}
     </AuthContext.Provider>
   );

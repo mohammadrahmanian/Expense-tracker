@@ -1,8 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { categoriesService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
-import { toast } from 'sonner';
-import { createMutationErrorHandler } from '@/lib/mutation-error-handler';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { categoriesService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
+import { toast } from "sonner";
+import { createMutationErrorHandler } from "@/lib/mutation-error-handler";
 
 /**
  * Hook for deleting a category
@@ -32,11 +32,11 @@ export function useDeleteCategory() {
       // Invalidate categories and transactions (since transactions include category data)
       queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
-      toast.success('Category deleted successfully');
+      toast.success("Category deleted successfully");
     },
     onError: createMutationErrorHandler({
-      action: 'delete category',
-      feature: 'CATEGORIES',
+      action: "delete category",
+      feature: "CATEGORIES",
     }),
   });
 }

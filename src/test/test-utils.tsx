@@ -1,17 +1,20 @@
-import React, { ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { vi } from 'vitest';
-import { AuthContext } from '@/contexts/AuthContext';
-import { type AuthContextType } from '@/types';
-import { CurrencyContext, type CurrencyContextType } from '@/contexts/CurrencyContext';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React, { ReactElement } from "react";
+import { render, RenderOptions } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import { vi } from "vitest";
+import { AuthContext } from "@/contexts/AuthContext";
+import { type AuthContextType } from "@/types";
+import {
+  CurrencyContext,
+  type CurrencyContextType,
+} from "@/contexts/CurrencyContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Mock user data for testing
 export const mockUser = {
-  id: '1',
-  name: 'Test User',
-  email: 'test@example.com',
+  id: "1",
+  name: "Test User",
+  email: "test@example.com",
   createdAt: new Date(),
 };
 
@@ -27,13 +30,13 @@ export const mockAuthContext: AuthContextType = {
 
 // Mock currency context value
 export const mockCurrencyContext: CurrencyContextType = {
-  currency: 'USD',
+  currency: "USD",
   setCurrency: vi.fn(),
   formatAmount: vi.fn((amount: number) => `$${amount.toFixed(2)}`),
 };
 
 // Custom render function with all providers
-interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
+interface CustomRenderOptions extends Omit<RenderOptions, "wrapper"> {
   authContext?: Partial<AuthContextType>;
   currencyContext?: Partial<CurrencyContextType>;
   initialEntries?: string[];
@@ -45,7 +48,7 @@ export const renderWithProviders = (
     authContext = {},
     currencyContext = {},
     ...renderOptions
-  }: CustomRenderOptions = {}
+  }: CustomRenderOptions = {},
 ) => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -78,17 +81,13 @@ export const renderWithProviders = (
 };
 
 // Helper to render components with router only
-export const renderWithRouter = (
-  ui: ReactElement
-) => {
+export const renderWithRouter = (ui: ReactElement) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <BrowserRouter>
-      {children}
-    </BrowserRouter>
+    <BrowserRouter>{children}</BrowserRouter>
   );
 
   return render(ui, { wrapper: Wrapper });
 };
 
-export * from '@testing-library/react';
-export { default as userEvent } from '@testing-library/user-event';
+export * from "@testing-library/react";
+export { default as userEvent } from "@testing-library/user-event";

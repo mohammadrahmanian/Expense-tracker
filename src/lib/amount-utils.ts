@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent } from "react";
 
 /**
  * Creates an amount change handler that validates input to allow only valid amount formats
@@ -6,7 +6,7 @@ import { ChangeEvent } from 'react';
  * @returns Change event handler for amount input fields
  */
 export const createAmountChangeHandler = (
-  setAmount: (value: string) => void
+  setAmount: (value: string) => void,
 ) => {
   return (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -24,7 +24,7 @@ export const createAmountChangeHandler = (
  */
 export const normalizeAmount = (value: string): string => {
   // Replace comma with period for decimal separator
-  return value.replace(',', '.');
+  return value.replace(",", ".");
 };
 
 /**

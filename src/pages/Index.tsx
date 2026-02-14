@@ -8,13 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  TrendingUp,
-  PieChart,
-  Shield,
-  BarChart3,
-  Wallet,
-} from "lucide-react";
+import { TrendingUp, PieChart, Shield, BarChart3, Wallet } from "lucide-react";
 
 const Index = () => {
   const { user } = useAuth();

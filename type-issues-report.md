@@ -3,21 +3,25 @@
 ## Issue: `vi` Not Recognized in test-utils.tsx
 
 ### Problem
+
 The IDE shows a type error: `Cannot find name 'vi'` in `src/test/test-utils.tsx`, but terminal `npm run typecheck` doesn't catch this error.
 
 ### Root Cause Analysis
 
 #### Why Terminal TypeCheck Doesn't Catch It:
+
 1. **TypeScript Configuration**: The `tsconfig.app.json` only includes `src` directory but may not properly handle Vitest globals
 2. **Missing Vitest Types**: The `test-utils.tsx` file uses `vi` from Vitest but doesn't import it or have the proper type declarations
 
 #### Why IDE Shows the Error:
+
 1. **More Comprehensive Analysis**: IDEs use their own TypeScript language server that analyzes all files
 2. **Missing Import**: The `vi` global is not imported in `test-utils.tsx`
 
 ### Current Setup Analysis
 
 **Vitest Configuration** (from `vite.config.ts`):
+
 ```typescript
 test: {
   globals: true,        // ✅ Enables vi globally
@@ -27,11 +31,13 @@ test: {
 ```
 
 **Setup File** (`src/test/setup.ts`):
+
 ```typescript
-import { beforeAll, beforeEach, afterEach, vi } from 'vitest'; // ✅ vi imported here
+import { beforeAll, beforeEach, afterEach, vi } from "vitest"; // ✅ vi imported here
 ```
 
 **Problem File** (`src/test/test-utils.tsx`):
+
 ```typescript
 // ❌ Missing vi import
 export const mockAuthContext: AuthContextType = {
@@ -45,19 +51,24 @@ export const mockAuthContext: AuthContextType = {
 ### Solutions
 
 #### Option 1: Add Missing Import (Recommended)
+
 ```typescript
 // Add to src/test/test-utils.tsx
-import { vi } from 'vitest';
+import { vi } from "vitest";
 ```
 
 #### Option 2: Use Global Types Declaration
+
 Create `src/test/vitest-globals.d.ts`:
+
 ```typescript
-import 'vitest/globals';
+import "vitest/globals";
 ```
 
 #### Option 3: Update TypeScript Config
+
 Add vitest types to tsconfig:
+
 ```json
 {
   "compilerOptions": {

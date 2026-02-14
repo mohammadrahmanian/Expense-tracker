@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
-export type Currency = 'USD' | 'EUR';
+export type Currency = "USD" | "EUR";
 
 export interface CurrencyContextType {
   currency: Currency;
@@ -8,12 +8,14 @@ export interface CurrencyContextType {
   formatAmount: (amount: number) => string;
 }
 
-export const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
+export const CurrencyContext = createContext<CurrencyContextType | undefined>(
+  undefined,
+);
 
 export const useCurrency = () => {
   const context = useContext(CurrencyContext);
   if (context === undefined) {
-    throw new Error('useCurrency must be used within a CurrencyProvider');
+    throw new Error("useCurrency must be used within a CurrencyProvider");
   }
   return context;
 };
@@ -22,21 +24,23 @@ interface CurrencyProviderProps {
   children: ReactNode;
 }
 
-export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) => {
+export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({
+  children,
+}) => {
   const [currency, setCurrency] = useState<Currency>(() => {
     // Get currency from localStorage or default to USD
     try {
-      const savedCurrency = localStorage.getItem('currency') as Currency;
-      return savedCurrency || 'USD';
+      const savedCurrency = localStorage.getItem("currency") as Currency;
+      return savedCurrency || "USD";
     } catch (error) {
       // Fallback to USD if localStorage is unavailable (e.g., private browsing)
-      return 'USD';
+      return "USD";
     }
   });
 
   const formatAmount = (amount: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
       currency: currency,
     }).format(amount);
   };
@@ -44,7 +48,7 @@ export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) 
   const handleSetCurrency = (newCurrency: Currency) => {
     setCurrency(newCurrency);
     try {
-      localStorage.setItem('currency', newCurrency);
+      localStorage.setItem("currency", newCurrency);
     } catch (error) {
       // Silently fail if localStorage is unavailable (e.g., private browsing)
       // The currency state is still updated in memory

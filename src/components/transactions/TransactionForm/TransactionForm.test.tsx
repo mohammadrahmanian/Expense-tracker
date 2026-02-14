@@ -5,15 +5,20 @@ import { TransactionForm } from "./TransactionForm";
 import { Transaction } from "@/types";
 
 vi.mock("@/components/ui/responsive-dialog", () => ({
-  ResponsiveDialogHeader: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-    <div {...props}>{children}</div>
-  ),
-  ResponsiveDialogTitle: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
+  ResponsiveDialogHeader: ({
+    children,
+    ...props
+  }: React.HTMLAttributes<HTMLDivElement>) => <div {...props}>{children}</div>,
+  ResponsiveDialogTitle: ({
+    children,
+    ...props
+  }: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h2 {...props}>{children}</h2>
   ),
-  ResponsiveDialogFooter: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-    <div {...props}>{children}</div>
-  ),
+  ResponsiveDialogFooter: ({
+    children,
+    ...props
+  }: React.HTMLAttributes<HTMLDivElement>) => <div {...props}>{children}</div>,
 }));
 
 vi.mock("@/components/shared/CategorySelect", () => ({
@@ -90,7 +95,12 @@ vi.mock("@/components/shared/DateSelect", () => ({
 }));
 
 const mockCategories = [
-  { id: "cat-1", name: "Groceries", color: "#FF6B6B", type: "EXPENSE" as const },
+  {
+    id: "cat-1",
+    name: "Groceries",
+    color: "#FF6B6B",
+    type: "EXPENSE" as const,
+  },
   { id: "cat-2", name: "Salary", color: "#4ECDC4", type: "INCOME" as const },
 ];
 
@@ -173,7 +183,9 @@ describe("TransactionForm", () => {
     it("shows validation errors on empty submit", async () => {
       renderWithProviders(<TransactionForm {...defaultProps} />);
 
-      await user.click(screen.getByRole("button", { name: /add transaction/i }));
+      await user.click(
+        screen.getByRole("button", { name: /add transaction/i }),
+      );
 
       expect(await screen.findByText("Title is required")).toBeInTheDocument();
       expect(screen.getByText("Amount is required")).toBeInTheDocument();
@@ -186,7 +198,9 @@ describe("TransactionForm", () => {
       await user.type(screen.getByLabelText(/title/i), "Test");
       await user.type(screen.getByLabelText(/amount/i), "abc");
       await user.selectOptions(screen.getByLabelText(/category/i), "cat-1");
-      await user.click(screen.getByRole("button", { name: /add transaction/i }));
+      await user.click(
+        screen.getByRole("button", { name: /add transaction/i }),
+      );
 
       expect(
         await screen.findByText(/please enter a valid amount/i),
@@ -199,7 +213,9 @@ describe("TransactionForm", () => {
       await user.type(screen.getByLabelText(/title/i), "Coffee");
       await user.type(screen.getByLabelText(/amount/i), "4.50");
       await user.selectOptions(screen.getByLabelText(/category/i), "cat-1");
-      await user.click(screen.getByRole("button", { name: /add transaction/i }));
+      await user.click(
+        screen.getByRole("button", { name: /add transaction/i }),
+      );
 
       await waitFor(() => {
         expect(createMutate).toHaveBeenCalledTimes(1);
@@ -253,7 +269,9 @@ describe("TransactionForm", () => {
       const titleInput = screen.getByLabelText(/title/i);
       await user.clear(titleInput);
       await user.type(titleInput, "Updated Groceries");
-      await user.click(screen.getByRole("button", { name: /update transaction/i }));
+      await user.click(
+        screen.getByRole("button", { name: /update transaction/i }),
+      );
 
       await waitFor(() => {
         expect(updateMutate).toHaveBeenCalledTimes(1);

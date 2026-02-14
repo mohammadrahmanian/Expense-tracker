@@ -36,12 +36,12 @@ import React, { useState } from "react";
 const getDateRangeForTimeRange = (
   range: "3m" | "6m" | "12m" | "custom",
   customStart?: Date,
-  customEnd?: Date
+  customEnd?: Date,
 ): { startDate: string; endDate: string } => {
   if (range === "custom") {
     return {
       startDate: customStart ? format(customStart, "yyyy-MM-dd") : "",
-      endDate: customEnd ? format(customEnd, "yyyy-MM-dd") : ""
+      endDate: customEnd ? format(customEnd, "yyyy-MM-dd") : "",
     };
   }
 
@@ -51,16 +51,24 @@ const getDateRangeForTimeRange = (
 
   return {
     startDate: format(startDate, "yyyy-MM-dd"),
-    endDate: format(endDate, "yyyy-MM-dd")
+    endDate: format(endDate, "yyyy-MM-dd"),
   };
 };
 
 const Reports: React.FC = () => {
   const { formatAmount } = useCurrency();
-  const [timeRange, setTimeRange] = useState<"3m" | "6m" | "12m" | "custom">("6m");
-  const [customStartDate, setCustomStartDate] = useState<Date | undefined>(undefined);
-  const [customEndDate, setCustomEndDate] = useState<Date | undefined>(undefined);
-  const [categoryBreakdownType, setCategoryBreakdownType] = useState<"expenses" | "income">("expenses");
+  const [timeRange, setTimeRange] = useState<"3m" | "6m" | "12m" | "custom">(
+    "6m",
+  );
+  const [customStartDate, setCustomStartDate] = useState<Date | undefined>(
+    undefined,
+  );
+  const [customEndDate, setCustomEndDate] = useState<Date | undefined>(
+    undefined,
+  );
+  const [categoryBreakdownType, setCategoryBreakdownType] = useState<
+    "expenses" | "income"
+  >("expenses");
 
   // Calculate date range based on time range selection
   // Keep this in component - it's UI state logic
@@ -71,7 +79,7 @@ const Reports: React.FC = () => {
   // Validate dates for custom range
   // Keep this in component - it's complex UI validation logic
   const datesAreValid = useMemo(() => {
-    if (timeRange !== 'custom') return true;
+    if (timeRange !== "custom") return true;
 
     const { startDate, endDate } = dateRange;
     if (!startDate || !endDate) return false;
@@ -103,22 +111,25 @@ const Reports: React.FC = () => {
 
   // Derive error message from validation or query error
   const error = useMemo(() => {
-    if (timeRange === 'custom' && !datesAreValid) {
+    if (timeRange === "custom" && !datesAreValid) {
       if (!customStartDate || !customEndDate) {
-        return 'Please select both start and end dates';
+        return "Please select both start and end dates";
       }
       if (customStartDate && customEndDate) {
         const todaysEnd = endOfDay(new Date());
-        if (isAfter(customStartDate, todaysEnd) || isAfter(customEndDate, todaysEnd)) {
-          return 'Dates cannot be in the future';
+        if (
+          isAfter(customStartDate, todaysEnd) ||
+          isAfter(customEndDate, todaysEnd)
+        ) {
+          return "Dates cannot be in the future";
         }
         if (isAfter(customStartDate, customEndDate)) {
-          return 'End date must be the same as or after start date';
+          return "End date must be the same as or after start date";
         }
       }
     }
     if (queryError) {
-      return 'Failed to load reports. Please try again.';
+      return "Failed to load reports. Please try again.";
     }
     return null;
   }, [timeRange, datesAreValid, customStartDate, customEndDate, queryError]);
@@ -129,7 +140,7 @@ const Reports: React.FC = () => {
     if (!reportsData?.categoryBreakdown.expenses) return [];
     const total = reportsData.categoryBreakdown.expenses.reduce(
       (sum, cat) => sum + cat.amount,
-      0
+      0,
     );
     return reportsData.categoryBreakdown.expenses.map((cat) => ({
       ...cat,
@@ -141,7 +152,7 @@ const Reports: React.FC = () => {
     if (!reportsData?.categoryBreakdown.income) return [];
     const total = reportsData.categoryBreakdown.income.reduce(
       (sum, cat) => sum + cat.amount,
-      0
+      0,
     );
     return reportsData.categoryBreakdown.income.map((cat) => ({
       ...cat,
@@ -156,14 +167,17 @@ const Reports: React.FC = () => {
   const buildCategorySeriesData = (
     monthlyData: MonthlyData[],
     categoryBreakdown: CategorySpending[],
-    type: "income" | "expenses"
+    type: "income" | "expenses",
   ) => {
     // Build series for each category
-    const series = categoryBreakdown.map(category => ({
+    const series = categoryBreakdown.map((category) => ({
       name: category.categoryName,
       type: "column" as const,
-      data: monthlyData.map(month => {
-        const categories = type === "income" ? month.income.categories : month.expenses.categories;
+      data: monthlyData.map((month) => {
+        const categories =
+          type === "income"
+            ? month.income.categories
+            : month.expenses.categories;
         return categories[category.categoryId] || 0;
       }),
       color: category.color,
@@ -179,7 +193,9 @@ const Reports: React.FC = () => {
         <div className="flex flex-col gap-4 md:flex-row md:justify-end md:items-center">
           <Select
             value={timeRange}
-            onValueChange={(value: "3m" | "6m" | "12m" | "custom") => setTimeRange(value)}
+            onValueChange={(value: "3m" | "6m" | "12m" | "custom") =>
+              setTimeRange(value)
+            }
           >
             <SelectTrigger className="w-full md:w-40">
               <SelectValue />
@@ -200,11 +216,13 @@ const Reports: React.FC = () => {
                     variant="outline"
                     className={cn(
                       "w-full md:w-[200px] justify-start text-left font-normal",
-                      !customStartDate && "text-muted-foreground"
+                      !customStartDate && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {customStartDate ? format(customStartDate, "PPP") : "Start date"}
+                    {customStartDate
+                      ? format(customStartDate, "PPP")
+                      : "Start date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -225,7 +243,7 @@ const Reports: React.FC = () => {
                     variant="outline"
                     className={cn(
                       "w-full md:w-[200px] justify-start text-left font-normal",
-                      !customEndDate && "text-muted-foreground"
+                      !customEndDate && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -283,7 +301,9 @@ const Reports: React.FC = () => {
                   Total Expenses
                 </p>
                 <p className="text-2xl font-bold text-red-600">
-                  {isLoading ? "..." : formatAmount(summary?.totalExpenses || 0)}
+                  {isLoading
+                    ? "..."
+                    : formatAmount(summary?.totalExpenses || 0)}
                 </p>
               </div>
             </CardContent>
@@ -310,7 +330,9 @@ const Reports: React.FC = () => {
           <ComponentErrorBoundary name="IncomeVsExpensesChart">
             <Card>
               <CardHeader className="p-4">
-                <CardTitle className="text-base font-semibold">Income vs Expenses</CardTitle>
+                <CardTitle className="text-base font-semibold">
+                  Income vs Expenses
+                </CardTitle>
               </CardHeader>
               <CardContent className="p-4">
                 {monthlyData.length > 0 ? (
@@ -324,10 +346,12 @@ const Reports: React.FC = () => {
                         text: undefined,
                       },
                       xAxis: {
-                        categories: monthlyData.map((d) => d.monthLabel || d.month),
+                        categories: monthlyData.map(
+                          (d) => d.monthLabel || d.month,
+                        ),
                         labels: {
                           style: {
-                            fontSize: '10px',
+                            fontSize: "10px",
                           },
                         },
                       },
@@ -337,7 +361,7 @@ const Reports: React.FC = () => {
                         },
                         labels: {
                           style: {
-                            fontSize: '10px',
+                            fontSize: "10px",
                           },
                         },
                       },
@@ -372,7 +396,7 @@ const Reports: React.FC = () => {
                       legend: {
                         enabled: true,
                         itemStyle: {
-                          fontSize: '10px',
+                          fontSize: "10px",
                         },
                       },
                       plotOptions: {
@@ -415,7 +439,9 @@ const Reports: React.FC = () => {
                 </CardTitle>
                 <Select
                   value={categoryBreakdownType}
-                  onValueChange={(value: "expenses" | "income") => setCategoryBreakdownType(value)}
+                  onValueChange={(value: "expenses" | "income") =>
+                    setCategoryBreakdownType(value)
+                  }
                 >
                   <SelectTrigger className="w-32">
                     <SelectValue />
@@ -429,8 +455,10 @@ const Reports: React.FC = () => {
             </CardHeader>
             <CardContent className="p-4">
               {monthlyData.length > 0 &&
-               ((categoryBreakdownType === "expenses" && categorySpending.length > 0) ||
-                (categoryBreakdownType === "income" && incomeByCategory.length > 0)) ? (
+              ((categoryBreakdownType === "expenses" &&
+                categorySpending.length > 0) ||
+                (categoryBreakdownType === "income" &&
+                  incomeByCategory.length > 0)) ? (
                 <HighchartsContainer
                   className="w-full"
                   options={{
@@ -441,10 +469,12 @@ const Reports: React.FC = () => {
                       text: undefined,
                     },
                     xAxis: {
-                      categories: monthlyData.map((d) => d.monthLabel || d.month),
+                      categories: monthlyData.map(
+                        (d) => d.monthLabel || d.month,
+                      ),
                       labels: {
                         style: {
-                          fontSize: '10px',
+                          fontSize: "10px",
                         },
                       },
                     },
@@ -454,7 +484,7 @@ const Reports: React.FC = () => {
                       },
                       labels: {
                         style: {
-                          fontSize: '10px',
+                          fontSize: "10px",
                         },
                       },
                     },
@@ -466,8 +496,10 @@ const Reports: React.FC = () => {
                     },
                     series: buildCategorySeriesData(
                       monthlyData,
-                      categoryBreakdownType === "expenses" ? categorySpending : incomeByCategory,
-                      categoryBreakdownType
+                      categoryBreakdownType === "expenses"
+                        ? categorySpending
+                        : incomeByCategory,
+                      categoryBreakdownType,
                     ),
                     tooltip: {
                       formatter: function () {
@@ -477,7 +509,7 @@ const Reports: React.FC = () => {
                     legend: {
                       enabled: true,
                       itemStyle: {
-                        fontSize: '10px',
+                        fontSize: "10px",
                       },
                     },
                   }}
@@ -497,7 +529,9 @@ const Reports: React.FC = () => {
           {/* Monthly Comparison */}
           <Card>
             <CardHeader className="p-4">
-              <CardTitle className="text-base font-semibold">Monthly Comparison</CardTitle>
+              <CardTitle className="text-base font-semibold">
+                Monthly Comparison
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               {monthlyData.length > 0 ? (
@@ -511,10 +545,12 @@ const Reports: React.FC = () => {
                       text: undefined,
                     },
                     xAxis: {
-                      categories: monthlyData.map((d) => d.monthLabel || d.month),
+                      categories: monthlyData.map(
+                        (d) => d.monthLabel || d.month,
+                      ),
                       labels: {
                         style: {
-                          fontSize: '10px',
+                          fontSize: "10px",
                         },
                       },
                     },
@@ -524,7 +560,7 @@ const Reports: React.FC = () => {
                       },
                       labels: {
                         style: {
-                          fontSize: '10px',
+                          fontSize: "10px",
                         },
                       },
                     },
@@ -550,7 +586,7 @@ const Reports: React.FC = () => {
                     legend: {
                       enabled: true,
                       itemStyle: {
-                        fontSize: '10px',
+                        fontSize: "10px",
                       },
                     },
                     plotOptions: {
@@ -576,7 +612,9 @@ const Reports: React.FC = () => {
           {/* Expense Breakdown */}
           <Card>
             <CardHeader className="p-4">
-              <CardTitle className="text-base font-semibold">Expense Breakdown</CardTitle>
+              <CardTitle className="text-base font-semibold">
+                Expense Breakdown
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               {categorySpending.length > 0 ? (
@@ -660,7 +698,9 @@ const Reports: React.FC = () => {
           {/* Income Breakdown */}
           <Card>
             <CardHeader className="p-4">
-              <CardTitle className="text-base font-semibold">Income Breakdown</CardTitle>
+              <CardTitle className="text-base font-semibold">
+                Income Breakdown
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               {incomeByCategory.length > 0 ? (

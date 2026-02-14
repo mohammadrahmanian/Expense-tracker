@@ -86,7 +86,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                 <span
                   className={cn(
                     "font-medium transition-all duration-300 ease-in-out whitespace-nowrap",
-                    collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto",
+                    collapsed
+                      ? "opacity-0 w-0 overflow-hidden"
+                      : "opacity-100 w-auto",
                   )}
                 >
                   {item.name}

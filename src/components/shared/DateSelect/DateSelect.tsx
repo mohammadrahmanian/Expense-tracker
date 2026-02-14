@@ -35,7 +35,8 @@ export const DateSelect: React.FC<DateSelectProps> = ({
   return (
     <div className="space-y-2">
       <Label>
-        {label}{required && <span className="text-red-500"> *</span>}
+        {label}
+        {required && <span className="text-red-500"> *</span>}
       </Label>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>

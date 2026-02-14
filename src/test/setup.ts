@@ -1,9 +1,9 @@
-import '@testing-library/jest-dom';
-import { beforeAll, beforeEach, afterEach, vi } from 'vitest';
+import "@testing-library/jest-dom";
+import { beforeAll, beforeEach, afterEach, vi } from "vitest";
 
 // Mock window.matchMedia for responsive tests
 beforeAll(() => {
-  Object.defineProperty(window, 'matchMedia', {
+  Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({
       matches: false,
@@ -44,20 +44,20 @@ afterEach(() => {
 
 // Helper function to mock screen size
 export const mockScreenSize = (width: number, height: number = 768) => {
-  Object.defineProperty(window, 'innerWidth', {
+  Object.defineProperty(window, "innerWidth", {
     writable: true,
     configurable: true,
     value: width,
   });
-  Object.defineProperty(window, 'innerHeight', {
+  Object.defineProperty(window, "innerHeight", {
     writable: true,
     configurable: true,
     value: height,
   });
-  
+
   // Mock matchMedia based on width
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-    matches: query === '(min-width: 1024px)' ? width >= 1024 : width < 1024,
+    matches: query === "(min-width: 1024px)" ? width >= 1024 : width < 1024,
     media: query,
     onchange: null,
     addListener: vi.fn(),
@@ -66,7 +66,7 @@ export const mockScreenSize = (width: number, height: number = 768) => {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   }));
-  
+
   // Trigger resize event
-  window.dispatchEvent(new Event('resize'));
+  window.dispatchEvent(new Event("resize"));
 };

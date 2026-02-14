@@ -17,7 +17,7 @@ import {
 import {
   ResponsiveDialog as Dialog,
   ResponsiveDialogContent as DialogContent,
-  ResponsiveDialogTrigger as DialogTrigger
+  ResponsiveDialogTrigger as DialogTrigger,
 } from "@/components/ui/responsive-dialog";
 import {
   Select,
@@ -53,7 +53,9 @@ const Transactions: React.FC = () => {
 
   // Filter and pagination state
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">("all");
+  const [typeFilter, setTypeFilter] = useState<"all" | "INCOME" | "EXPENSE">(
+    "all",
+  );
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
@@ -64,7 +66,9 @@ const Transactions: React.FC = () => {
 
   // UI state
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
+  const [editingTransaction, setEditingTransaction] = useState<
+    Transaction | undefined
+  >();
   const prevPageRef = React.useRef<number>(1);
   const prevSortFieldRef = React.useRef<"date" | "amount">("date");
   const prevSortOrderRef = React.useRef<"asc" | "desc">("desc");
@@ -113,21 +117,31 @@ const Transactions: React.FC = () => {
     }
 
     return params;
-  }, [searchTerm, typeFilter, categoryFilter, startDate, endDate, currentPage, pageSize, sortField, sortOrder]);
+  }, [
+    searchTerm,
+    typeFilter,
+    categoryFilter,
+    startDate,
+    endDate,
+    currentPage,
+    pageSize,
+    sortField,
+    sortOrder,
+  ]);
 
   // Fetch data using React Query hooks with error states
   const {
     data: transactionsData,
     isLoading: transactionsLoading,
     isError: transactionsError,
-    error: transactionsErrorInfo
+    error: transactionsErrorInfo,
   } = useTransactions(queryParams);
 
   const {
     data: categories,
     isLoading: categoriesLoading,
     isError: categoriesError,
-    error: categoriesErrorInfo
+    error: categoriesErrorInfo,
   } = useCategories();
 
   const deleteTransaction = useDeleteTransaction();
@@ -229,7 +243,12 @@ const Transactions: React.FC = () => {
         </div>
 
         {/* Summary Cards */}
-        <div className={cn("grid gap-4 md:grid-cols-3", hasError && "opacity-50 pointer-events-none")}>
+        <div
+          className={cn(
+            "grid gap-4 md:grid-cols-3",
+            hasError && "opacity-50 pointer-events-none",
+          )}
+        >
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
@@ -239,7 +258,7 @@ const Transactions: React.FC = () => {
                     Total Income
                   </p>
                   <p className="text-2xl font-bold text-green-600">
-                    {hasError ? '—' : `+${formatAmount(totalIncome)}`}
+                    {hasError ? "—" : `+${formatAmount(totalIncome)}`}
                   </p>
                 </div>
               </div>
@@ -254,7 +273,7 @@ const Transactions: React.FC = () => {
                     Total Expenses
                   </p>
                   <p className="text-2xl font-bold text-red-600">
-                    {hasError ? '—' : `-${formatAmount(totalExpenses)}`}
+                    {hasError ? "—" : `-${formatAmount(totalExpenses)}`}
                   </p>
                 </div>
               </div>
@@ -266,10 +285,11 @@ const Transactions: React.FC = () => {
                 <div
                   className={cn(
                     "h-5 w-5 rounded-full",
-                    hasError ? "bg-gray-400" :
-                    totalIncome - totalExpenses >= 0
-                      ? "bg-green-600"
-                      : "bg-red-600",
+                    hasError
+                      ? "bg-gray-400"
+                      : totalIncome - totalExpenses >= 0
+                        ? "bg-green-600"
+                        : "bg-red-600",
                   )}
                 />
                 <div>
@@ -279,13 +299,16 @@ const Transactions: React.FC = () => {
                   <p
                     className={cn(
                       "text-2xl font-bold",
-                      hasError ? "text-gray-900 dark:text-white" :
-                      totalIncome - totalExpenses >= 0
-                        ? "text-green-600"
-                        : "text-red-600",
+                      hasError
+                        ? "text-gray-900 dark:text-white"
+                        : totalIncome - totalExpenses >= 0
+                          ? "text-green-600"
+                          : "text-red-600",
                     )}
                   >
-                    {hasError ? '—' : `${totalIncome - totalExpenses >= 0 ? "+" : "-"}${formatAmount(Math.abs(totalIncome - totalExpenses))}`}
+                    {hasError
+                      ? "—"
+                      : `${totalIncome - totalExpenses >= 0 ? "+" : "-"}${formatAmount(Math.abs(totalIncome - totalExpenses))}`}
                   </p>
                 </div>
               </div>
@@ -349,11 +372,13 @@ const Transactions: React.FC = () => {
                     variant="outline"
                     className={cn(
                       "justify-start text-left font-normal",
-                      !startDate && "text-muted-foreground"
+                      !startDate && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "MMM dd, yyyy") : "Start date"}
+                    {startDate
+                      ? format(startDate, "MMM dd, yyyy")
+                      : "Start date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -371,7 +396,7 @@ const Transactions: React.FC = () => {
                     variant="outline"
                     className={cn(
                       "justify-start text-left font-normal",
-                      !endDate && "text-muted-foreground"
+                      !endDate && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -422,10 +447,16 @@ const Transactions: React.FC = () => {
                 <AlertDescription>
                   <div className="mt-2 space-y-1">
                     {transactionsError && (
-                      <p>• Transactions: {transactionsErrorInfo?.message || 'Unknown error'}</p>
+                      <p>
+                        • Transactions:{" "}
+                        {transactionsErrorInfo?.message || "Unknown error"}
+                      </p>
                     )}
                     {categoriesError && (
-                      <p>• Categories: {categoriesErrorInfo?.message || 'Unknown error'}</p>
+                      <p>
+                        • Categories:{" "}
+                        {categoriesErrorInfo?.message || "Unknown error"}
+                      </p>
                     )}
                   </div>
                 </AlertDescription>
@@ -438,7 +469,11 @@ const Transactions: React.FC = () => {
             ) : transactions.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400">
-                  {searchTerm || typeFilter !== "all" || categoryFilter !== "all" || startDate || endDate
+                  {searchTerm ||
+                  typeFilter !== "all" ||
+                  categoryFilter !== "all" ||
+                  startDate ||
+                  endDate
                     ? "No transactions match your filters."
                     : "No transactions yet. Start by adding your first transaction!"}
                 </p>
@@ -455,7 +490,9 @@ const Transactions: React.FC = () => {
                 {/* Mobile: Card List */}
                 <div className="md:hidden space-y-3">
                   {transactions.map((transaction) => {
-                    const category = getCategoryById(transaction.categoryId) ?? {
+                    const category = getCategoryById(
+                      transaction.categoryId,
+                    ) ?? {
                       id: "missing",
                       name: "Uncategorized",
                       color: "#6b7280",
@@ -489,7 +526,9 @@ const Transactions: React.FC = () => {
                     />
                     <TableBody>
                       {transactions.map((transaction) => {
-                        const category = getCategoryById(transaction.categoryId) ?? {
+                        const category = getCategoryById(
+                          transaction.categoryId,
+                        ) ?? {
                           id: "missing",
                           name: "Uncategorized",
                           color: "#6b7280",
@@ -540,27 +579,34 @@ const Transactions: React.FC = () => {
                   </div>
                   <div className="text-sm text-muted-foreground">
                     Showing {(currentPage - 1) * pageSize + 1} to{" "}
-                    {(currentPage - 1) * pageSize + transactions.length} of {totalTransactions} transactions
+                    {(currentPage - 1) * pageSize + transactions.length} of{" "}
+                    {totalTransactions} transactions
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(1, prev - 1))
+                    }
                     disabled={currentPage === 1}
                   >
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     Previous
                   </Button>
                   <div className="text-sm font-medium">
-                    Page {currentPage} of {Math.ceil(totalTransactions / pageSize)}
+                    Page {currentPage} of{" "}
+                    {Math.ceil(totalTransactions / pageSize)}
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentPage((prev) => prev + 1)}
-                    disabled={(currentPage - 1) * pageSize + transactions.length >= totalTransactions}
+                    disabled={
+                      (currentPage - 1) * pageSize + transactions.length >=
+                      totalTransactions
+                    }
                   >
                     Next
                     <ChevronRight className="h-4 w-4 ml-1" />
