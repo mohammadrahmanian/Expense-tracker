@@ -1,5 +1,4 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { RecurringTransactionCreateForm } from "@/components/recurring/RecurringTransactionCreateForm";
 import { RecurringTransactionForm } from "@/components/recurring/RecurringTransactionForm";
 import {
   AlertDialog,
@@ -368,6 +367,7 @@ const RecurringTransactions: React.FC = () => {
         <ResponsiveDialogContent>
           {selectedTransaction && (
             <RecurringTransactionForm
+              mode="edit"
               transaction={selectedTransaction}
               onSuccess={handleFormSuccess}
               onCancel={() => {
@@ -385,7 +385,8 @@ const RecurringTransactions: React.FC = () => {
         onOpenChange={setCreateDialogOpen}
       >
         <ResponsiveDialogContent>
-          <RecurringTransactionCreateForm
+          <RecurringTransactionForm
+            mode="create"
             onSuccess={handleFormSuccess}
             onCancel={() => {
               setCreateDialogOpen(false);
