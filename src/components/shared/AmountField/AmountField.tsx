@@ -26,6 +26,8 @@ export const AmountField = React.forwardRef<HTMLInputElement, AmountFieldProps>(
           type="text"
           inputMode="decimal"
           placeholder="0.00 or 0,00"
+          required={required}
+          aria-required={required}
           className={cn("pl-8", error && "border-red-500", className)}
           {...inputProps}
         />
