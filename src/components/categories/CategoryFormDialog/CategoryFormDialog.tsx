@@ -1,4 +1,4 @@
-import { type FC, useEffect } from "react";
+import { type FC } from "react";
 import { Button } from "@/components/ui/button";
 import {
   ResponsiveDialog as Dialog,
@@ -11,13 +11,9 @@ import {
 import { FormInput } from "@/components/shared/FormInput";
 import { TypeSelect } from "@/components/shared/TypeSelect";
 import { ColorPicker } from "./ColorPicker";
-import { categorySchema, type CategoryFormData } from "./CategoryFormDialog.types";
-import { useCreateCategory } from "@/hooks/mutations/useCreateCategory";
-import { useUpdateCategory } from "@/hooks/mutations/useUpdateCategory";
+import { useCategoryForm } from "./useCategoryForm";
 import { Category } from "@/types";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import { useForm } from "react-hook-form";
 
 type CategoryFormDialogProps = {
   isOpen: boolean;
@@ -34,38 +30,8 @@ export const CategoryFormDialog: FC<CategoryFormDialogProps> = ({
   onSuccess,
   onNewClick,
 }) => {
-  const createCategory = useCreateCategory();
-  const updateCategory = useUpdateCategory();
-  const { register, handleSubmit, formState: { errors }, watch, setValue, reset } =
-    useForm<CategoryFormData>({
-      resolver: zodResolver(categorySchema),
-      defaultValues: { name: "", type: "EXPENSE", color: "#FF6B6B" },
-    });
-
-  useEffect(() => {
-    if (editingCategory) {
-      reset({ name: editingCategory.name, type: editingCategory.type, color: editingCategory.color });
-    }
-  }, [editingCategory, reset]);
-
-  const onSubmit = async (data: CategoryFormData) => {
-    try {
-      if (editingCategory) {
-        await updateCategory.mutateAsync({ id: editingCategory.id, updates: data });
-      } else {
-        await createCategory.mutateAsync(data);
-      }
-      reset();
-      onSuccess();
-    } catch {
-      // Error toast handled by mutation hook
-    }
-  };
-
-  const handleCancel = () => {
-    reset();
-    onOpenChange(false);
-  };
+  const { register, handleFormSubmit, errors, watch, setValue, handleCancel } =
+    useCategoryForm(editingCategory, onSuccess, onOpenChange);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -81,7 +47,7 @@ export const CategoryFormDialog: FC<CategoryFormDialogProps> = ({
             {editingCategory ? "Edit Category" : "Create New Category"}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
+        <form onSubmit={handleFormSubmit} className="flex flex-col h-full">
           <div className="space-y-4">
             <FormInput
               id="name"
