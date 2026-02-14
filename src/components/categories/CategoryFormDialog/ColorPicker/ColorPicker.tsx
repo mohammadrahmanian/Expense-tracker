@@ -39,7 +39,7 @@ export const ColorPicker: FC<ColorPickerProps> = ({
     <div className="space-y-3">
       <div className="flex items-center space-x-2">
         <div
-          className="w-8 h-8 rounded-full border-2 border-gray-300"
+          className="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-600"
           style={{ backgroundColor: value }}
         />
         <Input
@@ -48,20 +48,20 @@ export const ColorPicker: FC<ColorPickerProps> = ({
           onChange={(e) => onChange(e.target.value)}
           className="w-16 h-8 p-0 border-0"
         />
-        <span className="text-sm text-gray-500">{value}</span>
+        <span className="text-sm text-gray-500 dark:text-gray-400">{value}</span>
       </div>
       <div className="grid grid-cols-6 gap-2">
         {PREDEFINED_COLORS.map((color) => (
           <button
             key={color}
             type="button"
-            className="w-8 h-8 rounded-full border-2 border-gray-300 hover:scale-110 transition-transform"
+            className="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-600 hover:scale-110 transition-transform"
             style={{ backgroundColor: color }}
             onClick={() => onChange(color)}
           />
         ))}
       </div>
     </div>
-    {error && <p className="text-sm text-red-500">{error}</p>}
+    {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
   </div>
 );
