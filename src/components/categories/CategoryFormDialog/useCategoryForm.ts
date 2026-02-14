@@ -39,10 +39,10 @@ export const useCategoryForm = (
     }
   };
 
-  const handleCancel = () => {
-    reset();
-    onOpenChange(false);
+  const handleOpenChange = (open: boolean) => {
+    if (!open) reset();
+    onOpenChange(open);
   };
 
-  return { register, handleFormSubmit: handleSubmit(onSubmit), errors, watch, setValue, handleCancel };
+  return { register, handleFormSubmit: handleSubmit(onSubmit), errors, watch, setValue, handleOpenChange };
 };

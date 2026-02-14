@@ -20,7 +20,7 @@ const PREDEFINED_COLORS = [
   "#74B9FF",
   "#55A3FF",
   "#FF7675",
-  "#FD79A8",
+  "#E84393",
 ];
 
 type ColorPickerProps = {
