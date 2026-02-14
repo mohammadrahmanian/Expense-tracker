@@ -2,6 +2,11 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 
 export type Currency = "USD" | "EUR";
 
+export const currencySymbols: Record<Currency, string> = {
+  USD: "$",
+  EUR: "\u20AC",
+};
+
 export interface CurrencyContextType {
   currency: Currency;
   setCurrency: (currency: Currency) => void;

@@ -6,15 +6,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCurrency, Currency } from "@/contexts/CurrencyContext";
+import {
+  useCurrency,
+  currencySymbols,
+  type Currency,
+} from "@/contexts/CurrencyContext";
 import { ChevronDown } from "lucide-react";
 
 export const CurrencySwitcher: React.FC = () => {
   const { currency, setCurrency } = useCurrency();
 
   const currencies: { code: Currency; symbol: string; name: string }[] = [
-    { code: "USD", symbol: "$", name: "US Dollar" },
-    { code: "EUR", symbol: "€", name: "Euro" },
+    { code: "USD", symbol: currencySymbols.USD, name: "US Dollar" },
+    { code: "EUR", symbol: currencySymbols.EUR, name: "Euro" },
   ];
 
   const currentCurrency = currencies.find((c) => c.code === currency);

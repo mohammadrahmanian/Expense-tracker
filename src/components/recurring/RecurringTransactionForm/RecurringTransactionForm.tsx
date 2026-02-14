@@ -4,7 +4,7 @@ import {
   ResponsiveDialogTitle as DialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { createAmountChangeHandler } from "@/lib/amount-utils";
-import { useCurrency } from "@/contexts/CurrencyContext";
+import { currencySymbols, useCurrency } from "@/contexts/CurrencyContext";
 import { useCategories } from "@/hooks/queries/useCategories";
 import { useCreateRecurringTransaction } from "@/hooks/mutations/useCreateRecurringTransaction";
 import { useUpdateRecurringTransaction } from "@/hooks/mutations/useUpdateRecurringTransaction";
@@ -77,7 +77,7 @@ export const RecurringTransactionForm: FC<RecurringTransactionFormProps> = (
           form={form}
           amount={amount}
           onAmountChange={createAmountChangeHandler(setAmount)}
-          currencySymbol={currency === "USD" ? "$" : "\u20AC"}
+          currencySymbol={currencySymbols[currency]}
           filteredCategories={categories.filter(
             (c) => c.type === form.watch("type"),
           )}
