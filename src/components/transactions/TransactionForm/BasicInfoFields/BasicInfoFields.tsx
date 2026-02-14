@@ -1,4 +1,5 @@
 import { type FC } from "react";
+import { AmountField } from "@/components/shared/AmountField";
 import { CategorySelect } from "@/components/shared/CategorySelect";
 import { DateSelect } from "@/components/shared/DateSelect";
 import { FormInput } from "@/components/shared/FormInput";
@@ -35,12 +36,8 @@ export const BasicInfoFields: FC<BasicInfoFieldsProps> = ({
           {...register("title")}
           error={errors.title?.message}
         />
-        <FormInput
-          label={`Amount (${currencySymbol})`}
-          id="amount"
-          type="text"
-          inputMode="decimal"
-          placeholder="0.00 or 0,00"
+        <AmountField
+          currencySymbol={currencySymbol}
           {...register("amount")}
           error={errors.amount?.message}
         />
