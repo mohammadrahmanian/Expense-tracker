@@ -123,14 +123,15 @@ TransactionForm/
 - Companion files (`*.types.ts`, `*.utils.ts`, `*.styles.tsx`, `*.test.tsx`) are optional — create only when needed
 - **Props types live in the component file**, not in a shared `*.types.ts`. Use `type` (not `interface`) for props. Shared types (schemas, data types used across files) stay in `*.types.ts`.
 
-```typescript
+```text
 // ✅ Correct
-TransactionForm / TransactionForm.tsx; // 85 lines — smart component
-TransactionFormUI.tsx; // 90 lines — presentational
-index.ts; // named exports
+TransactionForm/
+  TransactionForm.tsx    // 85 lines — smart component
+  TransactionFormUI.tsx  // 90 lines — presentational
+  index.ts               // named exports
 
 // ❌ Wrong
-TransactionForm.tsx; // 250 lines — everything in one file
+TransactionForm.tsx      // 250 lines — everything in one file
 ```
 
 ---
