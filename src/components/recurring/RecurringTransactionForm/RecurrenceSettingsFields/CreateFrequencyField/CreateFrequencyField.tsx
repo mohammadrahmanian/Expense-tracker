@@ -31,7 +31,7 @@ export const CreateFrequencyField: FC<CreateFrequencyFieldProps> = ({
       <Select
         value={watch("recurrenceFrequency")}
         onValueChange={(value: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY") =>
-          setValue("recurrenceFrequency", value)
+          setValue("recurrenceFrequency", value, { shouldValidate: true })
         }
       >
         <SelectTrigger
