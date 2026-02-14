@@ -97,12 +97,12 @@ export function buildUpdatePayload(
   }
 
   const currentEndDate = transaction.endDate
-    ? new Date(transaction.endDate).getTime()
+    ? toUTC(new Date(transaction.endDate)).getTime()
     : null;
-  const newEndDate = data.endDate ? data.endDate.getTime() : null;
+  const newEndDate = data.endDate ? toUTC(data.endDate).getTime() : null;
 
   if (currentEndDate !== newEndDate) {
-    payload.endDate = data.endDate ? data.endDate.toISOString() : null;
+    payload.endDate = data.endDate ? toUTC(data.endDate).toISOString() : null;
   }
 
   return payload;
