@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { QuickExpenseModal } from "./quick-expense-modal";
+import { QuickExpenseModal } from "@/components/transactions/QuickExpenseModal";
 
 export const FloatingActionButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
