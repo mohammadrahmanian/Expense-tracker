@@ -16,7 +16,7 @@ interface EnvConfig {
  */
 export function validateEnv(
   env: Record<string, string>,
-  config: EnvConfig
+  config: EnvConfig,
 ): void {
   const missingMandatory: string[] = [];
 
@@ -49,7 +49,7 @@ export function validateEnv(
         // Simple string: warn if missing
         if (!env[varConfig] || env[varConfig].trim() === "") {
           console.warn(
-            `⚠️  Optional environment variable '${varConfig}' is not set.`
+            `⚠️  Optional environment variable '${varConfig}' is not set.`,
           );
         }
       } else {

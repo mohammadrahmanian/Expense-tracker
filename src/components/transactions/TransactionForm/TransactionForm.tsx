@@ -2,7 +2,7 @@ import {
   ResponsiveDialogHeader as DialogHeader,
   ResponsiveDialogTitle as DialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { useCurrency } from "@/contexts/CurrencyContext";
+import { currencySymbols, useCurrency } from "@/contexts/CurrencyContext";
 import { useCreateTransaction } from "@/hooks/mutations/useCreateTransaction";
 import { useUpdateTransaction } from "@/hooks/mutations/useUpdateTransaction";
 import { useCategories } from "@/hooks/queries/useCategories";
@@ -81,7 +81,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
         <div className="space-y-6">
           <BasicInfoFields
             form={form}
-            currencySymbol={currency === "USD" ? "$" : "\u20AC"}
+            currencySymbol={currencySymbols[currency]}
             filteredCategories={filteredCategories}
           />
           <ScheduleFields form={form} />

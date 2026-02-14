@@ -14,7 +14,7 @@ import {
   PiggyBank,
   TrendingDown,
   TrendingUp,
-  Wallet
+  Wallet,
 } from "lucide-react";
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -31,33 +31,38 @@ const Dashboard: React.FC = () => {
     data: stats,
     isLoading: statsLoading,
     isError: statsError,
-    error: statsErrorDetails
+    error: statsErrorDetails,
   } = useDashboardStats();
 
   const {
     data: transactionsData,
     isLoading: transactionsLoading,
     isError: transactionsError,
-    error: transactionsErrorDetails
+    error: transactionsErrorDetails,
   } = useTransactions();
 
   const {
     data: categories,
     isLoading: categoriesLoading,
     isError: categoriesError,
-    error: categoriesErrorDetails
+    error: categoriesErrorDetails,
   } = useCategories();
 
   const {
     data: categoryExpenses,
     isLoading: categoryExpensesLoading,
     isError: categoryExpensesError,
-    error: categoryExpensesErrorDetails
+    error: categoryExpensesErrorDetails,
   } = useCategoryExpenses();
 
   // Compute overall loading and error states
-  const isLoading = statsLoading || transactionsLoading || categoriesLoading || categoryExpensesLoading;
-  const hasError = statsError || transactionsError || categoriesError || categoryExpensesError;
+  const isLoading =
+    statsLoading ||
+    transactionsLoading ||
+    categoriesLoading ||
+    categoryExpensesLoading;
+  const hasError =
+    statsError || transactionsError || categoriesError || categoryExpensesError;
 
   // Extract and sort recent transactions (top 5 by date)
   const recentTransactions = useMemo(() => {
@@ -89,16 +94,28 @@ const Dashboard: React.FC = () => {
             <AlertDescription>
               <div className="mt-2 space-y-1">
                 {statsError && (
-                  <p>• Dashboard stats: {statsErrorDetails?.message || 'Unknown error'}</p>
+                  <p>
+                    • Dashboard stats:{" "}
+                    {statsErrorDetails?.message || "Unknown error"}
+                  </p>
                 )}
                 {transactionsError && (
-                  <p>• Transactions: {transactionsErrorDetails?.message || 'Unknown error'}</p>
+                  <p>
+                    • Transactions:{" "}
+                    {transactionsErrorDetails?.message || "Unknown error"}
+                  </p>
                 )}
                 {categoriesError && (
-                  <p>• Categories: {categoriesErrorDetails?.message || 'Unknown error'}</p>
+                  <p>
+                    • Categories:{" "}
+                    {categoriesErrorDetails?.message || "Unknown error"}
+                  </p>
                 )}
                 {categoryExpensesError && (
-                  <p>• Category expenses: {categoryExpensesErrorDetails?.message || 'Unknown error'}</p>
+                  <p>
+                    • Category expenses:{" "}
+                    {categoryExpensesErrorDetails?.message || "Unknown error"}
+                  </p>
                 )}
               </div>
             </AlertDescription>
@@ -106,7 +123,12 @@ const Dashboard: React.FC = () => {
         )}
 
         {/* Stats Cards */}
-        <div className={cn("grid gap-4 md:grid-cols-2 lg:grid-cols-4", hasError && "opacity-50 pointer-events-none")}>
+        <div
+          className={cn(
+            "grid gap-4 md:grid-cols-2 lg:grid-cols-4",
+            hasError && "opacity-50 pointer-events-none",
+          )}
+        >
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -116,7 +138,7 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {statsError ? '—' : formatAmount(stats?.currentBalance || 0)}
+                {statsError ? "—" : formatAmount(stats?.currentBalance || 0)}
               </div>
               <p className="text-xs text-muted-foreground">
                 Total income minus expenses
@@ -133,7 +155,9 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {statsError ? '—' : `+${formatAmount(stats?.monthlyIncome || 0)}`}
+                {statsError
+                  ? "—"
+                  : `+${formatAmount(stats?.monthlyIncome || 0)}`}
               </div>
               <p className="text-xs text-muted-foreground">
                 This month's earnings
@@ -150,7 +174,9 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                {statsError ? '—' : `-${formatAmount(stats?.monthlyExpenses || 0)}`}
+                {statsError
+                  ? "—"
+                  : `-${formatAmount(stats?.monthlyExpenses || 0)}`}
               </div>
               <p className="text-xs text-muted-foreground">
                 This month's spending
@@ -167,10 +193,12 @@ const Dashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
-                {statsError ? '—' : formatAmount(stats?.monthlySaving || 0)}
+                {statsError ? "—" : formatAmount(stats?.monthlySaving || 0)}
               </div>
               <p className="text-xs text-muted-foreground">
-                {statsError ? 'Data unavailable' : `${savingsRate.toFixed(1)}% savings rate`}
+                {statsError
+                  ? "Data unavailable"
+                  : `${savingsRate.toFixed(1)}% savings rate`}
               </p>
             </CardContent>
           </Card>
@@ -194,7 +222,8 @@ const Dashboard: React.FC = () => {
                   <div className="flex justify-between text-sm">
                     <span>Monthly Savings</span>
                     <span>
-                      {formatAmount(stats?.monthlySaving || 0)} of {formatAmount(stats?.monthlyIncome || 0)}
+                      {formatAmount(stats?.monthlySaving || 0)} of{" "}
+                      {formatAmount(stats?.monthlyIncome || 0)}
                     </span>
                   </div>
                   <Progress
@@ -216,19 +245,27 @@ const Dashboard: React.FC = () => {
             <CardHeader>
               <CardTitle>Expense by Category</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Current month: {statsError ? '—' : formatAmount(stats?.monthlyExpenses || 0)}
+                Current month:{" "}
+                {statsError ? "—" : formatAmount(stats?.monthlyExpenses || 0)}
               </p>
             </CardHeader>
             <CardContent>
               {categoryExpensesError ? (
                 <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
                   <AlertCircle className="h-8 w-8 mb-2" />
-                  <p className="text-sm font-medium">Unable to load expense breakdown</p>
-                  <p className="text-xs text-muted-foreground mt-1">{categoryExpensesErrorDetails?.message || 'An error occurred'}</p>
+                  <p className="text-sm font-medium">
+                    Unable to load expense breakdown
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {categoryExpensesErrorDetails?.message ||
+                      "An error occurred"}
+                  </p>
                 </div>
               ) : isLoading ? (
                 <div className="flex items-center justify-center h-64">
-                  <div className="text-sm text-muted-foreground">Loading chart...</div>
+                  <div className="text-sm text-muted-foreground">
+                    Loading chart...
+                  </div>
                 </div>
               ) : categoryExpenses && categoryExpenses.length > 0 ? (
                 <div className="space-y-4">
@@ -236,7 +273,7 @@ const Dashboard: React.FC = () => {
                     className="w-full h-[320px]"
                     options={{
                       chart: {
-                        type: 'pie',
+                        type: "pie",
                         marginBottom: 30,
                         spacingBottom: 10,
                         marginTop: 20,
@@ -245,21 +282,23 @@ const Dashboard: React.FC = () => {
                       title: {
                         text: undefined,
                       },
-                      series: [{
-                        name: 'Expenses',
-                        type: 'pie',
-                        data: categoryExpenses.map((item) => ({
-                          name: item.categoryName,
-                          y: item.amount,
-                          color: item.color,
-                        })),
-                        innerSize: '40%',
-                        dataLabels: {
-                          enabled: false,
+                      series: [
+                        {
+                          name: "Expenses",
+                          type: "pie",
+                          data: categoryExpenses.map((item) => ({
+                            name: item.categoryName,
+                            y: item.amount,
+                            color: item.color,
+                          })),
+                          innerSize: "40%",
+                          dataLabels: {
+                            enabled: false,
+                          },
                         },
-                      }],
+                      ],
                       tooltip: {
-                        formatter: function() {
+                        formatter: function () {
                           return `<b>${this.key}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
                         },
                       },
@@ -269,7 +308,7 @@ const Dashboard: React.FC = () => {
                       plotOptions: {
                         pie: {
                           allowPointSelect: true,
-                          cursor: 'pointer',
+                          cursor: "pointer",
                           borderWidth: 0,
                         },
                       },
@@ -303,8 +342,12 @@ const Dashboard: React.FC = () => {
               ) : (
                 <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
                   <div className="text-4xl mb-2">📊</div>
-                  <p className="text-sm font-medium">No expense data for this month</p>
-                  <p className="text-xs text-muted-foreground mt-1">Start adding transactions to see your spending breakdown</p>
+                  <p className="text-sm font-medium">
+                    No expense data for this month
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Start adding transactions to see your spending breakdown
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -325,11 +368,13 @@ const Dashboard: React.FC = () => {
             {transactionsError || categoriesError ? (
               <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                 <AlertCircle className="h-8 w-8 mb-2" />
-                <p className="text-sm font-medium">Unable to load transactions</p>
+                <p className="text-sm font-medium">
+                  Unable to load transactions
+                </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {transactionsError
-                    ? transactionsErrorDetails?.message || 'An error occurred'
-                    : categoriesErrorDetails?.message || 'An error occurred'}
+                    ? transactionsErrorDetails?.message || "An error occurred"
+                    : categoriesErrorDetails?.message || "An error occurred"}
                 </p>
               </div>
             ) : recentTransactions.length === 0 ? (
@@ -351,7 +396,10 @@ const Dashboard: React.FC = () => {
                       className="flex items-center justify-between p-3 rounded-lg border"
                     >
                       <div className="flex items-center space-x-3">
-                        <TransactionTypeIcon type={transaction.type} size="md" />
+                        <TransactionTypeIcon
+                          type={transaction.type}
+                          size="md"
+                        />
                         <div>
                           <p className="font-medium">{transaction.title}</p>
                           <div className="flex items-center space-x-2">
@@ -378,7 +426,8 @@ const Dashboard: React.FC = () => {
                             : "text-red-600",
                         )}
                       >
-                        {transaction.type === "INCOME" ? "+" : "-"}{formatAmount(transaction.amount)}
+                        {transaction.type === "INCOME" ? "+" : "-"}
+                        {formatAmount(transaction.amount)}
                       </div>
                     </div>
                   );

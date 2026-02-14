@@ -12,7 +12,6 @@ When a prompt asks to add a feature, fix a bug, or add tests:
 8. Once done with a task implementation, run the typecheck command to ensure no type errors: `npm run typecheck:all`
 9. Make sure to clean up the unused imports, variables, and code and leave no tech debts behind when the task is done.
 
-
 **Tech Stack:** React 18, TypeScript, Vite, TanStack Query, Tailwind CSS, shadcn/ui
 
 ---
@@ -117,13 +116,14 @@ TransactionForm/
 ```
 
 **Rules:**
+
 - The 100-line limit applies to `.tsx` component files only (types, utils, styles can be longer)
 - Sub-components follow the same folder structure recursively
 - Use named exports everywhere (no default exports)
 - Companion files (`*.types.ts`, `*.utils.ts`, `*.styles.tsx`, `*.test.tsx`) are optional — create only when needed
 - **Props types live in the component file**, not in a shared `*.types.ts`. Use `type` (not `interface`) for props. Shared types (schemas, data types used across files) stay in `*.types.ts`.
 
-```typescript
+```text
 // ✅ Correct
 TransactionForm/
   TransactionForm.tsx    // 85 lines — smart component

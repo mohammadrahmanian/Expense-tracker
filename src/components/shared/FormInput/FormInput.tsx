@@ -13,7 +13,8 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
   ({ label, error, required, id, className, ...inputProps }, ref) => (
     <div className="space-y-2">
       <Label htmlFor={id}>
-        {label}{required && <span className="text-red-500"> *</span>}
+        {label}
+        {required && <span className="text-red-500"> *</span>}
       </Label>
       <Input
         ref={ref}

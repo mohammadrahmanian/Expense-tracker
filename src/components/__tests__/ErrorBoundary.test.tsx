@@ -27,10 +27,12 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <Boom />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
-    expect(await screen.findByText(/cosmic pothole|wobbly|page tripped/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/cosmic pothole|wobbly|page tripped/i),
+    ).toBeInTheDocument();
 
     const button = screen.getByRole("button", { name: /try again/i });
     await userEvent.click(button);

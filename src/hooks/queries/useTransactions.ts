@@ -1,13 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
-import { transactionsService } from '@/services/api';
-import { queryKeys } from '@/lib/query-keys';
+import { useQuery } from "@tanstack/react-query";
+import { transactionsService } from "@/services/api";
+import { queryKeys } from "@/lib/query-keys";
 
 type TransactionParams = {
   limit?: number;
   offset?: number;
-  sort?: 'date' | 'amount';
-  order?: 'asc' | 'desc';
-  type?: 'INCOME' | 'EXPENSE';
+  sort?: "date" | "amount";
+  order?: "asc" | "desc";
+  type?: "INCOME" | "EXPENSE";
   fromDate?: string;
   toDate?: string;
   categoryId?: string;

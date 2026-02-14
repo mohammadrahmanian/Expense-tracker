@@ -22,9 +22,7 @@ export const TypeSelect: FC<TypeSelectProps> = ({
   required,
 }) => (
   <div className="space-y-2">
-    <Label>
-      Type{required && <span className="text-red-500"> *</span>}
-    </Label>
+    <Label>Type{required && <span className="text-red-500"> *</span>}</Label>
     <Select
       value={value}
       onValueChange={(v) => onChange(v as "INCOME" | "EXPENSE")}

@@ -5,8 +5,8 @@
  * relevant information from error objects.
  */
 
-import { AxiosError } from 'axios';
-import { ErrorType } from '@/types/errors';
+import { AxiosError } from "axios";
+import { ErrorType } from "@/types/errors";
 
 /**
  * Categorizes an error based on its properties
@@ -73,7 +73,7 @@ export function extractBackendMessage(error: unknown): string | undefined {
   if (error instanceof AxiosError) {
     // Try to get message from response data
     const message = error.response?.data?.message;
-    if (typeof message === 'string') {
+    if (typeof message === "string") {
       return message;
     }
   }
@@ -99,10 +99,10 @@ export function extractErrorMessage(error: unknown): string {
   }
 
   // Try string error
-  if (typeof error === 'string') {
+  if (typeof error === "string") {
     return error;
   }
 
   // Unknown error
-  return 'An unexpected error occurred';
+  return "An unexpected error occurred";
 }

@@ -5,15 +5,15 @@
  * across the application.
  */
 
-import { toast } from 'sonner';
-import { ErrorType, ErrorContext, CategorizedError } from '@/types/errors';
-import { ERROR_MESSAGES } from '@/constants/error-messages';
+import { toast } from "sonner";
+import { ErrorType, ErrorContext, CategorizedError } from "@/types/errors";
+import { ERROR_MESSAGES } from "@/constants/error-messages";
 import {
   categorizeError,
   extractBackendMessage,
   getStatusCode,
-} from './error-categorization';
-import { logger, reportErrorToSentry } from './sentry';
+} from "./error-categorization";
+import { logger, reportErrorToSentry } from "./sentry";
 
 /**
  * Options for error handling behavior
@@ -63,7 +63,7 @@ export interface ErrorHandlingOptions {
 export function handleApiError(
   error: unknown,
   context: ErrorContext,
-  options?: ErrorHandlingOptions
+  options?: ErrorHandlingOptions,
 ): CategorizedError {
   const {
     showToast = true,
@@ -87,13 +87,13 @@ export function handleApiError(
   // Log error using Sentry structured logging
   if (logError) {
     logger.error(
-      logger.fmt`[${context.feature || 'App'}:${context.action}] ${userMessage}`,
+      logger.fmt`[${context.feature || "App"}:${context.action}] ${userMessage}`,
       {
         errorType,
         statusCode,
         context,
         originalError: error,
-      }
+      },
     );
   }
 
@@ -125,7 +125,7 @@ export function handleApiError(
  */
 function getDefaultMessage(
   errorType: ErrorType,
-  context: ErrorContext
+  context: ErrorContext,
 ): string | undefined {
   // Network errors
   if (errorType === ErrorType.NETWORK) {
@@ -146,12 +146,12 @@ function getDefaultMessage(
   if (context.feature) {
     const featureMessages =
       ERROR_MESSAGES[context.feature as keyof typeof ERROR_MESSAGES];
-    if (featureMessages && typeof featureMessages === 'object') {
+    if (featureMessages && typeof featureMessages === "object") {
       // Convert action to uppercase with underscores (e.g., "fetch transactions" -> "FETCH_TRANSACTIONS")
-      const actionKey = context.action.toUpperCase().replace(/ /g, '_');
+      const actionKey = context.action.toUpperCase().replace(/ /g, "_");
       const message =
         featureMessages[actionKey as keyof typeof featureMessages];
-      if (typeof message === 'string') {
+      if (typeof message === "string") {
         return message;
       }
     }
