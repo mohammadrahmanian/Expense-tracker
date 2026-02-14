@@ -1,1 +1,0 @@
-{"root":["./src/components/__tests__/ErrorBoundary.test.tsx","./src/components/transactions/TransactionForm/TransactionForm.test.tsx","./src/lib/utils.spec.ts","./src/test/setup.ts","./src/test/test-utils.tsx"],"errors":true,"version":"5.8.3"}
