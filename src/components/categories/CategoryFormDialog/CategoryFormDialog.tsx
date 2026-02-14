@@ -31,7 +31,7 @@ export const CategoryFormDialog: FC<CategoryFormDialogProps> = ({
   onNewClick,
 }) => {
   const { register, handleFormSubmit, errors, watch, setValue, handleOpenChange } =
-    useCategoryForm(editingCategory, onSuccess, onOpenChange);
+    useCategoryForm(isOpen, editingCategory, onSuccess, onOpenChange);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>

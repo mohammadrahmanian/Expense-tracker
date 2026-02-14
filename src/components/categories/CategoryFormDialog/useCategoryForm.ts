@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { categorySchema, type CategoryFormData } from "./CategoryFormDialog.types";
 
 export const useCategoryForm = (
+  isOpen: boolean,
   editingCategory: Category | undefined,
   onSuccess: () => void,
   onOpenChange: (open: boolean) => void,
@@ -20,10 +21,13 @@ export const useCategoryForm = (
     });
 
   useEffect(() => {
+    if (!isOpen) return;
     if (editingCategory) {
       reset({ name: editingCategory.name, type: editingCategory.type, color: editingCategory.color });
+    } else {
+      reset();
     }
-  }, [editingCategory, reset]);
+  }, [isOpen, editingCategory, reset]);
 
   const onSubmit = async (data: CategoryFormData) => {
     try {
