@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Category } from "@/types";
 import { UseFormReturn } from "react-hook-form";
-import { AmountField } from "./AmountField";
+import { AmountField } from "@/components/shared/AmountField";
 
 type TransactionDetailsFieldsProps = {
   form: UseFormReturn<any>;
@@ -49,6 +49,7 @@ export const TransactionDetailsFields: FC<TransactionDetailsFieldsProps> = ({
           currencySymbol={currencySymbol}
           value={amount}
           onChange={onAmountChange}
+          required
         />
         <TypeSelect
           value={watch("type")}
