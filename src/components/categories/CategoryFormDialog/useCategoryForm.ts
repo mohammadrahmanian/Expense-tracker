@@ -48,5 +48,7 @@ export const useCategoryForm = (
     onOpenChange(open);
   };
 
-  return { register, handleFormSubmit: handleSubmit(onSubmit), errors, watch, setValue, handleOpenChange };
+  const isSubmitting = createCategory.isPending || updateCategory.isPending;
+
+  return { register, handleFormSubmit: handleSubmit(onSubmit), errors, watch, setValue, handleOpenChange, isSubmitting };
 };

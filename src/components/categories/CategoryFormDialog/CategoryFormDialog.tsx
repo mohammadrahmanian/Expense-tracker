@@ -30,7 +30,7 @@ export const CategoryFormDialog: FC<CategoryFormDialogProps> = ({
   onSuccess,
   onNewClick,
 }) => {
-  const { register, handleFormSubmit, errors, watch, setValue, handleOpenChange } =
+  const { register, handleFormSubmit, errors, watch, setValue, handleOpenChange, isSubmitting } =
     useCategoryForm(isOpen, editingCategory, onSuccess, onOpenChange);
 
   return (
@@ -71,7 +71,7 @@ export const CategoryFormDialog: FC<CategoryFormDialogProps> = ({
             <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} className="flex-1">
               Cancel
             </Button>
-            <Button type="submit" className="flex-1">
+            <Button type="submit" disabled={isSubmitting} className="flex-1">
               {editingCategory ? "Update" : "Create"} Category
             </Button>
           </DialogFooter>
