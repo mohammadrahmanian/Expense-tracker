@@ -16,21 +16,18 @@ const Dashboard = () => {
 
   const {
     data: stats,
-    isLoading: statsLoading,
     isError: statsError,
     error: statsErrorDetails,
   } = useDashboardStats();
 
   const {
     data: transactionsData,
-    isLoading: transactionsLoading,
     isError: transactionsError,
     error: transactionsErrorDetails,
   } = useTransactions();
 
   const {
     data: categories,
-    isLoading: categoriesLoading,
     isError: categoriesError,
     error: categoriesErrorDetails,
   } = useCategories();
@@ -42,8 +39,6 @@ const Dashboard = () => {
     error: categoryExpensesErrorDetails,
   } = useCategoryExpenses();
 
-  const isLoading =
-    statsLoading || transactionsLoading || categoriesLoading || categoryExpensesLoading;
   const hasError =
     statsError || transactionsError || categoriesError || categoryExpensesError;
 
