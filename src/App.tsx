@@ -17,7 +17,7 @@ import Login from "./pages/Login";
 import More from "./pages/More";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
-import Reports from "./pages/Reports";
+import { Reports } from "./pages/Reports";
 import Transactions from "./pages/Transactions";
 import Profile from "./pages/Profile";
 import RecurringTransactions from "./pages/RecurringTransactions";
