@@ -1,6 +1,7 @@
 import { type FC } from "react";
 import { Badge } from "@/components/ui/badge";
 import { HighchartsContainer } from "@/components/ui/highcharts-chart";
+import { escapeHtml } from "@/lib/utils";
 import { type CategorySpending } from "@/types";
 
 type CategoryPieChartProps = {
@@ -42,7 +43,7 @@ export const CategoryPieChart: FC<CategoryPieChartProps> = ({
           ],
           tooltip: {
             formatter: function () {
-              return `<b>${this.key}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
+              return `<b>${escapeHtml(String(this.key))}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
             },
           },
           legend: { enabled: false },

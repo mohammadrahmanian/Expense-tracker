@@ -88,7 +88,7 @@ const Dashboard = () => {
             categoryExpensesErrorMessage={categoryExpensesErrorDetails?.message}
             monthlyExpenses={formatAmount(stats?.monthlyExpenses || 0)}
             statsError={statsError}
-            isLoading={isLoading}
+            isLoading={categoryExpensesLoading}
             formatAmount={formatAmount}
           />
         </div>
