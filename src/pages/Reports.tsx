@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { ComponentErrorBoundary } from "@/components/ErrorBoundary";
-import { Badge } from "@/components/ui/badge";
+import { CategoryPieChart } from "@/components/charts/CategoryPieChart";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -618,73 +618,11 @@ const Reports: React.FC = () => {
             </CardHeader>
             <CardContent className="p-4">
               {categorySpending.length > 0 ? (
-                <div className="space-y-3">
-                  <HighchartsContainer
-                    className="w-full h-[320px]"
-                    options={{
-                      chart: {
-                        type: "pie",
-                      },
-                      title: {
-                        text: undefined,
-                      },
-                      series: [
-                        {
-                          name: "Expenses",
-                          type: "pie",
-                          data: categorySpending.map((item) => ({
-                            name: item.categoryName,
-                            y: item.amount,
-                            color: item.color,
-                          })),
-                          innerSize: "40%",
-                          dataLabels: {
-                            enabled: false,
-                          },
-                        },
-                      ],
-                      tooltip: {
-                        formatter: function () {
-                          return `<b>${this.key}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
-                        },
-                      },
-                      legend: {
-                        enabled: false,
-                      },
-                      plotOptions: {
-                        pie: {
-                          allowPointSelect: true,
-                          cursor: "pointer",
-                          borderWidth: 0,
-                        },
-                      },
-                    }}
-                  />
-                  <div className="space-y-2">
-                    {categorySpending.map((item) => (
-                      <div
-                        key={item.categoryId}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <div
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: item.color }}
-                          />
-                          <span className="text-sm">{item.categoryName}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="secondary">
-                            {(item.percentage ?? 0).toFixed(1)}%
-                          </Badge>
-                          <span className="text-sm font-medium">
-                            {formatAmount(item.amount)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <CategoryPieChart
+                  data={categorySpending}
+                  seriesName="Expenses"
+                  formatAmount={formatAmount}
+                />
               ) : (
                 <div className="text-center py-8">
                   <p className="text-gray-500 dark:text-gray-400">
@@ -704,73 +642,11 @@ const Reports: React.FC = () => {
             </CardHeader>
             <CardContent className="p-4">
               {incomeByCategory.length > 0 ? (
-                <div className="space-y-3">
-                  <HighchartsContainer
-                    className="w-full h-[320px]"
-                    options={{
-                      chart: {
-                        type: "pie",
-                      },
-                      title: {
-                        text: undefined,
-                      },
-                      series: [
-                        {
-                          name: "Income",
-                          type: "pie",
-                          data: incomeByCategory.map((item) => ({
-                            name: item.categoryName,
-                            y: item.amount,
-                            color: item.color,
-                          })),
-                          innerSize: "40%",
-                          dataLabels: {
-                            enabled: false,
-                          },
-                        },
-                      ],
-                      tooltip: {
-                        formatter: function () {
-                          return `<b>${this.key}</b><br/>${formatAmount(this.y || 0)} (${this.percentage?.toFixed(1)}%)`;
-                        },
-                      },
-                      legend: {
-                        enabled: false,
-                      },
-                      plotOptions: {
-                        pie: {
-                          allowPointSelect: true,
-                          cursor: "pointer",
-                          borderWidth: 0,
-                        },
-                      },
-                    }}
-                  />
-                  <div className="space-y-2">
-                    {incomeByCategory.map((item) => (
-                      <div
-                        key={item.categoryId}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <div
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: item.color }}
-                          />
-                          <span className="text-sm">{item.categoryName}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="secondary">
-                            {(item.percentage ?? 0).toFixed(1)}%
-                          </Badge>
-                          <span className="text-sm font-medium">
-                            {formatAmount(item.amount)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <CategoryPieChart
+                  data={incomeByCategory}
+                  seriesName="Income"
+                  formatAmount={formatAmount}
+                />
               ) : (
                 <div className="text-center py-8">
                   <p className="text-gray-500 dark:text-gray-400">
