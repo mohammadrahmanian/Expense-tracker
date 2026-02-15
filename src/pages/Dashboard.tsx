@@ -44,7 +44,7 @@ const Dashboard = () => {
 
   const savingsRate =
     stats?.monthlyIncome && stats.monthlyIncome > 0
-      ? (stats.monthlySaving / stats.monthlyIncome) * 100
+      ? ((stats.monthlySaving ?? 0) / stats.monthlyIncome) * 100
       : 0;
 
   const recentTransactions = useMemo(() => {
@@ -103,4 +103,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export { Dashboard };

@@ -11,7 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import Categories from "./pages/Categories";
-import Dashboard from "./pages/Dashboard";
+import { Dashboard } from "./pages/Dashboard";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import More from "./pages/More";
