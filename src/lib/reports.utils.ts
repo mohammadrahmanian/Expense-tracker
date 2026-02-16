@@ -39,15 +39,24 @@ export const validateDateRange = (
   dateRange: { startDate: string; endDate: string },
 ): { isValid: boolean; error: string | null } => {
   if (timeRange !== "custom") return { isValid: true, error: null };
-  if (!dateRange.startDate || !dateRange.endDate)
+
+  // Check both string representation and Date objects
+  if (!dateRange.startDate || !dateRange.endDate || !customStartDate || !customEndDate) {
     return { isValid: false, error: "Please select both start and end dates" };
+  }
+
   const todaysEnd = endOfDay(new Date());
-  const start = customStartDate!;
-  const end = customEndDate!;
-  if (isAfter(start, todaysEnd) || isAfter(end, todaysEnd))
+  // Now we can safely use customStartDate and customEndDate
+  if (isAfter(customStartDate, todaysEnd) || isAfter(customEndDate, todaysEnd)) {
     return { isValid: false, error: "Dates cannot be in the future" };
-  if (isAfter(start, end))
+  }
+
+  // Apply endOfDay to end date for proper comparison
+  const endWithTime = endOfDay(customEndDate);
+  if (isAfter(customStartDate, endWithTime)) {
     return { isValid: false, error: "End date must be the same as or after start date" };
+  }
+
   return { isValid: true, error: null };
 };
 

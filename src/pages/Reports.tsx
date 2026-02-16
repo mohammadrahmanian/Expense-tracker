@@ -73,7 +73,12 @@ export const Reports: FC = () => {
           onCustomEndDateChange={setCustomEndDate}
         />
 
-        {error && <ReportsErrorAlert error={error} onRetry={() => refetch()} />}
+        {error && (
+          <ReportsErrorAlert
+            error={error}
+            onRetry={queryError ? () => refetch() : undefined}
+          />
+        )}
 
         <ReportsSummaryStats summary={summary} isLoading={isLoading} formatAmount={formatAmount} />
 
