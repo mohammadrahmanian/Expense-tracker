@@ -43,7 +43,7 @@ export const Transactions: FC = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex justify-end items-center">
-          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+          <Dialog open={isFormOpen} onOpenChange={(open) => (open ? setIsFormOpen(true) : handleFormClose())}>
             <DialogTrigger asChild>
               <Button onClick={() => setEditingTransaction(undefined)} disabled={deleteTransaction.isPending}>
                 <Plus className="h-4 w-4 mr-2" />
