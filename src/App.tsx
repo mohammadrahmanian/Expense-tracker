@@ -1,14 +1,15 @@
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import ErrorBoundary, { PageErrorBoundary } from "@/components/ErrorBoundary";
-import { setNavigationCallback } from "@/services/api";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { SidebarContextProvider } from "@/contexts/SidebarContext";
+import { setNavigationCallback } from "@/services/api";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { useEffect } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import Categories from "./pages/Categories";
 import { Dashboard } from "./pages/Dashboard";
@@ -16,12 +17,11 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import More from "./pages/More";
 import NotFound from "./pages/NotFound";
-import Register from "./pages/Register";
-import Reports from "./pages/Reports";
-import Transactions from "./pages/Transactions";
 import Profile from "./pages/Profile";
 import RecurringTransactions from "./pages/RecurringTransactions";
-import { useEffect } from "react";
+import Register from "./pages/Register";
+import Reports from "./pages/Reports";
+import { Transactions } from "./pages/Transactions";
 
 // Configure React Query with optimal defaults
 const queryClient = new QueryClient({
