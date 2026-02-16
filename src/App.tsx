@@ -20,7 +20,7 @@ import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import RecurringTransactions from "./pages/RecurringTransactions";
 import Register from "./pages/Register";
-import Reports from "./pages/Reports";
+import { Reports } from "./pages/Reports";
 import { Transactions } from "./pages/Transactions";
 
 // Configure React Query with optimal defaults
