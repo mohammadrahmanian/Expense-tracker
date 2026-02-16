@@ -31,7 +31,7 @@ export const Transactions: FC = () => {
 
   const isLoading = transactionsLoading || categoriesLoading;
   const hasError = transactionsError || categoriesError;
-  const transactions = transactionsData?.items || [];
+  const transactions = useMemo(() => transactionsData?.items ?? [], [transactionsData?.items]);
   const totalTransactions = transactionsData?.total || 0;
   const pageTotals = useMemo(() => calculatePageTotals(transactions), [transactions]);
 

@@ -1,4 +1,4 @@
-import { Transaction } from "@/types";
+import { Category, Transaction } from "@/types";
 
 export type TransactionFilterState = {
   searchTerm: string;
@@ -74,3 +74,15 @@ export const hasActiveFilters = (
     state.startDate ||
     state.endDate
   );
+
+export const getCategoryById = (
+  categories: Category[] | undefined,
+  categoryId: string,
+  transactionType: "INCOME" | "EXPENSE",
+): Category =>
+  categories?.find((cat) => cat.id === categoryId) ?? {
+    id: "missing",
+    name: "Uncategorized",
+    color: "#6b7280",
+    type: transactionType,
+  };
