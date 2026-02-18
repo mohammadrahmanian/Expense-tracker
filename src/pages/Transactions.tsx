@@ -39,7 +39,9 @@ export const Transactions: FC = () => {
 
   const handleEdit = (transaction: Transaction) => { setEditingTransaction(transaction); setIsFormOpen(true); };
   const handleDelete = (id: string) => setDeletingId(id);
-  const handleDeleteConfirm = () => { if (deletingId) deleteTransaction.mutate(deletingId); setDeletingId(undefined); };
+  const handleDeleteConfirm = () => {
+    if (deletingId) deleteTransaction.mutate(deletingId, { onSuccess: () => setDeletingId(undefined) });
+  };
   const handleFormClose = () => { setIsFormOpen(false); setEditingTransaction(undefined); };
 
   return (
@@ -67,9 +69,10 @@ export const Transactions: FC = () => {
 
         <DeleteTransactionDialog
           open={deletingId !== undefined}
-          onClose={() => setDeletingId(undefined)}
+          onClose={() => { setDeletingId(undefined); deleteTransaction.reset(); }}
           onConfirm={handleDeleteConfirm}
           isPending={deleteTransaction.isPending}
+          error={deleteTransaction.isError ? ((deleteTransaction.error as Error)?.message ?? "Failed to delete transaction") : undefined}
         />
       </div>
     </DashboardLayout>
