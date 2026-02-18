@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { DeleteTransactionDialog } from "@/components/transactions/DeleteTransactionDialog";
 import { TransactionForm } from "@/components/transactions/TransactionForm";
 import { TransactionsFilters } from "@/components/transactions/TransactionsFilters";
 import { TransactionsList } from "@/components/transactions/TransactionsList";
@@ -24,6 +25,7 @@ export const Transactions: FC = () => {
   const { state, dispatch, queryParams, activeFilters } = useTransactionFilters();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
+  const [deletingId, setDeletingId] = useState<string | undefined>();
 
   const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError, error: transactionsErrorInfo } = useTransactions(queryParams);
   const { data: categories, isLoading: categoriesLoading, isError: categoriesError, error: categoriesErrorInfo } = useCategories();
@@ -36,7 +38,8 @@ export const Transactions: FC = () => {
   const pageTotals = useMemo(() => calculatePageTotals(transactions), [transactions]);
 
   const handleEdit = (transaction: Transaction) => { setEditingTransaction(transaction); setIsFormOpen(true); };
-  const handleDelete = (id: string) => { if (confirm("Are you sure you want to delete this transaction?")) deleteTransaction.mutate(id); };
+  const handleDelete = (id: string) => setDeletingId(id);
+  const handleDeleteConfirm = () => { if (deletingId) deleteTransaction.mutate(deletingId); setDeletingId(undefined); };
   const handleFormClose = () => { setIsFormOpen(false); setEditingTransaction(undefined); };
 
   return (
@@ -61,6 +64,13 @@ export const Transactions: FC = () => {
         <TransactionsFilters searchTerm={state.searchTerm} onSearchTermChange={v => dispatch({ type: "SET_SEARCH_TERM", payload: v })} typeFilter={state.typeFilter} onTypeFilterChange={v => dispatch({ type: "SET_TYPE_FILTER", payload: v })} categoryFilter={state.categoryFilter} onCategoryFilterChange={v => dispatch({ type: "SET_CATEGORY_FILTER", payload: v })} startDate={state.startDate} onStartDateChange={v => dispatch({ type: "SET_START_DATE", payload: v })} endDate={state.endDate} onEndDateChange={v => dispatch({ type: "SET_END_DATE", payload: v })} categories={categories} onClearFilters={() => dispatch({ type: "CLEAR_FILTERS" })} />
 
         <TransactionsList transactions={transactions} totalTransactions={totalTransactions} categories={categories} isLoading={isLoading} hasError={hasError} transactionsError={transactionsError} transactionsErrorMessage={transactionsErrorInfo?.message} categoriesError={categoriesError} categoriesErrorMessage={categoriesErrorInfo?.message} hasActiveFilters={activeFilters} sortField={state.sortField} sortOrder={state.sortOrder} onSort={f => dispatch({ type: "SORT", payload: f })} onEdit={handleEdit} onDelete={handleDelete} isDeletingId={deleteTransaction.isPending ? deleteTransaction.variables : undefined} formatAmount={formatAmount} currentPage={state.currentPage} pageSize={state.pageSize} onPageChange={p => dispatch({ type: "SET_CURRENT_PAGE", payload: p })} onPageSizeChange={p => dispatch({ type: "SET_PAGE_SIZE", payload: p })} />
+
+        <DeleteTransactionDialog
+          open={deletingId !== undefined}
+          onClose={() => setDeletingId(undefined)}
+          onConfirm={handleDeleteConfirm}
+          isPending={deleteTransaction.isPending}
+        />
       </div>
     </DashboardLayout>
   );
