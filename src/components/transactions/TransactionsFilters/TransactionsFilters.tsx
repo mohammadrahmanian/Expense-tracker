@@ -1,13 +1,7 @@
 import { type FC } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -15,10 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+import { DateSelect } from "@/components/shared/DateSelect";
 import { Category } from "@/types";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon, Filter, Search } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 
 type TransactionsFiltersProps = {
   searchTerm: string;
@@ -93,50 +86,18 @@ export const TransactionsFilters: FC<TransactionsFiltersProps> = ({
             ))}
           </SelectContent>
         </Select>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "justify-start text-left font-normal",
-                !startDate && "text-muted-foreground",
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {startDate ? format(startDate, "MMM dd, yyyy") : "Start date"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={startDate}
-              onSelect={onStartDateChange}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "justify-start text-left font-normal",
-                !endDate && "text-muted-foreground",
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {endDate ? format(endDate, "MMM dd, yyyy") : "End date"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={endDate}
-              onSelect={onEndDateChange}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
+        <DateSelect
+          label="Start date"
+          placeholder="Start date"
+          value={startDate}
+          onChange={(date) => onStartDateChange(date ?? undefined)}
+        />
+        <DateSelect
+          label="End date"
+          placeholder="End date"
+          value={endDate}
+          onChange={(date) => onEndDateChange(date ?? undefined)}
+        />
         <Button variant="outline" onClick={onClearFilters}>
           <Filter className="h-4 w-4 mr-2" />
           Clear Filters
