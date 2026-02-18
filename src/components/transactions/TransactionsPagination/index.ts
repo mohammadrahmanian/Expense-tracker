@@ -1,0 +1,1 @@
+export { TransactionsPagination } from "./TransactionsPagination";
