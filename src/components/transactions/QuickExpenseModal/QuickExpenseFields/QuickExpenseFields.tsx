@@ -53,6 +53,7 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
         required
       />
       <DateSelect
+        label="Date"
         value={watch("date")}
         onChange={(date) => setValue("date", date ?? new Date())}
         error={errors.date?.message}

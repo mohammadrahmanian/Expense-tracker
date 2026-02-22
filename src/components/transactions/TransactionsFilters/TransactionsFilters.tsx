@@ -87,13 +87,11 @@ export const TransactionsFilters: FC<TransactionsFiltersProps> = ({
           </SelectContent>
         </Select>
         <DateSelect
-          label="Start date"
           placeholder="Start date"
           value={startDate}
           onChange={(date) => onStartDateChange(date ?? undefined)}
         />
         <DateSelect
-          label="End date"
           placeholder="End date"
           value={endDate}
           onChange={(date) => onEndDateChange(date ?? undefined)}

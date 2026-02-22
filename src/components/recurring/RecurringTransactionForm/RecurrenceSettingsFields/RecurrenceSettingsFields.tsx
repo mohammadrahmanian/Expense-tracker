@@ -1,4 +1,4 @@
-import { type FC, useState } from "react";
+import { type FC } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RecurringTransaction } from "@/types";
 import { UseFormReturn } from "react-hook-form";
@@ -29,8 +29,6 @@ export const RecurrenceSettingsFields: FC<RecurrenceSettingsFieldsProps> = (
   props,
 ) => {
   const { mode, form } = props;
-  const [startCalendarOpen, setStartCalendarOpen] = useState(false);
-  const [endCalendarOpen, setEndCalendarOpen] = useState(false);
 
   // Cast to UseFormReturn<any> for shared endDate field access across both form types
   const sharedForm = form as UseFormReturn<any>;
@@ -58,11 +56,7 @@ export const RecurrenceSettingsFields: FC<RecurrenceSettingsFieldsProps> = (
         />
       )}
       {mode === "create" ? (
-        <CreateStartDateField
-          form={props.form}
-          isOpen={startCalendarOpen}
-          onOpenChange={setStartCalendarOpen}
-        />
+        <CreateStartDateField form={props.form} />
       ) : (
         <ReadOnlyField
           label="Start Date"
@@ -74,9 +68,7 @@ export const RecurrenceSettingsFields: FC<RecurrenceSettingsFieldsProps> = (
         watchEndDate={watchEndDate}
         minDate={minEndDate}
         error={errors.endDate?.message as string}
-        isOpen={endCalendarOpen}
-        onOpenChange={setEndCalendarOpen}
-        onSelect={(date) => sharedForm.setValue("endDate", date || null)}
+        onSelect={(date) => sharedForm.setValue("endDate", date)}
         onClear={() => sharedForm.setValue("endDate", null)}
       />
       <Alert>

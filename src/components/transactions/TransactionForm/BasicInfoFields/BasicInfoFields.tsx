@@ -59,6 +59,7 @@ export const BasicInfoFields: FC<BasicInfoFieldsProps> = ({
         />
       </div>
       <DateSelect
+        label="Date"
         value={watch("date")}
         onChange={(date) => setValue("date", date ?? new Date())}
         error={errors.date?.message}
