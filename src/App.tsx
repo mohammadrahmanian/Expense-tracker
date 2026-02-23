@@ -9,7 +9,7 @@ import { SidebarContextProvider } from "@/contexts/SidebarContext";
 import { setNavigationCallback } from "@/services/api";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useEffect } from "react";
+import { type ReactNode, useEffect } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import Categories from "./pages/Categories";
 import { Dashboard } from "./pages/Dashboard";
@@ -62,6 +62,27 @@ const PageBoundary: React.FC<{ name: string; children: React.ReactNode }> = ({
   );
 };
 
+type RouteConfig = {
+  path: string;
+  element: ReactNode;
+  protected?: boolean;
+  boundaryName?: string;
+};
+
+const routes: RouteConfig[] = [
+  { path: "/", element: <Index /> },
+  { path: "/login", element: <Login /> },
+  { path: "/register", element: <Register /> },
+  { path: "/dashboard", element: <Dashboard />, protected: true, boundaryName: "DashboardPage" },
+  { path: "/transactions", element: <Transactions />, protected: true, boundaryName: "TransactionsPage" },
+  { path: "/categories", element: <Categories />, protected: true, boundaryName: "CategoriesPage" },
+  { path: "/recurring-transactions", element: <RecurringTransactions />, protected: true, boundaryName: "RecurringTransactionsPage" },
+  { path: "/reports", element: <Reports />, protected: true, boundaryName: "ReportsPage" },
+  { path: "/profile", element: <Profile />, protected: true, boundaryName: "ProfilePage" },
+  { path: "/more", element: <More />, protected: true, boundaryName: "MorePage" },
+  { path: "*", element: <NotFound /> },
+];
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -74,81 +95,23 @@ const App = () => (
               <NavigationSetup />
               <ErrorBoundary name="AppShell" variant="app">
                 <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute>
-                        <PageBoundary name="DashboardPage">
-                          <Dashboard />
-                        </PageBoundary>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/transactions"
-                    element={
-                      <ProtectedRoute>
-                        <PageBoundary name="TransactionsPage">
-                          <Transactions />
-                        </PageBoundary>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/categories"
-                    element={
-                      <ProtectedRoute>
-                        <PageBoundary name="CategoriesPage">
-                          <Categories />
-                        </PageBoundary>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/recurring-transactions"
-                    element={
-                      <ProtectedRoute>
-                        <PageBoundary name="RecurringTransactionsPage">
-                          <RecurringTransactions />
-                        </PageBoundary>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/reports"
-                    element={
-                      <ProtectedRoute>
-                        <PageBoundary name="ReportsPage">
-                          <Reports />
-                        </PageBoundary>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/profile"
-                    element={
-                      <ProtectedRoute>
-                        <PageBoundary name="ProfilePage">
-                          <Profile />
-                        </PageBoundary>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/more"
-                    element={
-                      <ProtectedRoute>
-                        <PageBoundary name="MorePage">
-                          <More />
-                        </PageBoundary>
-                      </ProtectedRoute>
-                    }
-                  />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
+                  {routes.map(({ path, element, protected: isProtected, boundaryName }) => (
+                    <Route
+                      key={path}
+                      path={path}
+                      element={
+                        isProtected ? (
+                          <ProtectedRoute>
+                            <PageBoundary name={boundaryName!}>
+                              {element}
+                            </PageBoundary>
+                          </ProtectedRoute>
+                        ) : (
+                          element
+                        )
+                      }
+                    />
+                  ))}
                 </Routes>
               </ErrorBoundary>
             </BrowserRouter>
