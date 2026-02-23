@@ -24,7 +24,7 @@ type DateSelectProps = {
 export const DateSelect: React.FC<DateSelectProps> = ({
   value,
   onChange,
-  label = "Date",
+  label,
   placeholder = "Pick a date",
   error,
   required,
@@ -34,10 +34,12 @@ export const DateSelect: React.FC<DateSelectProps> = ({
 
   return (
     <div className="space-y-2">
-      <Label>
-        {label}
-        {required && <span className="text-red-500"> *</span>}
-      </Label>
+      {label && (
+        <Label>
+          {label}
+          {required && <span className="text-red-500"> *</span>}
+        </Label>
+      )}
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
