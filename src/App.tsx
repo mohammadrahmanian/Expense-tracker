@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import Categories from "./pages/Categories";
 import { Dashboard } from "./pages/Dashboard";
-import Index from "./pages/Index";
+import { Index } from "./pages/Index";
 import Login from "./pages/Login";
 import More from "./pages/More";
 import NotFound from "./pages/NotFound";
