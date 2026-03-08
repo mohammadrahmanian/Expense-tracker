@@ -4,7 +4,7 @@ import {
   hasActiveFilters,
   TransactionFilterState,
 } from "@/lib/transactions.utils";
-import { useMemo, useReducer } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 
 type TransactionFilterAction =
   | { type: "SET_SEARCH_TERM"; payload: string }
@@ -75,11 +75,28 @@ const filterReducer = (
 
 export const useTransactionFilters = () => {
   const [state, dispatch] = useReducer(filterReducer, initialState);
+  const [searchInput, setSearchInput] = useState("");
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useScrollToTopOnChange(state.currentPage, state.sortField, state.sortOrder);
+
+  useEffect(() => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      dispatch({ type: "SET_SEARCH_TERM", payload: searchInput });
+    }, 300);
+    return () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    };
+  }, [searchInput]);
+
+  const handleClearFilters = () => {
+    setSearchInput("");
+    dispatch({ type: "CLEAR_FILTERS" });
+  };
 
   const queryParams = useMemo(() => buildQueryParams(state), [state]);
   const activeFilters = hasActiveFilters(state);
 
-  return { state, dispatch, queryParams, activeFilters };
+  return { state, dispatch, queryParams, activeFilters, searchInput, setSearchInput, handleClearFilters };
 };

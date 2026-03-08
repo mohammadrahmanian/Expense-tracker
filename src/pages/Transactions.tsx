@@ -22,7 +22,7 @@ import { useMemo, useState, type FC } from "react";
 
 export const Transactions: FC = () => {
   const { formatAmount } = useCurrency();
-  const { state, dispatch, queryParams, activeFilters } = useTransactionFilters();
+  const { state, dispatch, queryParams, activeFilters, searchInput, setSearchInput, handleClearFilters } = useTransactionFilters();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
   const [deletingId, setDeletingId] = useState<string | undefined>();
@@ -63,7 +63,7 @@ export const Transactions: FC = () => {
 
         <TransactionsSummaryCards totalIncome={pageTotals.totalIncome} totalExpenses={pageTotals.totalExpenses} net={pageTotals.net} hasError={hasError} isLoading={isLoading} formatAmount={formatAmount} />
 
-        <TransactionsFilters searchTerm={state.searchTerm} onSearchTermChange={v => dispatch({ type: "SET_SEARCH_TERM", payload: v })} typeFilter={state.typeFilter} onTypeFilterChange={v => dispatch({ type: "SET_TYPE_FILTER", payload: v })} categoryFilter={state.categoryFilter} onCategoryFilterChange={v => dispatch({ type: "SET_CATEGORY_FILTER", payload: v })} startDate={state.startDate} onStartDateChange={v => dispatch({ type: "SET_START_DATE", payload: v })} endDate={state.endDate} onEndDateChange={v => dispatch({ type: "SET_END_DATE", payload: v })} categories={categories} onClearFilters={() => dispatch({ type: "CLEAR_FILTERS" })} />
+        <TransactionsFilters searchTerm={searchInput} onSearchTermChange={setSearchInput} typeFilter={state.typeFilter} onTypeFilterChange={v => dispatch({ type: "SET_TYPE_FILTER", payload: v })} categoryFilter={state.categoryFilter} onCategoryFilterChange={v => dispatch({ type: "SET_CATEGORY_FILTER", payload: v })} startDate={state.startDate} onStartDateChange={v => dispatch({ type: "SET_START_DATE", payload: v })} endDate={state.endDate} onEndDateChange={v => dispatch({ type: "SET_END_DATE", payload: v })} categories={categories} onClearFilters={handleClearFilters} />
 
         <TransactionsList transactions={transactions} totalTransactions={totalTransactions} categories={categories} isLoading={isLoading} hasError={hasError} transactionsError={transactionsError} transactionsErrorMessage={transactionsErrorInfo?.message} categoriesError={categoriesError} categoriesErrorMessage={categoriesErrorInfo?.message} hasActiveFilters={activeFilters} sortField={state.sortField} sortOrder={state.sortOrder} onSort={f => dispatch({ type: "SORT", payload: f })} onEdit={handleEdit} onDelete={handleDelete} isDeletingId={deleteTransaction.isPending ? deleteTransaction.variables : undefined} formatAmount={formatAmount} currentPage={state.currentPage} pageSize={state.pageSize} onPageChange={p => dispatch({ type: "SET_CURRENT_PAGE", payload: p })} onPageSizeChange={p => dispatch({ type: "SET_PAGE_SIZE", payload: p })} />
 
