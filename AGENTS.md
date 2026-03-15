@@ -68,6 +68,28 @@ const form = useForm<FormData>({
 <div className="bg-white text-black">
 ```
 
+**Never use raw hex color codes in class names.** Always use the design system color tokens defined in `tailwind.config.ts`.
+
+**Always use the reusable `Card` component** from `@/components/ui/card` when implementing a card container. Never recreate card styles with raw `div` elements.
+
+```typescript
+// ✅ Correct
+import { Card } from "@/components/ui/card";
+<Card className="p-5 flex flex-col gap-4">...</Card>
+
+// ❌ Wrong
+<div className="rounded-lg border border-neutral-200 bg-surface p-5">...</div>
+```
+
+```typescript
+// ✅ Correct
+<div className="bg-surface text-neutral-900 border-neutral-200">
+<div className="bg-gold-50 text-gold-500">
+
+// ❌ Wrong
+<div className="bg-[#FFFDF8] text-[#1A1A18] border-[#E8E2D8]">
+```
+
 ### API Calls
 
 **Always use service layer.** Never call axios directly in components.

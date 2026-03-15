@@ -85,6 +85,7 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        surface: "#FFFDF8",
         neutral: {
           50: "#FAF6F1",
           100: "#F5F0E8",
@@ -110,18 +111,21 @@ export default {
           900: "#4A3500",
         },
         success: {
+          50: "#E8F5EC",
           100: "#EAF6EE",
           300: "#A8D7B3",
           500: "#2D8C45",
           700: "#1E5F2F",
         },
         warning: {
+          50: "#FFF8E1",
           100: "#FFF5DB",
           300: "#E0C97A",
           500: "#8B7A2B",
           700: "#5E531D",
         },
         danger: {
+          50: "#FDEAEA",
           100: "#FDECEC",
           300: "#E79D96",
           500: "#C0392B",
