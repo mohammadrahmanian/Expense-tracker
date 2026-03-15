@@ -18,7 +18,7 @@ export const Index = () => {
 
   return (
     <div
-      className="min-h-screen bg-[#fafafa] text-gray-900 relative overflow-hidden"
+      className="min-h-screen bg-neutral-50 text-neutral-900 relative overflow-hidden"
       style={{ fontFamily: "'Source Sans 3', sans-serif" }}
     >
       <FloatingShapes />
