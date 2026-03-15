@@ -11,13 +11,13 @@ const badgeVariants = cva(
         default:
           "border-gold-300 bg-gold-50 text-gold-500",
         secondary:
-          "border-neutral-200 bg-[#FFFDF8] text-neutral-600",
+          "border-neutral-200 bg-surface text-neutral-600",
         destructive:
-          "border-danger-300 bg-[#FDEAEA] text-danger-700",
+          "border-danger-300 bg-danger-50 text-danger-700",
         success:
-          "border-success-300 bg-[#E8F5EC] text-success-700",
+          "border-success-300 bg-success-50 text-success-700",
         warning:
-          "border-warning-300 bg-[#FFF8E1] text-warning-700",
+          "border-warning-300 bg-warning-50 text-warning-700",
         info:
           "border-info-300 bg-info-100 text-info-700",
         outline: "bg-transparent text-foreground",
