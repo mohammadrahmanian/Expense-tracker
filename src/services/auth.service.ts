@@ -5,15 +5,12 @@ export const authService = {
   login: async (
     email: string,
     password: string,
-  ): Promise<{ token: string; user: any }> => {
+  ): Promise<{ user: any }> => {
     try {
       const response = await apiClient.post("/users/login", {
         email,
         password,
       });
-      if (response.data.token) {
-        localStorage.setItem("authToken", response.data.token);
-      }
       return response.data;
     } catch (error) {
       // Log error silently - AuthContext handles user notifications
@@ -33,16 +30,13 @@ export const authService = {
     email: string,
     password: string,
     name: string,
-  ): Promise<{ token: string; user: any }> => {
+  ): Promise<{ user: any }> => {
     try {
       const response = await apiClient.post("/users/register", {
         email,
         password,
         name,
       });
-      if (response.data.token) {
-        localStorage.setItem("authToken", response.data.token);
-      }
       return response.data;
     } catch (error) {
       // Log error silently - AuthContext handles user notifications
@@ -62,7 +56,6 @@ export const authService = {
     try {
       await apiClient.post("/users/logout");
     } catch (error) {
-      // Even if logout fails on server, clear local token
       // Log error silently - AuthContext handles this
       handleApiError(
         error,
@@ -72,8 +65,6 @@ export const authService = {
         },
         { showToast: false },
       );
-    } finally {
-      localStorage.removeItem("authToken");
     }
   },
 
