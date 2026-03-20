@@ -26,28 +26,13 @@ const apiClient: AxiosInstance = axios.create({
   withCredentials: true, // Enable sending/receiving cookies in cross-origin requests
 });
 
-// Request interceptor to add authentication token
-apiClient.interceptors.request.use(
-  (config) => {
-    // Add auth token if available
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
-
 // Response interceptor for error handling
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized access
-      localStorage.removeItem("authToken");
+      // Handle unauthorized access — clear persisted user data
+      localStorage.removeItem("user");
       // Only redirect if not already on auth pages
       if (
         window.location.pathname !== "/" &&
