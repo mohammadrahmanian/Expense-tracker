@@ -110,7 +110,7 @@ export const BottomTabBar: React.FC = () => {
         role="navigation"
         aria-label="Bottom navigation"
       >
-        <div className="bg-surface border-t border-neutral-200 px-4 pt-2.5 dark:bg-neutral-900 dark:border-neutral-700">
+        <div className="bg-surface border-t border-neutral-200 pt-2.5 dark:bg-neutral-900 dark:border-neutral-700">
           <div className="flex items-end">
             {leftTabs.map(renderTab)}
 
@@ -129,10 +129,8 @@ export const BottomTabBar: React.FC = () => {
             {rightTabs.map(renderTab)}
           </div>
 
-          {/* Home indicator */}
-          <div className="flex items-center justify-center h-[34px]">
-            <div className="h-[5px] w-[134px] rounded-sm bg-neutral-400" />
-          </div>
+          {/* Safe area for iOS home indicator */}
+          <div className="h-[34px]" />
         </div>
       </nav>
 
