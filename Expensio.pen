@@ -7979,7 +7979,7 @@
                               "type": "icon_font",
                               "id": "yOvBw",
                               "name": "biIconL",
-                              "width": 381.1039999999999,
+                              "width": 429.1039999999999,
                               "height": 16,
                               "iconFontName": "lock",
                               "iconFontFamily": "lucide",
@@ -14148,7 +14148,7 @@
                       "type": "frame",
                       "id": "PoiXw",
                       "name": "Stock Ticker Card",
-                      "width": 69939.40530515584,
+                      "width": 139890.8106103117,
                       "fill": "$surface",
                       "cornerRadius": 8,
                       "layout": "vertical",
@@ -14363,7 +14363,7 @@
                       "type": "frame",
                       "id": "cxaaI",
                       "name": "Stock Ticker Card - Loss",
-                      "width": 69939.40530515584,
+                      "width": 139890.8106103117,
                       "fill": "$surface",
                       "cornerRadius": 8,
                       "layout": "vertical",
@@ -54215,6 +54215,497 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "CenQg",
+      "x": 4829,
+      "y": 3728,
+      "name": "input-filled-default",
+      "reusable": true,
+      "width": 200,
+      "layout": "vertical",
+      "gap": 6,
+      "children": [
+        {
+          "type": "text",
+          "id": "jlT2e",
+          "name": "label",
+          "fill": "$foreground",
+          "content": "Label",
+          "fontFamily": "$font-primary",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "YITre",
+          "name": "field",
+          "width": "fill_container",
+          "fill": "$neutral-100",
+          "cornerRadius": [
+            4,
+            4,
+            0,
+            0
+          ],
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "bottom": 1
+            },
+            "fill": "$neutral-400"
+          },
+          "padding": [
+            10,
+            12
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "1AHH1",
+              "name": "value",
+              "fill": "$foreground-muted",
+              "content": "Placeholder",
+              "fontFamily": "$font-primary",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "INcWg",
+          "name": "hint",
+          "fill": "$foreground-muted",
+          "content": "Default state",
+          "fontFamily": "$font-primary",
+          "fontSize": 11,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "jYQD9",
+      "x": 5039,
+      "y": 3728,
+      "name": "input-filled-focused",
+      "reusable": true,
+      "width": 200,
+      "layout": "vertical",
+      "gap": 6,
+      "children": [
+        {
+          "type": "text",
+          "id": "TObIS",
+          "name": "label",
+          "fill": "$foreground",
+          "content": "Label",
+          "fontFamily": "$font-primary",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "coYfV",
+          "name": "field",
+          "width": "fill_container",
+          "fill": "$neutral-100",
+          "cornerRadius": [
+            4,
+            4,
+            0,
+            0
+          ],
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "bottom": 2
+            },
+            "fill": "$primary-500"
+          },
+          "padding": [
+            10,
+            12
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "bhp3F",
+              "name": "value",
+              "fill": "$foreground",
+              "content": "Typing...",
+              "fontFamily": "$font-primary",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "ZzOp5",
+          "name": "hint",
+          "fill": "$primary-500",
+          "content": "Focused state",
+          "fontFamily": "$font-primary",
+          "fontSize": 11,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "quHhL",
+      "x": 5249,
+      "y": 3728,
+      "name": "input-filled-filled",
+      "reusable": true,
+      "width": 200,
+      "layout": "vertical",
+      "gap": 6,
+      "children": [
+        {
+          "type": "text",
+          "id": "w46RB",
+          "name": "label",
+          "fill": "$foreground",
+          "content": "Label",
+          "fontFamily": "$font-primary",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "LR1AR",
+          "name": "field",
+          "width": "fill_container",
+          "fill": "$neutral-100",
+          "cornerRadius": [
+            4,
+            4,
+            0,
+            0
+          ],
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "bottom": 1
+            },
+            "fill": "$neutral-400"
+          },
+          "padding": [
+            10,
+            12
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "SMVRM",
+              "name": "value",
+              "fill": "$foreground",
+              "content": "John Doe",
+              "fontFamily": "$font-primary",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "hHBrp",
+          "name": "hint",
+          "fill": "$foreground-muted",
+          "content": "Filled state",
+          "fontFamily": "$font-primary",
+          "fontSize": 11,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "dLWmb",
+      "x": 5459,
+      "y": 3728,
+      "name": "input-filled-error",
+      "reusable": true,
+      "width": 200,
+      "layout": "vertical",
+      "gap": 6,
+      "children": [
+        {
+          "type": "text",
+          "id": "slkr7",
+          "name": "label",
+          "fill": "$foreground",
+          "content": "Label",
+          "fontFamily": "$font-primary",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "NPlla",
+          "name": "field",
+          "width": "fill_container",
+          "fill": "$danger-050",
+          "cornerRadius": [
+            4,
+            4,
+            0,
+            0
+          ],
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "bottom": 2
+            },
+            "fill": "$danger"
+          },
+          "padding": [
+            10,
+            12
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "7xyhv",
+              "name": "value",
+              "fill": "$danger",
+              "content": "invalid@",
+              "fontFamily": "$font-primary",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "jnGp4",
+          "name": "hint",
+          "fill": "$danger",
+          "content": "Please enter a valid email",
+          "fontFamily": "$font-primary",
+          "fontSize": 11,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "jthhR",
+      "x": 5669,
+      "y": 3728,
+      "name": "input-filled-disabled",
+      "reusable": true,
+      "width": 200,
+      "layout": "vertical",
+      "gap": 6,
+      "children": [
+        {
+          "type": "text",
+          "id": "1qwhZ",
+          "name": "label",
+          "fill": "$foreground-muted",
+          "content": "Label",
+          "fontFamily": "$font-primary",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "ewTVY",
+          "name": "field",
+          "opacity": 0.5,
+          "width": "fill_container",
+          "fill": "$neutral-100",
+          "cornerRadius": [
+            4,
+            4,
+            0,
+            0
+          ],
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "bottom": 1
+            },
+            "fill": "$neutral-300"
+          },
+          "padding": [
+            10,
+            12
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "E1xVs",
+              "name": "value",
+              "fill": "$foreground-muted",
+              "content": "Disabled value",
+              "fontFamily": "$font-primary",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "9hyon",
+          "name": "hint",
+          "fill": "$foreground-muted",
+          "content": "Disabled state",
+          "fontFamily": "$font-primary",
+          "fontSize": 11,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "gaDjm",
+      "x": 4829,
+      "y": 3828,
+      "name": "input-filled-read-only",
+      "reusable": true,
+      "width": 200,
+      "layout": "vertical",
+      "gap": 6,
+      "children": [
+        {
+          "type": "text",
+          "id": "HPbM7",
+          "name": "label",
+          "fill": "$foreground",
+          "content": "Label",
+          "fontFamily": "$font-primary",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "SB8U5",
+          "name": "field",
+          "width": "fill_container",
+          "fill": "$neutral-50",
+          "cornerRadius": [
+            4,
+            4,
+            0,
+            0
+          ],
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "bottom": 1
+            },
+            "fill": "$neutral-300"
+          },
+          "padding": [
+            10,
+            12
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "1lfbJ",
+              "name": "value",
+              "fill": "$foreground-secondary",
+              "content": "Read-only value",
+              "fontFamily": "$font-primary",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "ZIwhf",
+          "name": "hint",
+          "fill": "$foreground-muted",
+          "content": "Read-only state",
+          "fontFamily": "$font-primary",
+          "fontSize": 11,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "vXOin",
+      "x": 5039,
+      "y": 3828,
+      "name": "input-filled-success",
+      "reusable": true,
+      "width": 200,
+      "layout": "vertical",
+      "gap": 6,
+      "children": [
+        {
+          "type": "text",
+          "id": "zgQR6",
+          "name": "label",
+          "fill": "$foreground",
+          "content": "Label",
+          "fontFamily": "$font-primary",
+          "fontSize": 12,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "ilQlH",
+          "name": "field",
+          "width": "fill_container",
+          "fill": "$success-050",
+          "cornerRadius": [
+            4,
+            4,
+            0,
+            0
+          ],
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "bottom": 2
+            },
+            "fill": "$success"
+          },
+          "padding": [
+            10,
+            12
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "f6eQ8",
+              "name": "value",
+              "fill": "$foreground",
+              "content": "Valid entry",
+              "fontFamily": "$font-primary",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "wbsIh",
+          "name": "hint",
+          "fill": "$success",
+          "content": "Validation passed",
+          "fontFamily": "$font-primary",
+          "fontSize": 11,
+          "fontWeight": "normal"
         }
       ]
     }
