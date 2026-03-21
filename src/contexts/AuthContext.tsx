@@ -1,6 +1,6 @@
+import { handleApiError } from "@/lib/error-handling";
 import { authService } from "@/services/api";
 import { AuthContextType, User } from "@/types";
-import { handleApiError } from "@/lib/error-handling";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       handleApiError(error, {
         action: "login",
         feature: "AUTH",
-      }, { reportToSentry: false });
+      }, { reportToSentry: false, logError: false });
       throw error; // Re-throw for component to handle
     } finally {
       setIsLoading(false);
@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       handleApiError(error, {
         action: "register",
         feature: "AUTH",
-      }, { reportToSentry: false });
+      }, { reportToSentry: false, logError: false });
       throw error; // Re-throw for component to handle
     } finally {
       setIsLoading(false);
@@ -92,6 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         {
           showToast: false,
           reportToSentry: false,
+          logError: false,
         },
       );
     } finally {
