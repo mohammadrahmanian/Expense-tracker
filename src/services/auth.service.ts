@@ -1,3 +1,4 @@
+import axios from "axios";
 import { apiClient } from "./api-client";
 import { handleApiError } from "@/lib/error-handling";
 
@@ -73,10 +74,17 @@ export const authService = {
       const response = await apiClient.get("/users/me");
       return response.data;
     } catch (error) {
-      handleApiError(error, {
-        action: "get current user",
-        feature: "AUTH",
-      });
+      // 401 on /users/me is expected (session expiry check on app start) — skip Sentry and toast
+      const is401 =
+        axios.isAxiosError(error) && error.response?.status === 401;
+      handleApiError(
+        error,
+        {
+          action: "get current user",
+          feature: "AUTH",
+        },
+        { showToast: !is401, reportToSentry: !is401 },
+      );
       throw error;
     }
   },
