@@ -55,17 +55,7 @@ export function initializeSentry() {
     ],
 
     // Filter out expected errors before sending to Sentry
-    beforeSend(event, hint) {
-      const error = hint.originalException;
-
-      // Don't send 401 errors (auth redirects are expected and handled)
-      if (error && typeof error === "object" && "response" in error) {
-        const axiosError = error as { response?: { status?: number } };
-        if (axiosError.response?.status === 401) {
-          return null;
-        }
-      }
-
+    beforeSend(event) {
       return event;
     },
   });

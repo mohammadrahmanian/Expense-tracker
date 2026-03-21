@@ -10,8 +10,7 @@
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
     "typecheck:all": "tsc --build",
-    "typecheck:tests": "tsc -p tsconfig.test.json --noEmit",
-    "postinstall": "if [ \"$(uname)\" = \"Linux\" ]; then npm install @rollup/rollup-linux-x64-gnu @swc/core-linux-x64-gnu; fi"
+    "typecheck:tests": "tsc -p tsconfig.test.json --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -45,10 +44,8 @@
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.4",
     "@react-three/fiber": "^8.18.0",
-    "@rollup/rollup-linux-x64-gnu": "^4.57.1",
     "@sentry/react": "^10.38.0",
     "@sentry/vite-plugin": "^4.8.0",
-    "@swc/core-linux-x64-gnu": "^1.15.11",
     "@tanstack/react-query": "^5.90.20",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@types/three": "^0.176.0",
