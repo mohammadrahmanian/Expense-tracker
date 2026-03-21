@@ -137,8 +137,12 @@ export const transactionsService = {
     endDate: string,
   ): Promise<Transaction[]> => {
     try {
+      const queryParams = new URLSearchParams();
+      queryParams.append("start", startDate);
+      queryParams.append("end", endDate);
+
       const response = await apiClient.get<Transaction[]>(
-        `/transactions/date-range?start=${startDate}&end=${endDate}`,
+        `/transactions/date-range?${queryParams.toString()}`,
       );
       return response.data;
     } catch (error) {
