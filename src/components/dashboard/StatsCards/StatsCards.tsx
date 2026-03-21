@@ -28,17 +28,18 @@ export const StatsCards: FC<StatsCardsProps> = ({
     <StatCard
       title="Current Balance"
       value={statsError ? "\u2014" : formatAmount(stats?.currentBalance || 0)}
-      subtitle="Total income minus expenses"
-      icon={<Wallet className="h-4 w-4 text-muted-foreground" />}
+      subtitle="total balance"
+      icon={<Wallet className="h-[18px] w-[18px] text-gold-500" />}
     />
     <StatCard
       title="Monthly Income"
       value={
         statsError ? "\u2014" : `+${formatAmount(stats?.monthlyIncome || 0)}`
       }
-      subtitle="This month's earnings"
-      icon={<TrendingUp className="h-4 w-4 text-green-600" />}
-      valueClassName="text-green-600"
+      subtitle="vs last month"
+      changeText={statsError ? undefined : "+12%"}
+      changeType="positive"
+      icon={<TrendingUp className="h-[18px] w-[18px] text-success-500" />}
     />
     <StatCard
       title="Monthly Expenses"
@@ -47,9 +48,10 @@ export const StatsCards: FC<StatsCardsProps> = ({
           ? "\u2014"
           : `-${formatAmount(stats?.monthlyExpenses || 0)}`
       }
-      subtitle="This month's spending"
-      icon={<TrendingDown className="h-4 w-4 text-red-600" />}
-      valueClassName="text-red-600"
+      subtitle="vs last month"
+      changeText={statsError ? undefined : "+8%"}
+      changeType="negative"
+      icon={<TrendingDown className="h-[18px] w-[18px] text-danger-500" />}
     />
     <StatCard
       title="Monthly Savings"
@@ -59,8 +61,9 @@ export const StatsCards: FC<StatsCardsProps> = ({
           ? "Data unavailable"
           : `${savingsRate.toFixed(1)}% savings rate`
       }
-      icon={<PiggyBank className="h-4 w-4 text-blue-600" />}
-      valueClassName="text-blue-600"
+      changeText={statsError ? undefined : "+24%"}
+      changeType="positive"
+      icon={<PiggyBank className="h-[18px] w-[18px] text-success-500" />}
     />
   </div>
 );

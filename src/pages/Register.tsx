@@ -61,10 +61,10 @@ const Register: React.FC = () => {
               type="text"
               placeholder="Enter your full name"
               {...register("name")}
-              className={errors.name ? "border-red-500" : ""}
+              aria-invalid={errors.name ? "true" : undefined}
             />
             {errors.name && (
-              <p className="text-sm text-red-500">{errors.name.message}</p>
+              <p className="text-xs text-danger-500">{errors.name.message}</p>
             )}
           </div>
 
@@ -75,10 +75,10 @@ const Register: React.FC = () => {
               type="email"
               placeholder="Enter your email"
               {...register("email")}
-              className={errors.email ? "border-red-500" : ""}
+              aria-invalid={errors.email ? "true" : undefined}
             />
             {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
+              <p className="text-xs text-danger-500">{errors.email.message}</p>
             )}
           </div>
 
@@ -89,10 +89,10 @@ const Register: React.FC = () => {
               type="password"
               placeholder="Create a password"
               {...register("password")}
-              className={errors.password ? "border-red-500" : ""}
+              aria-invalid={errors.password ? "true" : undefined}
             />
             {errors.password && (
-              <p className="text-sm text-red-500">{errors.password.message}</p>
+              <p className="text-xs text-danger-500">{errors.password.message}</p>
             )}
           </div>
 
@@ -103,10 +103,10 @@ const Register: React.FC = () => {
               type="password"
               placeholder="Confirm your password"
               {...register("confirmPassword")}
-              className={errors.confirmPassword ? "border-red-500" : ""}
+              aria-invalid={errors.confirmPassword ? "true" : undefined}
             />
             {errors.confirmPassword && (
-              <p className="text-sm text-red-500">
+              <p className="text-xs text-danger-500">
                 {errors.confirmPassword.message}
               </p>
             )}
@@ -117,11 +117,11 @@ const Register: React.FC = () => {
           </Button>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+                className="font-semibold text-gold-500 hover:text-gold-400"
               >
                 Sign in
               </Link>

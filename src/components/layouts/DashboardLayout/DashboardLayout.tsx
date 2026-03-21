@@ -22,7 +22,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   }, [sidebarCollapsed]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Desktop sidebar */}
       <div
         className={cn(
@@ -30,17 +30,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           sidebarCollapsed ? "lg:w-20" : "lg:w-72",
         )}
       >
-        <div
-          className={cn(
-            "h-full transition-all duration-300",
-            sidebarCollapsed ? "px-2 py-4" : "p-4",
-          )}
-        >
-          <DashboardSidebar
-            collapsed={sidebarCollapsed}
-            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-          />
-        </div>
+        <DashboardSidebar
+          collapsed={sidebarCollapsed}
+          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
       </div>
 
       {/* Main content */}

@@ -1,10 +1,13 @@
-import { Heart, Home, UtensilsCrossed } from "lucide-react";
+import { Car, Ellipsis, FileText, ShoppingBag, Tv, Utensils } from "lucide-react";
 import { z } from "zod";
 
 export const quickCategories = [
-  { name: "Food", icon: UtensilsCrossed, color: "#FF6B6B" },
-  { name: "Health", icon: Heart, color: "#4ECDC4" },
-  { name: "Household", icon: Home, color: "#45B7D1" },
+  { name: "Food", icon: Utensils, color: "#B8860B" },
+  { name: "Transport", icon: Car, color: "#6B6560" },
+  { name: "Shopping", icon: ShoppingBag, color: "#2B6CB0" },
+  { name: "Bills", icon: FileText, color: "#8B7A2B" },
+  { name: "Fun", icon: Tv, color: "#2D8C45" },
+  { name: "Other", icon: Ellipsis, color: "#9C958E" },
 ] as const;
 
 export const quickExpenseSchema = z.object({
@@ -25,6 +28,10 @@ export const quickExpenseSchema = z.object({
     ),
   categoryName: z.string().min(1, "Category is required"),
   date: z.date(),
+  isRecurring: z.boolean().default(false),
+  recurrenceFrequency: z
+    .enum(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"])
+    .optional(),
 });
 
 export type QuickExpenseFormData = z.infer<typeof quickExpenseSchema>;

@@ -10,6 +10,11 @@ export interface NavigationItem {
   icon: React.FC<{ className?: string }>;
 }
 
+export interface NavigationSection {
+  label: string;
+  items: NavigationItem[];
+}
+
 export interface DashboardSidebarProps {
   closeButton?: React.ReactNode;
   collapsed?: boolean;
