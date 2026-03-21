@@ -44,7 +44,7 @@ export function TransactionTableRow({
       </TableCell>
       <TableCell>
         <Badge
-          variant={transaction.type === "INCOME" ? "default" : "destructive"}
+          variant={transaction.type === "INCOME" ? "success" : "destructive"}
         >
           {transaction.type}
         </Badge>

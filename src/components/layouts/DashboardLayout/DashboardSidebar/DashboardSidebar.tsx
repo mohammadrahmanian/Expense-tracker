@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Settings, LifeBuoy } from "lucide-react";
+import { ChevronLeft, ChevronRight, Settings } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { DashboardSidebarProps, NavigationItem } from "../DashboardLayout.types";
 import { navigationSections } from "../DashboardLayout.utils";
+import { SidebarUserProfile } from "./SidebarUserProfile";
 
 const NavItem = ({
   item,
@@ -16,7 +17,8 @@ const NavItem = ({
   <Link
     to={item.href}
     className={cn(
-      "group flex items-center gap-2.5 h-10 px-3 rounded-lg text-body transition-colors",
+      "group flex items-center h-10 rounded-lg text-body transition-colors",
+      collapsed ? "px-0 justify-center gap-0" : "px-3 gap-2.5",
       isActive
         ? "bg-gold-50 text-gold-500 font-semibold dark:bg-gold-500/10"
         : "text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800",
@@ -50,11 +52,11 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   const location = useLocation();
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#FFFDF8] dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 overflow-hidden">
+    <div className="flex-1 flex flex-col h-full bg-surface dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 overflow-hidden">
       <div
         className={cn(
           "flex-1 flex flex-col overflow-y-auto transition-all duration-300",
-          collapsed ? "px-2 py-6" : "px-4 py-6",
+          collapsed ? "px-2 py-2" : "px-4 py-2",
         )}
       >
         {/* Header */}
@@ -123,11 +125,12 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           <div className="h-px bg-neutral-200 dark:bg-neutral-800" />
 
           {/* Bottom Section */}
-          <div className="pt-3 space-y-0.5">
+          <div className="pt-3 space-y-0.5 pb-2">
             <Link
               to="/profile"
               className={cn(
-                "group flex items-center gap-2.5 h-10 px-3 rounded-lg text-body transition-colors",
+                "group flex items-center h-10 rounded-lg text-body transition-colors",
+                collapsed ? "px-0 justify-center gap-0" : "px-3 gap-2.5",
                 location.pathname === "/profile"
                   ? "bg-gold-50 text-gold-500 font-semibold dark:bg-gold-500/10"
                   : "text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800",
@@ -146,23 +149,8 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                 Settings
               </span>
             </Link>
-            <a
-              href="#"
-              className="group flex items-center gap-2.5 h-10 px-3 rounded-lg text-body text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800 transition-colors"
-              title={collapsed ? "Help & Support" : undefined}
-            >
-              <LifeBuoy className="h-[18px] w-[18px] flex-shrink-0" />
-              <span
-                className={cn(
-                  "whitespace-nowrap transition-all duration-300",
-                  collapsed
-                    ? "opacity-0 w-0 overflow-hidden"
-                    : "opacity-100 w-auto",
-                )}
-              >
-                Help & Support
-              </span>
-            </a>
+
+            <SidebarUserProfile collapsed={collapsed ?? false} />
           </div>
         </nav>
       </div>
