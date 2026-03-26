@@ -36,8 +36,7 @@ import { ErrorContext } from "@/types/errors";
  */
 export function createMutationErrorHandler(context: ErrorContext) {
   return (error: unknown) => {
-    // handleApiError logs, shows toast, and reports to Sentry
-    handleApiError(error, context);
-    // No need for additional console.error or toast
+    // Sentry reporting is handled at the service layer to avoid duplicates
+    handleApiError(error, context, { reportToSentry: false });
   };
 }

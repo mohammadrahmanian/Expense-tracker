@@ -1,6 +1,6 @@
+import { handleApiError } from "@/lib/error-handling";
 import { authService } from "@/services/api";
 import { AuthContextType, User } from "@/types";
-import { handleApiError } from "@/lib/error-handling";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -27,26 +27,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // Check if user is logged in on app start
     const checkAuthStatus = async () => {
-      // Check if we have a legacy localStorage token that needs migration
-      const hasLegacyToken = !!localStorage.getItem("authToken");
-
       try {
-        // Always attempt to get current user
-        // This will work if:
-        // 1. httpOnly cookie exists (new method) - automatically sent by browser
-        // 2. localStorage token exists (legacy method) - sent via axios interceptor
         const userData = await authService.getCurrentUser();
         setUser(userData);
-
-        // Migration: If authentication succeeded and we had a localStorage token,
-        // remove it since the backend has now set an httpOnly cookie
-        if (hasLegacyToken) {
-          localStorage.removeItem("authToken");
-        }
       } catch (error) {
-        // Authentication failed - no valid cookie or localStorage token
-        // Clean up localStorage in case it has an invalid token
-        localStorage.removeItem("authToken");
         localStorage.removeItem("user");
       } finally {
         setIsInitializingAuth(false);
@@ -61,18 +45,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await authService.login(email, password);
 
-      // Store user data
       setUser(response.user);
       localStorage.setItem("user", JSON.stringify(response.user));
-
-      // Migration: Remove legacy token if it exists
-      // Backend has set httpOnly cookie, so localStorage token is no longer needed
-      localStorage.removeItem("authToken");
     } catch (error: any) {
+      // Sentry reporting is handled at the service layer to avoid duplicates
       handleApiError(error, {
         action: "login",
         feature: "AUTH",
-      });
+      }, { reportToSentry: false, logError: false });
       throw error; // Re-throw for component to handle
     } finally {
       setIsLoading(false);
@@ -84,18 +64,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await authService.register(email, password, name);
 
-      // Store user data
       setUser(response.user);
       localStorage.setItem("user", JSON.stringify(response.user));
-
-      // Migration: Remove legacy token if it exists
-      // Backend has set httpOnly cookie, so localStorage token is no longer needed
-      localStorage.removeItem("authToken");
     } catch (error: any) {
+      // Sentry reporting is handled at the service layer to avoid duplicates
       handleApiError(error, {
         action: "register",
         feature: "AUTH",
-      });
+      }, { reportToSentry: false, logError: false });
       throw error; // Re-throw for component to handle
     } finally {
       setIsLoading(false);
@@ -106,6 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await authService.logout();
     } catch (error) {
+      // Sentry reporting is handled at the service layer to avoid duplicates
       handleApiError(
         error,
         {
@@ -113,15 +90,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           feature: "AUTH",
         },
         {
-          showToast: false, // Don't show error toast on logout
-          logError: true,
+          showToast: false,
+          reportToSentry: false,
+          logError: false,
         },
       );
     } finally {
       // Clear local state and storage regardless of API call result
       setUser(null);
       localStorage.removeItem("user");
-      localStorage.removeItem("authToken");
       localStorage.removeItem("transactions");
       localStorage.removeItem("categories");
       localStorage.removeItem("budgets");
