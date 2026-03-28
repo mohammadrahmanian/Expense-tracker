@@ -10,8 +10,7 @@
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
     "typecheck:all": "tsc --build",
-    "typecheck:tests": "tsc -p tsconfig.test.json --noEmit",
-    "postinstall": "if [ \"$(uname)\" = \"Linux\" ]; then npm install @rollup/rollup-linux-x64-gnu @swc/core-linux-x64-gnu; fi"
+    "typecheck:tests": "tsc -p tsconfig.test.json --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

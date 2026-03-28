@@ -172,17 +172,12 @@ function getDefaultMessage(
  * @param statusCode - HTTP status code if applicable
  * @returns Whether error should be reported
  */
-function shouldReportError(errorType: ErrorType, statusCode?: number): boolean {
-  // Don't report validation errors (user input errors, not bugs)
-  if (errorType === ErrorType.VALIDATION) {
+function shouldReportError(_errorType: ErrorType, statusCode?: number): boolean {
+  // Don't report 400 errors (user input errors that the user can fix)
+  if (statusCode === 400) {
     return false;
   }
 
-  // Don't report 401 (handled by auth flow and filtered in Sentry beforeSend)
-  if (statusCode === 401) {
-    return false;
-  }
-
-  // Report all other errors
+  // Report all other errors (401, 403, 404, 5xx, network, etc.)
   return true;
 }
