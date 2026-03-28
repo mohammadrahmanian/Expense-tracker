@@ -1,6 +1,10 @@
+import { startOfDay, endOfDay } from "date-fns";
 import { useScrollToTopOnChange } from "@/hooks/useScrollToTopOnChange";
 import {
+  buildInfiniteQueryParams,
   buildQueryParams,
+  computeDateRange,
+  DatePreset,
   hasActiveFilters,
   TransactionFilterState,
 } from "@/lib/transactions.utils";
@@ -10,6 +14,9 @@ type TransactionFilterAction =
   | { type: "SET_SEARCH_TERM"; payload: string }
   | { type: "SET_TYPE_FILTER"; payload: "all" | "INCOME" | "EXPENSE" }
   | { type: "SET_CATEGORY_FILTER"; payload: string }
+  | { type: "SET_DATE_PRESET"; payload: DatePreset }
+  | { type: "SET_CUSTOM_DATE"; payload: Date }
+  | { type: "SET_CUSTOM_RANGE"; payload: { from: Date; to: Date } }
   | { type: "SET_START_DATE"; payload: Date | undefined }
   | { type: "SET_END_DATE"; payload: Date | undefined }
   | { type: "SET_PAGE_SIZE"; payload: number }
@@ -17,14 +24,17 @@ type TransactionFilterAction =
   | { type: "SORT"; payload: "date" | "amount" }
   | { type: "CLEAR_FILTERS" };
 
+const defaultRange = computeDateRange("this_month");
+
 const initialState: TransactionFilterState = {
   searchTerm: "",
   typeFilter: "all",
   categoryFilter: "all",
-  startDate: undefined,
-  endDate: undefined,
+  datePreset: "this_month",
+  startDate: defaultRange.start,
+  endDate: defaultRange.end,
   currentPage: 1,
-  pageSize: 50,
+  pageSize: 10,
   sortField: "date",
   sortOrder: "desc",
 };
@@ -40,10 +50,38 @@ const filterReducer = (
       return { ...state, typeFilter: action.payload, currentPage: 1 };
     case "SET_CATEGORY_FILTER":
       return { ...state, categoryFilter: action.payload, currentPage: 1 };
+    case "SET_DATE_PRESET": {
+      const range = computeDateRange(action.payload);
+      return {
+        ...state,
+        datePreset: action.payload,
+        startDate: range.start,
+        endDate: range.end,
+        currentPage: 1,
+      };
+    }
+    case "SET_CUSTOM_DATE": {
+      const date = action.payload;
+      return {
+        ...state,
+        datePreset: "custom_date",
+        startDate: startOfDay(date),
+        endDate: endOfDay(date),
+        currentPage: 1,
+      };
+    }
+    case "SET_CUSTOM_RANGE":
+      return {
+        ...state,
+        datePreset: "custom_range",
+        startDate: startOfDay(action.payload.from),
+        endDate: endOfDay(action.payload.to),
+        currentPage: 1,
+      };
     case "SET_START_DATE":
-      return { ...state, startDate: action.payload, currentPage: 1 };
+      return { ...state, startDate: action.payload, datePreset: "custom_range", currentPage: 1 };
     case "SET_END_DATE":
-      return { ...state, endDate: action.payload, currentPage: 1 };
+      return { ...state, endDate: action.payload, datePreset: "custom_range", currentPage: 1 };
     case "SET_PAGE_SIZE":
       return { ...state, pageSize: action.payload, currentPage: 1 };
     case "SET_CURRENT_PAGE":
@@ -60,16 +98,19 @@ const filterReducer = (
             : "desc",
         currentPage: 1,
       };
-    case "CLEAR_FILTERS":
+    case "CLEAR_FILTERS": {
+      const resetRange = computeDateRange("this_month");
       return {
         ...state,
         searchTerm: "",
         typeFilter: "all",
         categoryFilter: "all",
-        startDate: undefined,
-        endDate: undefined,
+        datePreset: "this_month",
+        startDate: resetRange.start,
+        endDate: resetRange.end,
         currentPage: 1,
       };
+    }
   }
 };
 
@@ -96,7 +137,8 @@ export const useTransactionFilters = () => {
   };
 
   const queryParams = useMemo(() => buildQueryParams(state), [state]);
+  const infiniteQueryParams = useMemo(() => buildInfiniteQueryParams(state), [state]);
   const activeFilters = hasActiveFilters(state);
 
-  return { state, dispatch, queryParams, activeFilters, searchInput, setSearchInput, handleClearFilters };
+  return { state, dispatch, queryParams, infiniteQueryParams, activeFilters, searchInput, setSearchInput, handleClearFilters };
 };
