@@ -53,6 +53,10 @@ export const DateSelect: FC<DateSelectProps> = ({
     const parsed = parse(inputValue, DATE_FORMAT, new Date());
     if (isValid(parsed)) {
       onChange(parsed);
+    } else {
+      setInputValue(
+        value && isValid(value) ? format(value, DATE_FORMAT) : "",
+      );
     }
   };
 

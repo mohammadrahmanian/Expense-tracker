@@ -1,3 +1,4 @@
+import { FC } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Settings } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -44,7 +45,7 @@ const NavItem = ({
   </Link>
 );
 
-export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
+export const DashboardSidebar: FC<DashboardSidebarProps> = ({
   closeButton,
   collapsed = false,
   onToggle,
