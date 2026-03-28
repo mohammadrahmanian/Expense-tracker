@@ -110,11 +110,14 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
           {isRecurring && (
             <Select
               value={watch("recurrenceFrequency")}
-              onValueChange={(
-                value: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY",
-              ) => setValue("recurrenceFrequency", value)}
+              onValueChange={(value) => {
+                setValue(
+                  "recurrenceFrequency",
+                  value as "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY",
+                );
+              }}
             >
-              <SelectTrigger className="rounded-t-sm rounded-b-none border-0 border-b border-b-neutral-400 bg-neutral-100 data-[state=open]:border-b-2 data-[state=open]:border-b-gold-500 data-[state=open]:rounded-b-none focus-visible:border-b-2 focus-visible:border-b-gold-500">
+              <SelectTrigger className="rounded-t-sm rounded-b-none border-0 border-b border-b-neutral-400 bg-neutral-100 data-[state=open]:border-b-2 data-[state=open]:border-b-gold-500 data-[state=open]:rounded-b-none focus-visible:border-b-2 focus-visible:border-b-gold-500 dark:border-b-neutral-600 dark:bg-neutral-800 dark:data-[state=open]:border-b-2 dark:data-[state=open]:border-b-gold-500 dark:focus-visible:border-b-2 dark:focus-visible:border-b-gold-500">
                 <SelectValue placeholder="Select frequency" />
               </SelectTrigger>
               <SelectContent>

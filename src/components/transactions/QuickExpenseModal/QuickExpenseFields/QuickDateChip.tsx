@@ -27,11 +27,11 @@ export const QuickDateChip: FC<QuickDateChipProps> = ({ value, onChange }) => {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-1.5 h-9 rounded-md bg-neutral-100 px-3 text-[13px] font-medium text-neutral-600 hover:bg-neutral-200 transition-colors"
+          className="flex items-center gap-1.5 h-9 rounded-md bg-neutral-100 px-3 text-[13px] font-medium text-neutral-600 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
         >
-          <CalendarIcon className="h-3.5 w-3.5" />
+          <CalendarIcon className="h-3.5 w-3.5 text-neutral-600 dark:text-neutral-300" />
           <span>{formatDateLabel(value)}</span>
-          <ChevronDown className="h-3.5 w-3.5 text-neutral-500" />
+          <ChevronDown className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-300" />
         </button>
       </PopoverTrigger>
       <PopoverContent

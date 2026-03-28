@@ -10,19 +10,31 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-gold-300 bg-gold-50 text-gold-500",
-        secondary: "border-neutral-200 bg-surface text-neutral-600",
-        destructive: "border-danger-300 bg-danger-50 text-danger-700",
-        success: "border-success-300 bg-success-50 text-success-700",
-        warning: "border-warning-300 bg-warning-50 text-warning-700",
-        info: "border-info-300 bg-info-100 text-info-700",
-        outline: "bg-transparent text-foreground",
-        "ghost-success": "border-success-300 bg-transparent text-success-500",
-        "ghost-warning": "border-warning-300 bg-transparent text-warning-500",
-        "ghost-danger": "border-danger-300 bg-transparent text-danger-500",
-        "ghost-info": "border-info-300 bg-transparent text-info-500",
-        "ghost-neutral": "border-neutral-200 bg-transparent text-neutral-500",
-        "ghost-primary": "border-gold-300 bg-transparent text-gold-500",
+        default:
+          "border-gold-300 bg-gold-50 text-gold-500 dark:border-gold-700 dark:bg-gold-900/40 dark:text-gold-200",
+        secondary:
+          "border-neutral-200 bg-surface text-neutral-600 dark:border-border dark:bg-muted dark:text-muted-foreground",
+        destructive:
+          "border-danger-300 bg-danger-50 text-danger-700 dark:border-danger-500 dark:bg-danger-700/25 dark:text-danger-300",
+        success:
+          "border-success-300 bg-success-50 text-success-700 dark:border-success-500 dark:bg-success-700/25 dark:text-success-300",
+        warning:
+          "border-warning-300 bg-warning-50 text-warning-700 dark:border-warning-500 dark:bg-warning-700/25 dark:text-warning-300",
+        info:
+          "border-info-300 bg-info-100 text-info-700 dark:border-info-500 dark:bg-info-700/25 dark:text-info-300",
+        outline: "border-border bg-transparent text-foreground",
+        "ghost-success":
+          "border-success-300 bg-transparent text-success-500 dark:border-success-500 dark:text-success-300",
+        "ghost-warning":
+          "border-warning-300 bg-transparent text-warning-500 dark:border-warning-500 dark:text-warning-300",
+        "ghost-danger":
+          "border-danger-300 bg-transparent text-danger-500 dark:border-danger-500 dark:text-danger-300",
+        "ghost-info":
+          "border-info-300 bg-transparent text-info-500 dark:border-info-500 dark:text-info-300",
+        "ghost-neutral":
+          "border-neutral-200 bg-transparent text-neutral-500 dark:border-neutral-600 dark:text-neutral-400",
+        "ghost-primary":
+          "border-gold-300 bg-transparent text-gold-500 dark:border-gold-500 dark:text-gold-300",
       },
       size: {
         sm: "gap-1 px-2 py-0.5 text-[10px]",
