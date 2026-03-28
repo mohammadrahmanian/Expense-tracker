@@ -37,8 +37,8 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
               className={cn(
                 "flex flex-col items-center justify-center gap-1.5 h-20 rounded-md transition-colors cursor-pointer",
                 isSelected
-                  ? "bg-gold-50 border-2 border-gold-500 text-gold-500"
-                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200",
+                  ? "bg-gold-50 border-2 border-gold-500 text-gold-500 dark:bg-gold-500/10 dark:border-gold-500 dark:text-gold-400"
+                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700",
               )}
             >
               <Icon className="h-[22px] w-[22px]" />
@@ -48,7 +48,7 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
         })}
       </div>
       {selectedCategory && !findCategory(selectedCategory) && (
-        <p className="text-caption text-gold-700 bg-gold-50 border border-gold-200 rounded-md p-3">
+        <p className="text-caption text-gold-700 bg-gold-50 border border-gold-200 rounded-md p-3 dark:bg-gold-900 dark:text-gold-200 dark:border-gold-700">
           &ldquo;{selectedCategory}&rdquo; category will be created
           automatically.
         </p>
