@@ -4,6 +4,17 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+function readRootRadiusPx(): number {
+  if (typeof document === "undefined") return 10;
+  const probe = document.createElement("div");
+  probe.style.cssText =
+    "position:absolute;left:-9999px;border-radius:var(--radius);visibility:hidden;pointer-events:none";
+  document.documentElement.appendChild(probe);
+  const px = parseFloat(getComputedStyle(probe).borderTopLeftRadius);
+  probe.remove();
+  return Number.isFinite(px) ? Math.round(px) : 10;
+}
+
 export type HighchartsConfig = {
   [k in string]: {
     label?: React.ReactNode;
@@ -64,6 +75,8 @@ const HighchartsContainer = React.forwardRef<
       }),
     };
   };
+
+  const tooltipBorderRadiusPx = React.useMemo(() => readRootRadiusPx(), []);
 
   // Apply dark mode and responsive configuration
   const chartOptions: Highcharts.Options = React.useMemo(() => {
@@ -126,7 +139,7 @@ const HighchartsContainer = React.forwardRef<
         ...options.tooltip,
         backgroundColor: "hsl(var(--background))",
         borderColor: "hsl(var(--border))",
-        borderRadius: 8,
+        borderRadius: tooltipBorderRadiusPx,
         borderWidth: 1,
         shadow: {
           color: "rgba(0, 0, 0, 0.1)",
@@ -160,7 +173,7 @@ const HighchartsContainer = React.forwardRef<
         ...options.responsive,
       },
     };
-  }, [options]);
+  }, [options, tooltipBorderRadiusPx]);
 
   return (
     <div

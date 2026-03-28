@@ -4,6 +4,8 @@ import { Globe, Smartphone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
+const SOCIAL_COMING_SOON_TITLE = "Coming soon";
+
 export const SocialLoginSection: FC = () => {
   return (
     <div className="flex flex-col gap-5">
@@ -18,6 +20,10 @@ export const SocialLoginSection: FC = () => {
           type="button"
           variant="outline"
           className="flex-1"
+          disabled
+          aria-disabled={true}
+          title={SOCIAL_COMING_SOON_TITLE}
+          aria-label="Sign in with Google — Coming soon"
         >
           <Globe className="h-4 w-4" />
           Google
@@ -26,6 +32,10 @@ export const SocialLoginSection: FC = () => {
           type="button"
           variant="outline"
           className="flex-1"
+          disabled
+          aria-disabled={true}
+          title={SOCIAL_COMING_SOON_TITLE}
+          aria-label="Sign in with Apple — Coming soon"
         >
           <Smartphone className="h-4 w-4" />
           Apple

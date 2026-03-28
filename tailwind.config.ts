@@ -140,7 +140,7 @@ export default {
       },
       borderRadius: {
         lg: "14px",
-        md: "10px",
+        md: "var(--radius)",
         sm: "4px",
         xl: "16px",
         icon: "12px",

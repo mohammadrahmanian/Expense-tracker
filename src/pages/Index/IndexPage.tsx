@@ -17,10 +17,7 @@ export const Index = () => {
   }, [user, navigate]);
 
   return (
-    <div
-      className="min-h-screen bg-neutral-50 text-neutral-900 relative overflow-hidden"
-      style={{ fontFamily: "'Source Sans 3', sans-serif" }}
-    >
+    <div className="min-h-screen bg-neutral-50 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-50 font-sans relative overflow-hidden">
       <FloatingShapes />
 
       <div className="container mx-auto px-4 py-20 relative z-10">
