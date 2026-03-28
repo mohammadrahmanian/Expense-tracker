@@ -7979,7 +7979,7 @@
                               "type": "icon_font",
                               "id": "yOvBw",
                               "name": "biIconL",
-                              "width": 525.1039999999999,
+                              "width": 573.1039999999999,
                               "height": 16,
                               "iconFontName": "lock",
                               "iconFontFamily": "lucide",
@@ -14149,7 +14149,7 @@
                       "type": "frame",
                       "id": "PoiXw",
                       "name": "Stock Ticker Card",
-                      "width": 468,
+                      "width": 468.00048061566866,
                       "fill": "$surface",
                       "cornerRadius": 8,
                       "layout": "vertical",
@@ -14364,7 +14364,7 @@
                       "type": "frame",
                       "id": "cxaaI",
                       "name": "Stock Ticker Card - Loss",
-                      "width": 468,
+                      "width": 468.00048061566866,
                       "fill": "$surface",
                       "cornerRadius": 8,
                       "layout": "vertical",
@@ -55138,6 +55138,14 @@
     "primary-900": {
       "type": "color",
       "value": "#4A3500"
+    },
+    "primary-foreground": {
+      "type": "color",
+      "value": "#211B12"
+    },
+    "sidebar-primary-foreground": {
+      "type": "color",
+      "value": "#211B12"
     }
   }
 }
