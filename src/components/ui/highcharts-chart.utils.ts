@@ -19,14 +19,16 @@ function mergeAxisDefaults(axis: any, isYAxis = false) {
     : "#64748B";
 
   return {
+    // Defaults go first so caller-provided axis colors can override them.
+    ...defaultColors,
     ...axis,
     labels: {
+      ...axis?.labels,
       style: {
         color: defaultLabelColor,
+        ...axis?.labels?.style,
       },
-      ...axis?.labels,
     },
-    ...defaultColors,
     visible: isYAxis ? axis?.visible : true,
     ...(isYAxis && {
       title: {
