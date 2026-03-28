@@ -37,14 +37,7 @@ export function TransactionCard({
 
               {/* Category & Date */}
               <div className="flex items-center gap-2 flex-wrap">
-                <Badge
-                  variant="secondary"
-                  className="text-xs"
-                  style={{
-                    backgroundColor: category.color + "20",
-                    color: category.color,
-                  }}
-                >
+                <Badge variant="secondary" className="text-xs">
                   {category.name}
                 </Badge>
                 <span className="text-sm text-muted-foreground">

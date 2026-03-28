@@ -32,13 +32,7 @@ export function TransactionTableRow({
         </div>
       </TableCell>
       <TableCell>
-        <Badge
-          variant="secondary"
-          style={{
-            backgroundColor: category.color + "20",
-            color: category.color,
-          }}
-        >
+        <Badge variant="secondary">
           {category.name}
         </Badge>
       </TableCell>
