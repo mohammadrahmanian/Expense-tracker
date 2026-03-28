@@ -1,6 +1,8 @@
 import { type FC } from "react";
+import { TransactionTabFilterBar } from "@/components/transactions/TransactionTabFilterBar";
 import { TransactionsPagination } from "@/components/transactions/TransactionsPagination";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { DatePreset } from "@/lib/transactions.utils";
 import { Category, Transaction } from "@/types";
 import { LoadingSkeleton } from "./LoadingSkeleton";
 import { TransactionsListContent } from "./TransactionsListContent";
@@ -17,6 +19,18 @@ type TransactionsListProps = {
   categoriesError: boolean;
   categoriesErrorMessage?: string;
   hasActiveFilters: boolean;
+  typeFilter: "all" | "INCOME" | "EXPENSE";
+  onTypeFilterChange: (v: "all" | "INCOME" | "EXPENSE") => void;
+  searchTerm: string;
+  onSearchTermChange: (v: string) => void;
+  categoryFilter: string;
+  onCategoryFilterChange: (v: string) => void;
+  datePreset: DatePreset;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  onDatePresetChange: (preset: DatePreset) => void;
+  onCustomDateSelect: (date: Date) => void;
+  onCustomRangeSelect: (from: Date, to: Date) => void;
   sortField: "date" | "amount";
   sortOrder: "asc" | "desc";
   onSort: (field: "date" | "amount") => void;
@@ -30,71 +44,58 @@ type TransactionsListProps = {
   onPageSizeChange: (size: number) => void;
 };
 
-export const TransactionsList: FC<TransactionsListProps> = ({
-  transactions,
-  totalTransactions,
-  categories,
-  isLoading,
-  hasError,
-  transactionsError,
-  transactionsErrorMessage,
-  categoriesError,
-  categoriesErrorMessage,
-  hasActiveFilters,
-  sortField,
-  sortOrder,
-  onSort,
-  onEdit,
-  onDelete,
-  isDeletingId,
-  formatAmount,
-  currentPage,
-  pageSize,
-  onPageChange,
-  onPageSizeChange,
-}) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>
-        {`All Transactions ${totalTransactions > 0 ? `(${totalTransactions} total, showing ${transactions.length})` : `(showing ${transactions.length})`}`}
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      {isLoading ? (
+export const TransactionsList: FC<TransactionsListProps> = (props) => (
+  <Card className="overflow-hidden p-0">
+    <TransactionTabFilterBar
+      typeFilter={props.typeFilter}
+      onTypeFilterChange={props.onTypeFilterChange}
+      searchTerm={props.searchTerm}
+      onSearchTermChange={props.onSearchTermChange}
+      categoryFilter={props.categoryFilter}
+      onCategoryFilterChange={props.onCategoryFilterChange}
+      categories={props.categories}
+      datePreset={props.datePreset}
+      startDate={props.startDate}
+      endDate={props.endDate}
+      onDatePresetChange={props.onDatePresetChange}
+      onCustomDateSelect={props.onCustomDateSelect}
+      onCustomRangeSelect={props.onCustomRangeSelect}
+    />
+    <div className="min-h-[300px]">
+      {props.isLoading ? (
         <LoadingSkeleton />
-      ) : hasError || transactions.length === 0 ? (
+      ) : props.hasError || props.transactions.length === 0 ? (
         <TransactionsListStatus
-          hasError={hasError}
-          transactionsError={transactionsError}
-          transactionsErrorMessage={transactionsErrorMessage}
-          categoriesError={categoriesError}
-          categoriesErrorMessage={categoriesErrorMessage}
-          hasActiveFilters={hasActiveFilters}
+          hasError={props.hasError}
+          transactionsError={props.transactionsError}
+          transactionsErrorMessage={props.transactionsErrorMessage}
+          categoriesError={props.categoriesError}
+          categoriesErrorMessage={props.categoriesErrorMessage}
+          hasActiveFilters={props.hasActiveFilters}
         />
       ) : (
         <TransactionsListContent
-          transactions={transactions}
-          categories={categories}
-          sortField={sortField}
-          sortOrder={sortOrder}
-          onSort={onSort}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          isDeletingId={isDeletingId}
-          formatAmount={formatAmount}
+          transactions={props.transactions}
+          categories={props.categories}
+          sortField={props.sortField}
+          sortOrder={props.sortOrder}
+          onSort={props.onSort}
+          onEdit={props.onEdit}
+          onDelete={props.onDelete}
+          isDeletingId={props.isDeletingId}
+          formatAmount={props.formatAmount}
         />
       )}
-
-      {!isLoading && transactions.length > 0 && (
-        <TransactionsPagination
-          currentPage={currentPage}
-          pageSize={pageSize}
-          totalTransactions={totalTransactions}
-          transactionsOnPage={transactions.length}
-          onPageChange={onPageChange}
-          onPageSizeChange={onPageSizeChange}
-        />
-      )}
-    </CardContent>
+    </div>
+    {!props.isLoading && props.transactions.length > 0 && (
+      <TransactionsPagination
+        currentPage={props.currentPage}
+        pageSize={props.pageSize}
+        totalTransactions={props.totalTransactions}
+        transactionsOnPage={props.transactions.length}
+        onPageChange={props.onPageChange}
+        onPageSizeChange={props.onPageSizeChange}
+      />
+    )}
   </Card>
 );

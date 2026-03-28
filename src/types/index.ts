@@ -52,6 +52,12 @@ export interface DashboardStats {
   monthlyIncome: number;
   monthlyExpenses: number;
   monthlySaving: number;
+  /** Prior month total income; when set, UI can show MoM % on dashboard income card */
+  previousMonthIncome?: number;
+  /** Prior month total expenses; when set, UI can show MoM % on dashboard expenses card */
+  previousMonthExpenses?: number;
+  /** Prior month savings; when set, UI can show MoM % on dashboard savings card */
+  previousMonthSaving?: number;
 }
 
 export interface CategorySpending {

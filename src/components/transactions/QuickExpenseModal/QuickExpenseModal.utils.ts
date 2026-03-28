@@ -56,7 +56,10 @@ export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
         type: "EXPENSE",
         categoryId: category.id,
         date: data.date,
-        isRecurring: false,
+        isRecurring: data.isRecurring,
+        recurrenceFrequency: data.isRecurring
+          ? data.recurrenceFrequency
+          : undefined,
       },
       { onSuccess: deps.onSuccess },
     );

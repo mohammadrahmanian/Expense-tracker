@@ -1,4 +1,4 @@
-import { type FC } from "react";
+import { useMemo, type FC } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type TransactionsPaginationProps = {
@@ -18,6 +19,8 @@ type TransactionsPaginationProps = {
   onPageSizeChange: (size: number) => void;
 };
 
+const PAGE_SIZE_OPTIONS = ["10", "25", "50", "100"];
+
 export const TransactionsPagination: FC<TransactionsPaginationProps> = ({
   currentPage,
   pageSize,
@@ -25,56 +28,77 @@ export const TransactionsPagination: FC<TransactionsPaginationProps> = ({
   transactionsOnPage,
   onPageChange,
   onPageSizeChange,
-}) => (
-  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 py-4 border-t">
-    <div className="flex items-center gap-4">
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">Show</span>
+}) => {
+  const totalPages = Math.max(1, Math.ceil(totalTransactions / pageSize));
+  const isLastPage =
+    (currentPage - 1) * pageSize + transactionsOnPage >= totalTransactions;
+
+  const visiblePages = useMemo(() => {
+    if (totalPages <= 3) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (currentPage <= 2) return [1, 2, 3];
+    if (currentPage >= totalPages - 1) return [totalPages - 2, totalPages - 1, totalPages];
+    return [currentPage - 1, currentPage, currentPage + 1];
+  }, [currentPage, totalPages]);
+
+  return (
+    <div className="flex flex-col gap-3 border-t border-border px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
+        <span>Rows per page</span>
         <Select
           value={pageSize.toString()}
-          onValueChange={(value) => onPageSizeChange(Number(value))}
+          onValueChange={(v) => onPageSizeChange(Number(v))}
         >
-          <SelectTrigger className="w-[80px] h-9">
+          <SelectTrigger className="h-8 w-[60px] text-xs font-semibold">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="25">25</SelectItem>
-            <SelectItem value="50">50</SelectItem>
-            <SelectItem value="100">100</SelectItem>
-            <SelectItem value="200">200</SelectItem>
+            {PAGE_SIZE_OPTIONS.map((v) => (
+              <SelectItem key={v} value={v}>{v}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
+        <div className="mx-1 h-4 w-px bg-border" />
+        <span>
+          Page {currentPage} of {totalPages} &middot; {totalTransactions} transactions
+        </span>
       </div>
-      <div className="text-sm text-muted-foreground">
-        Showing {(currentPage - 1) * pageSize + 1} to{" "}
-        {(currentPage - 1) * pageSize + transactionsOnPage} of{" "}
-        {totalTransactions} transactions
+      <div className="flex items-center gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1 px-3 text-xs"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          <ChevronLeft className="h-3.5 w-3.5" />
+          Previous
+        </Button>
+        {visiblePages.map((page) => (
+          <button
+            key={page}
+            type="button"
+            onClick={() => onPageChange(page)}
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-sm text-xs font-medium transition-colors",
+              page === currentPage
+                ? "bg-primary text-white"
+                : "border border-border text-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800",
+            )}
+          >
+            {page}
+          </button>
+        ))}
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1 px-3 text-xs"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={isLastPage}
+        >
+          Next
+          <ChevronRight className="h-3.5 w-3.5" />
+        </Button>
       </div>
     </div>
-    <div className="flex items-center space-x-2">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-        disabled={currentPage === 1}
-      >
-        <ChevronLeft className="h-4 w-4 mr-1" />
-        Previous
-      </Button>
-      <div className="text-sm font-medium">
-        Page {currentPage} of {Math.ceil(totalTransactions / pageSize)}
-      </div>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={
-          (currentPage - 1) * pageSize + transactionsOnPage >= totalTransactions
-        }
-      >
-        Next
-        <ChevronRight className="h-4 w-4 ml-1" />
-      </Button>
-    </div>
-  </div>
-);
+  );
+};

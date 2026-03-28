@@ -33,21 +33,22 @@ const ResponsiveDialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         // Base styles
-        "fixed z-50 flex flex-col w-full border bg-background shadow-lg duration-200",
+        "fixed z-50 flex flex-col w-full border bg-background shadow-lg",
         // Desktop: centered modal
         "sm:left-[50%] sm:top-[50%] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl",
         // Desktop animations
-        "sm:data-[state=open]:animate-in sm:data-[state=closed]:animate-out sm:data-[state=closed]:fade-out-0 sm:data-[state=open]:fade-in-0",
+        "sm:duration-200 sm:data-[state=open]:animate-in sm:data-[state=closed]:animate-out sm:data-[state=closed]:fade-out-0 sm:data-[state=open]:fade-in-0",
         "sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
         "sm:data-[state=closed]:slide-out-to-left-1/2 sm:data-[state=closed]:slide-out-to-top-[48%]",
         "sm:data-[state=open]:slide-in-from-left-1/2 sm:data-[state=open]:slide-in-from-top-[48%]",
         // Mobile: bottom sheet
         "bottom-0 left-0 right-0 rounded-t-[10px] mobile-safe-bottom",
-        // Mobile animations
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        "data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom",
+        // Mobile animations (iOS-style slide)
+        "duration-300 ease-out data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
+        "data-[state=open]:slide-in-from-bottom-full data-[state=closed]:slide-out-to-bottom-full",
         // Mobile max height only
-        "max-h-[80vh] sm:max-h-fit",
+        "max-h-[85vh] sm:max-h-fit",
         className,
       )}
       {...props}
