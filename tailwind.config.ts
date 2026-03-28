@@ -142,7 +142,7 @@ export default {
         lg: "14px",
         md: "10px",
         sm: "4px",
-        xl: "14px",
+        xl: "16px",
         icon: "12px",
       },
       keyframes: {
