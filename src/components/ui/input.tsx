@@ -63,11 +63,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     if (hasAdornment) {
       return (
         <div
+          aria-invalid={props["aria-invalid"] || undefined}
           className={cn(
             "flex items-center gap-2",
             SIZE_FULL[inputSize],
             variant === "outline" && OUTLINE_WRAPPER_CLASSES,
             variant === "filled" && FILLED_WRAPPER_CLASSES,
+            variant === "outline" && OUTLINE_CLASSES,
+            variant === "filled" && FILLED_CLASSES,
             wrapperClassName,
           )}
         >
