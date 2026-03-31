@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   ResponsiveDialog as Dialog,
   ResponsiveDialogContent as DialogContent,
-  ResponsiveDialogTrigger as DialogTrigger,
 } from "@/components/ui/responsive-dialog";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useDeleteTransaction } from "@/hooks/mutations/useDeleteTransaction";
@@ -52,17 +51,10 @@ export const Transactions: FC = () => {
   const handleFormClose = () => { setIsFormOpen(false); setEditingTransaction(undefined); };
 
   const addButton = (
-    <Dialog open={isFormOpen} onOpenChange={(open) => (open ? setIsFormOpen(true) : handleFormClose())}>
-      <DialogTrigger asChild>
-        <Button onClick={() => setEditingTransaction(undefined)} disabled={deleteTransaction.isPending}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Transaction
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl">
-        <TransactionForm transaction={editingTransaction} onSuccess={handleFormClose} onCancel={handleFormClose} />
-      </DialogContent>
-    </Dialog>
+    <Button onClick={() => { setEditingTransaction(undefined); setIsFormOpen(true); }} disabled={deleteTransaction.isPending}>
+      <Plus className="h-4 w-4 mr-2" />
+      Add Transaction
+    </Button>
   );
 
   return (
@@ -142,6 +134,12 @@ export const Transactions: FC = () => {
           onPageSizeChange={(p) => dispatch({ type: "SET_PAGE_SIZE", payload: p })}
         />
       </div>
+
+      <Dialog open={isFormOpen} onOpenChange={(open) => (open ? setIsFormOpen(true) : handleFormClose())}>
+        <DialogContent className="sm:max-w-2xl">
+          <TransactionForm transaction={editingTransaction} onSuccess={handleFormClose} onCancel={handleFormClose} />
+        </DialogContent>
+      </Dialog>
 
       <DeleteTransactionDialog
         open={deletingId !== undefined}
