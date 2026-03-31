@@ -40,7 +40,7 @@ export const queryKeys = {
     list: (params?: TransactionQueryParams) =>
       [...queryKeys.transactions.lists(), params] as const,
     infiniteLists: () => [...queryKeys.transactions.all, "infinite"] as const,
-    infiniteList: (params?: Omit<TransactionQueryParams, "limit" | "offset">) =>
+    infiniteList: (params?: Omit<TransactionQueryParams, "offset">) =>
       [...queryKeys.transactions.infiniteLists(), params] as const,
     details: () => [...queryKeys.transactions.all, "detail"] as const,
     detail: (id: string) => [...queryKeys.transactions.details(), id] as const,
