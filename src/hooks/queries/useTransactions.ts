@@ -37,9 +37,10 @@ type TransactionParams = {
  * const total = data?.total || 0;
  * ```
  */
-export function useTransactions(params?: TransactionParams) {
+export function useTransactions(params?: TransactionParams, enabled = true) {
   return useQuery({
     queryKey: queryKeys.transactions.list(params),
     queryFn: () => transactionsService.getAll(params),
+    enabled,
   });
 }

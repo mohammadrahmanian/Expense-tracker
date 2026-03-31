@@ -30,7 +30,7 @@ export const Transactions: FC = () => {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
   const [deletingId, setDeletingId] = useState<string | undefined>();
 
-  const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError, error: transactionsErrorInfo } = useTransactions(queryParams);
+  const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError, error: transactionsErrorInfo } = useTransactions(queryParams, !isMobile);
   const infiniteQuery = useInfiniteTransactions(infiniteQueryParams, isMobile);
   const { data: categories, isLoading: categoriesLoading, isError: categoriesError, error: categoriesErrorInfo } = useCategories();
   const deleteTransaction = useDeleteTransaction();
