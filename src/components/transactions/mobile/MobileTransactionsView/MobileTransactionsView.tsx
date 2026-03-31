@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, type FC } from "react";
+import { useMemo, type FC } from "react";
 import { MobileTransactionsHeader } from "@/components/transactions/mobile/MobileTransactionsHeader";
 import { MobileSearchBar } from "@/components/transactions/mobile/MobileSearchBar";
 import { MobilePillTabs } from "@/components/transactions/mobile/MobilePillTabs";
 import { MobileSummaryCards } from "@/components/transactions/mobile/MobileSummaryCards";
 import { MobileTransactionGroup } from "@/components/transactions/mobile/MobileTransactionGroup";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   calculatePageTotals,
   groupTransactionsByDate,
@@ -13,6 +12,8 @@ import {
 import { Category, Transaction } from "@/types";
 import { Loader2 } from "lucide-react";
 import type { InfiniteData } from "@tanstack/react-query";
+import { MobileLoadingSkeleton } from "./MobileLoadingSkeleton";
+import { useInfiniteScroll } from "./useInfiniteScroll";
 
 type PageData = { items: Transaction[]; total: number; count: number };
 
@@ -47,24 +48,11 @@ export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (props) =
   const totals = useMemo(() => calculatePageTotals(transactions), [transactions]);
   const groups = useMemo(() => groupTransactionsByDate(transactions), [transactions]);
 
-  const sentinelRef = useRef<HTMLDivElement>(null);
-
-  const handleIntersect = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      if (entries[0]?.isIntersecting && props.hasNextPage && !props.isFetchingNextPage) {
-        props.fetchNextPage();
-      }
-    },
-    [props.hasNextPage, props.isFetchingNextPage, props.fetchNextPage],
-  );
-
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(handleIntersect, { rootMargin: "200px" });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [handleIntersect]);
+  const { sentinelRef } = useInfiniteScroll({
+    hasNextPage: props.hasNextPage,
+    isFetchingNextPage: props.isFetchingNextPage,
+    fetchNextPage: props.fetchNextPage,
+  });
 
   return (
     <div className="flex flex-col gap-0">
@@ -116,18 +104,3 @@ export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (props) =
     </div>
   );
 };
-
-const MobileLoadingSkeleton: FC = () => (
-  <div className="flex flex-col gap-4 px-5 py-4">
-    {Array.from({ length: 5 }).map((_, i) => (
-      <div key={i} className="flex items-center gap-3">
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <div className="flex flex-1 flex-col gap-1.5">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-3 w-20" />
-        </div>
-        <Skeleton className="h-4 w-16" />
-      </div>
-    ))}
-  </div>
-);
