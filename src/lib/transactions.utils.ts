@@ -96,6 +96,24 @@ const resolveDateRange = (
   return computeDateRange(state.datePreset);
 };
 
+const formatDateBoundaries = (
+  start: Date | undefined,
+  end: Date | undefined,
+): { fromDate?: string; toDate?: string } => {
+  const result: { fromDate?: string; toDate?: string } = {};
+  if (start) {
+    const s = new Date(start);
+    s.setHours(0, 0, 0, 0);
+    result.fromDate = s.toISOString();
+  }
+  if (end) {
+    const e = new Date(end);
+    e.setHours(23, 59, 59, 999);
+    result.toDate = e.toISOString();
+  }
+  return result;
+};
+
 export const buildQueryParams = (state: TransactionFilterState) => {
   const params: {
     sort: "date" | "amount";
@@ -119,18 +137,7 @@ export const buildQueryParams = (state: TransactionFilterState) => {
   if (state.categoryFilter !== "all") params.categoryId = state.categoryFilter;
 
   const { start, end } = resolveDateRange(state);
-
-  if (start) {
-    const s = new Date(start);
-    s.setHours(0, 0, 0, 0);
-    params.fromDate = s.toISOString();
-  }
-
-  if (end) {
-    const e = new Date(end);
-    e.setHours(23, 59, 59, 999);
-    params.toDate = e.toISOString();
-  }
+  Object.assign(params, formatDateBoundaries(start, end));
 
   return params;
 };
@@ -154,18 +161,7 @@ export const buildInfiniteQueryParams = (state: TransactionFilterState) => {
   if (state.categoryFilter !== "all") params.categoryId = state.categoryFilter;
 
   const { start, end } = resolveDateRange(state);
-
-  if (start) {
-    const s = new Date(start);
-    s.setHours(0, 0, 0, 0);
-    params.fromDate = s.toISOString();
-  }
-
-  if (end) {
-    const e = new Date(end);
-    e.setHours(23, 59, 59, 999);
-    params.toDate = e.toISOString();
-  }
+  Object.assign(params, formatDateBoundaries(start, end));
 
   return params;
 };
