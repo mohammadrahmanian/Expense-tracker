@@ -1,5 +1,5 @@
 import { DatePreset } from "@/lib/transactions.utils";
-import { format } from "date-fns";
+import { format, subMonths } from "date-fns";
 import {
   Calendar,
   CalendarCheck,
@@ -44,11 +44,8 @@ export const getPillLabel = (
       return "Yesterday";
     case "this_month":
       return format(new Date(), "MMM");
-    case "last_month": {
-      const d = new Date();
-      d.setMonth(d.getMonth() - 1);
-      return format(d, "MMM");
-    }
+    case "last_month":
+      return format(subMonths(new Date(), 1), "MMM");
     default:
       return "Date";
   }
