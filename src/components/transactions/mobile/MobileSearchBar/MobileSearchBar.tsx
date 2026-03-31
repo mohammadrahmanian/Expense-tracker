@@ -27,6 +27,7 @@ export const MobileSearchBar: FC<MobileSearchBarProps> = ({
           <button
             type="button"
             onClick={() => onChange("")}
+            aria-label="Clear search"
             className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-muted-foreground text-white"
           >
             <X className="h-2.5 w-2.5" />
