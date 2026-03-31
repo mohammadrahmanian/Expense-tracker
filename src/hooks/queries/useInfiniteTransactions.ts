@@ -22,7 +22,7 @@ export function useInfiniteTransactions(
   const { limit = PAGE_SIZE, ...filterParams } = params ?? {};
 
   return useInfiniteQuery({
-    queryKey: queryKeys.transactions.infiniteList(filterParams),
+    queryKey: queryKeys.transactions.infiniteList({ ...filterParams, limit }),
     queryFn: ({ pageParam = 0 }) =>
       transactionsService.getAll({ ...filterParams, limit, offset: pageParam }),
     initialPageParam: 0,
