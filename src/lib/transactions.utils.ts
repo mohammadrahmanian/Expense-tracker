@@ -179,27 +179,29 @@ export const groupTransactionsByDate = (
     }
   }
 
-  return Array.from(grouped.entries()).map(([key, txs]) => {
-    const date = new Date(txs[0].date);
-    let dateLabel: string;
+  return Array.from(grouped.entries())
+    .map(([key, txs]) => {
+      const date = new Date(txs[0].date);
+      let dateLabel: string;
 
-    if (isToday(date)) {
-      dateLabel = `Today, ${format(date, "MMM dd")}`;
-    } else if (isYesterday(date)) {
-      dateLabel = `Yesterday, ${format(date, "MMM dd")}`;
-    } else if (date.getFullYear() === currentYear) {
-      dateLabel = format(date, "MMM dd");
-    } else {
-      dateLabel = format(date, "MMM dd, yyyy");
-    }
+      if (isToday(date)) {
+        dateLabel = `Today, ${format(date, "MMM dd")}`;
+      } else if (isYesterday(date)) {
+        dateLabel = `Yesterday, ${format(date, "MMM dd")}`;
+      } else if (date.getFullYear() === currentYear) {
+        dateLabel = format(date, "MMM dd");
+      } else {
+        dateLabel = format(date, "MMM dd, yyyy");
+      }
 
-    const dailyNet = txs.reduce(
-      (sum, t) => sum + (t.type === "INCOME" ? t.amount : -t.amount),
-      0,
-    );
+      const dailyNet = txs.reduce(
+        (sum, t) => sum + (t.type === "INCOME" ? t.amount : -t.amount),
+        0,
+      );
 
-    return { dateKey: key, dateLabel, date, transactions: txs, dailyNet };
-  });
+      return { dateKey: key, dateLabel, date, transactions: txs, dailyNet };
+    })
+    .sort((a, b) => b.date.getTime() - a.date.getTime());
 };
 
 export const getCategoryById = (
