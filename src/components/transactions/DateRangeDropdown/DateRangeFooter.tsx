@@ -19,7 +19,9 @@ export const DateRangeFooter: FC<DateRangeFooterProps> = ({
 }) => {
   const formattedLabel = dateLabel
     ? endDateLabel
-      ? `${format(dateLabel, "MMM dd")} – ${format(endDateLabel, "MMM dd, yyyy")}`
+      ? dateLabel.getFullYear() !== endDateLabel.getFullYear()
+        ? `${format(dateLabel, "MMM dd, yyyy")} – ${format(endDateLabel, "MMM dd, yyyy")}`
+        : `${format(dateLabel, "MMM dd")} – ${format(endDateLabel, "MMM dd, yyyy")}`
       : format(dateLabel, "MMM dd, yyyy")
     : "No date selected";
 
