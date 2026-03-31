@@ -76,12 +76,14 @@ export const TransactionTabFilterBar: FC<TransactionTabFilterBarProps> = ({
           value={searchTerm}
           onChange={(e) => onSearchTermChange(e.target.value)}
           placeholder="Search..."
+          aria-label="Search transactions"
           className="h-8 pl-8 pr-8 text-xs"
         />
         {searchTerm && (
           <button
             type="button"
             onClick={() => onSearchTermChange("")}
+            aria-label="Clear search"
             className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full bg-muted-foreground/80 p-0.5 text-white hover:bg-muted-foreground"
           >
             <X className="h-2.5 w-2.5" />
