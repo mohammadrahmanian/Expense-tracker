@@ -1,4 +1,4 @@
-import { type FC } from "react";
+import { type FC, type ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowDownLeft, ArrowUpRight, Wallet } from "lucide-react";
 
@@ -57,7 +57,7 @@ export const MobileSummaryCards: FC<MobileSummaryCardsProps> = ({
 );
 
 type SplitCardProps = {
-  icon: React.ReactNode;
+  icon: ReactNode;
   iconBg: string;
   label: string;
   value: string;
