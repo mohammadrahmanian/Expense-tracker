@@ -2,7 +2,13 @@ import { type FC } from "react";
 import { TransactionTabFilterBar } from "@/components/transactions/TransactionTabFilterBar";
 import { TransactionsPagination } from "@/components/transactions/TransactionsPagination";
 import { Card } from "@/components/ui/card";
-import { DatePreset } from "@/lib/transactions.utils";
+import {
+  type DateFilterProps,
+  type SearchProps,
+  type TypeFilterProps,
+  type SortProps,
+  type PaginationProps,
+} from "@/lib/transactions.utils";
 import { Category, Transaction } from "@/types";
 import { LoadingSkeleton } from "./LoadingSkeleton";
 import { TransactionsListContent } from "./TransactionsListContent";
@@ -19,47 +25,28 @@ type TransactionsListProps = {
   categoriesError: boolean;
   categoriesErrorMessage?: string;
   hasActiveFilters: boolean;
-  typeFilter: "all" | "INCOME" | "EXPENSE";
-  onTypeFilterChange: (v: "all" | "INCOME" | "EXPENSE") => void;
-  searchTerm: string;
-  onSearchTermChange: (v: string) => void;
+  typeFilter: TypeFilterProps;
+  search: SearchProps;
+  dateFilter: DateFilterProps;
   categoryFilter: string;
   onCategoryFilterChange: (v: string) => void;
-  datePreset: DatePreset;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  onDatePresetChange: (preset: DatePreset) => void;
-  onCustomDateSelect: (date: Date) => void;
-  onCustomRangeSelect: (from: Date, to: Date) => void;
-  sortField: "date" | "amount";
-  sortOrder: "asc" | "desc";
-  onSort: (field: "date" | "amount") => void;
+  sort: SortProps;
   onEdit: (transaction: Transaction) => void;
   onDelete: (id: string) => void;
   isDeletingId: string | undefined;
   formatAmount: (amount: number) => string;
-  currentPage: number;
-  pageSize: number;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (size: number) => void;
+  pagination: PaginationProps;
 };
 
 export const TransactionsList: FC<TransactionsListProps> = (props) => (
   <Card className="overflow-hidden p-0">
     <TransactionTabFilterBar
       typeFilter={props.typeFilter}
-      onTypeFilterChange={props.onTypeFilterChange}
-      searchTerm={props.searchTerm}
-      onSearchTermChange={props.onSearchTermChange}
+      search={props.search}
+      dateFilter={props.dateFilter}
       categoryFilter={props.categoryFilter}
       onCategoryFilterChange={props.onCategoryFilterChange}
       categories={props.categories}
-      datePreset={props.datePreset}
-      startDate={props.startDate}
-      endDate={props.endDate}
-      onDatePresetChange={props.onDatePresetChange}
-      onCustomDateSelect={props.onCustomDateSelect}
-      onCustomRangeSelect={props.onCustomRangeSelect}
     />
     <div className="min-h-[300px]">
       {props.isLoading ? (
@@ -77,9 +64,9 @@ export const TransactionsList: FC<TransactionsListProps> = (props) => (
         <TransactionsListContent
           transactions={props.transactions}
           categories={props.categories}
-          sortField={props.sortField}
-          sortOrder={props.sortOrder}
-          onSort={props.onSort}
+          sortField={props.sort.sortField}
+          sortOrder={props.sort.sortOrder}
+          onSort={props.sort.onSort}
           onEdit={props.onEdit}
           onDelete={props.onDelete}
           isDeletingId={props.isDeletingId}
@@ -89,12 +76,12 @@ export const TransactionsList: FC<TransactionsListProps> = (props) => (
     </div>
     {!props.isLoading && props.transactions.length > 0 && (
       <TransactionsPagination
-        currentPage={props.currentPage}
-        pageSize={props.pageSize}
+        currentPage={props.pagination.currentPage}
+        pageSize={props.pagination.pageSize}
         totalTransactions={props.totalTransactions}
         transactionsOnPage={props.transactions.length}
-        onPageChange={props.onPageChange}
-        onPageSizeChange={props.onPageSizeChange}
+        onPageChange={props.pagination.onPageChange}
+        onPageSizeChange={props.pagination.onPageSizeChange}
       />
     )}
   </Card>

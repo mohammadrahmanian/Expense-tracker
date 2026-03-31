@@ -33,6 +33,38 @@ export type TransactionFilterState = {
   sortOrder: "asc" | "desc";
 };
 
+export type DateFilterProps = {
+  datePreset: DatePreset;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  onDatePresetChange: (preset: DatePreset) => void;
+  onCustomDateSelect: (date: Date) => void;
+  onCustomRangeSelect: (from: Date, to: Date) => void;
+};
+
+export type SearchProps = {
+  searchTerm: string;
+  onSearchTermChange: (v: string) => void;
+};
+
+export type TypeFilterProps = {
+  typeFilter: "all" | "INCOME" | "EXPENSE";
+  onTypeFilterChange: (v: "all" | "INCOME" | "EXPENSE") => void;
+};
+
+export type SortProps = {
+  sortField: "date" | "amount";
+  sortOrder: "asc" | "desc";
+  onSort: (field: "date" | "amount") => void;
+};
+
+export type PaginationProps = {
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+};
+
 export const computeDateRange = (
   preset: DatePreset,
 ): { start: Date | undefined; end: Date | undefined } => {

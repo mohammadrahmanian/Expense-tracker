@@ -6,8 +6,13 @@ import {
   DatePreset,
   hasActiveFilters,
   TransactionFilterState,
+  type DateFilterProps,
+  type SearchProps,
+  type TypeFilterProps,
+  type SortProps,
+  type PaginationProps,
 } from "@/lib/transactions.utils";
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 
 type TransactionFilterAction =
   | { type: "SET_SEARCH_TERM"; payload: string }
@@ -133,5 +138,54 @@ export const useTransactionFilters = () => {
   const infiniteQueryParams = useMemo(() => buildInfiniteQueryParams(state), [state]);
   const activeFilters = hasActiveFilters(state);
 
-  return { state, dispatch, queryParams, infiniteQueryParams, activeFilters, searchInput, setSearchInput, handleClearFilters };
+  const dateFilterProps: DateFilterProps = useMemo(() => ({
+    datePreset: state.datePreset,
+    startDate: state.startDate,
+    endDate: state.endDate,
+    onDatePresetChange: (v: DatePreset) => dispatch({ type: "SET_DATE_PRESET", payload: v }),
+    onCustomDateSelect: (d: Date) => dispatch({ type: "SET_CUSTOM_DATE", payload: d }),
+    onCustomRangeSelect: (from: Date, to: Date) => dispatch({ type: "SET_CUSTOM_RANGE", payload: { from, to } }),
+  }), [state.datePreset, state.startDate, state.endDate]);
+
+  const searchProps: SearchProps = useMemo(() => ({
+    searchTerm: searchInput,
+    onSearchTermChange: setSearchInput,
+  }), [searchInput]);
+
+  const typeFilterProps: TypeFilterProps = useMemo(() => ({
+    typeFilter: state.typeFilter,
+    onTypeFilterChange: (v: "all" | "INCOME" | "EXPENSE") => dispatch({ type: "SET_TYPE_FILTER", payload: v }),
+  }), [state.typeFilter]);
+
+  const sortProps: SortProps = useMemo(() => ({
+    sortField: state.sortField,
+    sortOrder: state.sortOrder,
+    onSort: (f: "date" | "amount") => dispatch({ type: "SORT", payload: f }),
+  }), [state.sortField, state.sortOrder]);
+
+  const paginationProps: PaginationProps = useMemo(() => ({
+    currentPage: state.currentPage,
+    pageSize: state.pageSize,
+    onPageChange: (p: number) => dispatch({ type: "SET_CURRENT_PAGE", payload: p }),
+    onPageSizeChange: (p: number) => dispatch({ type: "SET_PAGE_SIZE", payload: p }),
+  }), [state.currentPage, state.pageSize]);
+
+  const onCategoryFilterChange = useCallback(
+    (v: string) => dispatch({ type: "SET_CATEGORY_FILTER", payload: v }),
+    [],
+  );
+
+  return {
+    state,
+    queryParams,
+    infiniteQueryParams,
+    activeFilters,
+    handleClearFilters,
+    dateFilterProps,
+    searchProps,
+    typeFilterProps,
+    sortProps,
+    paginationProps,
+    onCategoryFilterChange,
+  };
 };

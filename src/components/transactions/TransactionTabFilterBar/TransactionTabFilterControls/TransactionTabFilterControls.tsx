@@ -8,53 +8,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DatePreset } from "@/lib/transactions.utils";
+import { type DateFilterProps, type SearchProps } from "@/lib/transactions.utils";
 import { Category } from "@/types";
 import { Search, X } from "lucide-react";
 
 type TransactionTabFilterControlsProps = {
-  searchTerm: string;
-  onSearchTermChange: (value: string) => void;
+  search: SearchProps;
+  dateFilter: DateFilterProps;
   categoryFilter: string;
   onCategoryFilterChange: (value: string) => void;
   categories: Category[] | undefined;
-  datePreset: DatePreset;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  onDatePresetChange: (preset: DatePreset) => void;
-  onCustomDateSelect: (date: Date) => void;
-  onCustomRangeSelect: (from: Date, to: Date) => void;
 };
 
 export const TransactionTabFilterControls: FC<
   TransactionTabFilterControlsProps
 > = ({
-  searchTerm,
-  onSearchTermChange,
+  search,
+  dateFilter,
   categoryFilter,
   onCategoryFilterChange,
   categories,
-  datePreset,
-  startDate,
-  endDate,
-  onDatePresetChange,
-  onCustomDateSelect,
-  onCustomRangeSelect,
 }) => (
   <div className="flex items-center gap-2.5 pb-3 md:pb-0">
     <div className="relative w-[200px]">
       <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
       <Input
-        value={searchTerm}
-        onChange={(e) => onSearchTermChange(e.target.value)}
+        value={search.searchTerm}
+        onChange={(e) => search.onSearchTermChange(e.target.value)}
         placeholder="Search..."
         aria-label="Search transactions"
         className="h-8 pl-8 pr-8 text-xs"
       />
-      {searchTerm && (
+      {search.searchTerm && (
         <button
           type="button"
-          onClick={() => onSearchTermChange("")}
+          onClick={() => search.onSearchTermChange("")}
           aria-label="Clear search"
           className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full bg-muted-foreground/80 p-0.5 text-white hover:bg-muted-foreground dark:text-background dark:hover:bg-muted-foreground"
         >
@@ -76,12 +64,12 @@ export const TransactionTabFilterControls: FC<
       </SelectContent>
     </Select>
     <DateRangeDropdown
-      preset={datePreset}
-      startDate={startDate}
-      endDate={endDate}
-      onPresetChange={onDatePresetChange}
-      onCustomDateSelect={onCustomDateSelect}
-      onCustomRangeSelect={onCustomRangeSelect}
+      preset={dateFilter.datePreset}
+      startDate={dateFilter.startDate}
+      endDate={dateFilter.endDate}
+      onPresetChange={dateFilter.onDatePresetChange}
+      onCustomDateSelect={dateFilter.onCustomDateSelect}
+      onCustomRangeSelect={dateFilter.onCustomRangeSelect}
     />
   </div>
 );

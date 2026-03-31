@@ -156,6 +156,43 @@ TransactionForm/
 TransactionForm.tsx      // 250 lines — everything in one file
 ```
 
+### Prop Drilling
+
+**When a component receives 10+ props, group related props into typed "prop bag" objects.** Define shared bag types in the relevant `*.utils.ts` file and have the owning hook return pre-built, memoized bags.
+
+```typescript
+// ✅ Correct — shared bag types in utils, hook returns bags
+// src/lib/transactions.utils.ts
+export type DateFilterProps = {
+  datePreset: DatePreset;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  onDatePresetChange: (preset: DatePreset) => void;
+  onCustomDateSelect: (date: Date) => void;
+  onCustomRangeSelect: (from: Date, to: Date) => void;
+};
+
+// Hook returns memoized bag
+const dateFilterProps: DateFilterProps = useMemo(() => ({ ... }), [deps]);
+
+// Page passes bag as single prop
+<TransactionsList dateFilter={dateFilterProps} />
+
+// Intermediate components forward the bag without destructuring
+<TransactionTabFilterControls dateFilter={props.dateFilter} />
+
+// ❌ Wrong — 30 flat props drilled through 3+ levels
+<TransactionsList datePreset={state.datePreset} startDate={state.startDate}
+  endDate={state.endDate} onDatePresetChange={(v) => dispatch({...})}
+  onCustomDateSelect={(d) => dispatch({...})} ... />
+```
+
+**Rules:**
+- Bag types live in the shared utils file (e.g., `transactions.utils.ts`), not in component files
+- Hooks encapsulate `dispatch` — never expose `dispatch` to page components
+- Use `useMemo` for bag objects to maintain referential stability
+- Leaf components destructure from the bag; intermediate components forward the bag object
+
 ---
 
 ## Documentation Index

@@ -7,7 +7,9 @@ import { MobileTransactionGroup } from "@/components/transactions/mobile/MobileT
 import {
   calculatePageTotals,
   groupTransactionsByDate,
-  type DatePreset,
+  type DateFilterProps,
+  type SearchProps,
+  type TypeFilterProps,
 } from "@/lib/transactions.utils";
 import { Category, Transaction } from "@/types";
 import { Loader2 } from "lucide-react";
@@ -25,16 +27,9 @@ type MobileTransactionsViewProps = {
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   fetchNextPage: () => void;
-  typeFilter: "all" | "INCOME" | "EXPENSE";
-  onTypeFilterChange: (v: "all" | "INCOME" | "EXPENSE") => void;
-  searchTerm: string;
-  onSearchTermChange: (v: string) => void;
-  datePreset: DatePreset;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  onDatePresetChange: (preset: DatePreset) => void;
-  onCustomDateSelect: (date: Date) => void;
-  onCustomRangeSelect: (from: Date, to: Date) => void;
+  typeFilter: TypeFilterProps;
+  search: SearchProps;
+  dateFilter: DateFilterProps;
   onEdit: (transaction: Transaction) => void;
   formatAmount: (amount: number) => string;
 };
@@ -57,16 +52,10 @@ export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (props) =
   return (
     <div className="flex flex-col gap-0">
       <MobileTransactionsHeader totalTransactions={props.totalTransactions} />
-      <MobileSearchBar value={props.searchTerm} onChange={props.onSearchTermChange} />
+      <MobileSearchBar value={props.search.searchTerm} onChange={props.search.onSearchTermChange} />
       <MobilePillTabs
         typeFilter={props.typeFilter}
-        onTypeFilterChange={props.onTypeFilterChange}
-        datePreset={props.datePreset}
-        startDate={props.startDate}
-        endDate={props.endDate}
-        onDatePresetChange={props.onDatePresetChange}
-        onCustomDateSelect={props.onCustomDateSelect}
-        onCustomRangeSelect={props.onCustomRangeSelect}
+        dateFilter={props.dateFilter}
       />
       <MobileSummaryCards
         totalIncome={totals.totalIncome}

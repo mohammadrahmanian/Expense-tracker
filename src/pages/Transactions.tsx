@@ -25,7 +25,10 @@ import { useMemo, useState, type FC } from "react";
 export const Transactions: FC = () => {
   const isMobile = useIsMobile();
   const { formatAmount } = useCurrency();
-  const { state, dispatch, queryParams, infiniteQueryParams, activeFilters, searchInput, setSearchInput } = useTransactionFilters();
+  const {
+    state, queryParams, infiniteQueryParams, activeFilters,
+    dateFilterProps, searchProps, typeFilterProps, sortProps, paginationProps, onCategoryFilterChange,
+  } = useTransactionFilters();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
   const [deletingId, setDeletingId] = useState<string | undefined>();
@@ -69,16 +72,9 @@ export const Transactions: FC = () => {
           hasNextPage={infiniteQuery.hasNextPage}
           isFetchingNextPage={infiniteQuery.isFetchingNextPage}
           fetchNextPage={infiniteQuery.fetchNextPage}
-          typeFilter={state.typeFilter}
-          onTypeFilterChange={(v) => dispatch({ type: "SET_TYPE_FILTER", payload: v })}
-          searchTerm={searchInput}
-          onSearchTermChange={setSearchInput}
-          datePreset={state.datePreset}
-          startDate={state.startDate}
-          endDate={state.endDate}
-          onDatePresetChange={(v) => dispatch({ type: "SET_DATE_PRESET", payload: v })}
-          onCustomDateSelect={(d) => dispatch({ type: "SET_CUSTOM_DATE", payload: d })}
-          onCustomRangeSelect={(from, to) => dispatch({ type: "SET_CUSTOM_RANGE", payload: { from, to } })}
+          typeFilter={typeFilterProps}
+          search={searchProps}
+          dateFilter={dateFilterProps}
           onEdit={handleEdit}
           formatAmount={formatAmount}
         />
@@ -109,29 +105,17 @@ export const Transactions: FC = () => {
           categoriesError={categoriesError}
           categoriesErrorMessage={categoriesErrorInfo?.message}
           hasActiveFilters={activeFilters}
-          typeFilter={state.typeFilter}
-          onTypeFilterChange={(v) => dispatch({ type: "SET_TYPE_FILTER", payload: v })}
-          searchTerm={searchInput}
-          onSearchTermChange={setSearchInput}
+          typeFilter={typeFilterProps}
+          search={searchProps}
+          dateFilter={dateFilterProps}
           categoryFilter={state.categoryFilter}
-          onCategoryFilterChange={(v) => dispatch({ type: "SET_CATEGORY_FILTER", payload: v })}
-          datePreset={state.datePreset}
-          startDate={state.startDate}
-          endDate={state.endDate}
-          onDatePresetChange={(v) => dispatch({ type: "SET_DATE_PRESET", payload: v })}
-          onCustomDateSelect={(d) => dispatch({ type: "SET_CUSTOM_DATE", payload: d })}
-          onCustomRangeSelect={(from, to) => dispatch({ type: "SET_CUSTOM_RANGE", payload: { from, to } })}
-          sortField={state.sortField}
-          sortOrder={state.sortOrder}
-          onSort={(f) => dispatch({ type: "SORT", payload: f })}
+          onCategoryFilterChange={onCategoryFilterChange}
+          sort={sortProps}
           onEdit={handleEdit}
           onDelete={handleDelete}
           isDeletingId={deleteTransaction.isPending ? deleteTransaction.variables : undefined}
           formatAmount={formatAmount}
-          currentPage={state.currentPage}
-          pageSize={state.pageSize}
-          onPageChange={(p) => dispatch({ type: "SET_CURRENT_PAGE", payload: p })}
-          onPageSizeChange={(p) => dispatch({ type: "SET_PAGE_SIZE", payload: p })}
+          pagination={paginationProps}
         />
       </div>
 
