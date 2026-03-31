@@ -24,6 +24,7 @@ export const MobilePillTabs: FC<MobilePillTabsProps> = ({
         key={pill.value}
         type="button"
         onClick={() => typeFilter.onTypeFilterChange(pill.value)}
+        aria-pressed={typeFilter.typeFilter === pill.value}
         className={cn(
           "shrink-0 rounded-full px-4 py-[7px] text-[13px] font-medium transition-colors",
           typeFilter.typeFilter === pill.value
