@@ -1,3 +1,4 @@
+import { type FC } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { format } from "date-fns";
 import { Bell, ChevronLeft } from "lucide-react";
@@ -5,7 +6,7 @@ import { Link, useLocation } from "react-router-dom";
 import { getPageDescription, getPageTitle } from "../DashboardLayout.utils";
 import { CurrencySwitcher } from "./CurrencySwitcher";
 
-export const DashboardHeader: React.FC = () => {
+export const DashboardHeader: FC = () => {
   const { user } = useAuth();
   const location = useLocation();
   const isDashboard = location.pathname === "/dashboard";
