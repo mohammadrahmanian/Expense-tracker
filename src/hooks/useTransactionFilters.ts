@@ -3,7 +3,6 @@ import { useScrollToTopOnChange } from "@/hooks/useScrollToTopOnChange";
 import {
   buildInfiniteQueryParams,
   buildQueryParams,
-  computeDateRange,
   DatePreset,
   hasActiveFilters,
   TransactionFilterState,
@@ -24,15 +23,13 @@ type TransactionFilterAction =
   | { type: "SORT"; payload: "date" | "amount" }
   | { type: "CLEAR_FILTERS" };
 
-const defaultRange = computeDateRange("this_month");
-
 const initialState: TransactionFilterState = {
   searchTerm: "",
   typeFilter: "all",
   categoryFilter: "all",
   datePreset: "this_month",
-  startDate: defaultRange.start,
-  endDate: defaultRange.end,
+  startDate: undefined,
+  endDate: undefined,
   currentPage: 1,
   pageSize: 10,
   sortField: "date",
@@ -50,16 +47,14 @@ const filterReducer = (
       return { ...state, typeFilter: action.payload, currentPage: 1 };
     case "SET_CATEGORY_FILTER":
       return { ...state, categoryFilter: action.payload, currentPage: 1 };
-    case "SET_DATE_PRESET": {
-      const range = computeDateRange(action.payload);
+    case "SET_DATE_PRESET":
       return {
         ...state,
         datePreset: action.payload,
-        startDate: range.start,
-        endDate: range.end,
+        startDate: undefined,
+        endDate: undefined,
         currentPage: 1,
       };
-    }
     case "SET_CUSTOM_DATE": {
       const date = action.payload;
       return {
@@ -98,19 +93,17 @@ const filterReducer = (
             : "desc",
         currentPage: 1,
       };
-    case "CLEAR_FILTERS": {
-      const resetRange = computeDateRange("this_month");
+    case "CLEAR_FILTERS":
       return {
         ...state,
         searchTerm: "",
         typeFilter: "all",
         categoryFilter: "all",
         datePreset: "this_month",
-        startDate: resetRange.start,
-        endDate: resetRange.end,
+        startDate: undefined,
+        endDate: undefined,
         currentPage: 1,
       };
-    }
   }
 };
 

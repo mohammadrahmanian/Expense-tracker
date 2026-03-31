@@ -55,6 +55,15 @@ export const computeDateRange = (
   }
 };
 
+const resolveDateRange = (
+  state: TransactionFilterState,
+): { start: Date | undefined; end: Date | undefined } => {
+  if (state.startDate || state.endDate) {
+    return { start: state.startDate, end: state.endDate };
+  }
+  return computeDateRange(state.datePreset);
+};
+
 export const buildQueryParams = (state: TransactionFilterState) => {
   const params: {
     sort: "date" | "amount";
@@ -77,16 +86,18 @@ export const buildQueryParams = (state: TransactionFilterState) => {
   if (state.typeFilter !== "all") params.type = state.typeFilter;
   if (state.categoryFilter !== "all") params.categoryId = state.categoryFilter;
 
-  if (state.startDate) {
-    const start = new Date(state.startDate);
-    start.setHours(0, 0, 0, 0);
-    params.fromDate = start.toISOString();
+  const { start, end } = resolveDateRange(state);
+
+  if (start) {
+    const s = new Date(start);
+    s.setHours(0, 0, 0, 0);
+    params.fromDate = s.toISOString();
   }
 
-  if (state.endDate) {
-    const end = new Date(state.endDate);
-    end.setHours(23, 59, 59, 999);
-    params.toDate = end.toISOString();
+  if (end) {
+    const e = new Date(end);
+    e.setHours(23, 59, 59, 999);
+    params.toDate = e.toISOString();
   }
 
   return params;
@@ -110,16 +121,18 @@ export const buildInfiniteQueryParams = (state: TransactionFilterState) => {
   if (state.typeFilter !== "all") params.type = state.typeFilter;
   if (state.categoryFilter !== "all") params.categoryId = state.categoryFilter;
 
-  if (state.startDate) {
-    const start = new Date(state.startDate);
-    start.setHours(0, 0, 0, 0);
-    params.fromDate = start.toISOString();
+  const { start, end } = resolveDateRange(state);
+
+  if (start) {
+    const s = new Date(start);
+    s.setHours(0, 0, 0, 0);
+    params.fromDate = s.toISOString();
   }
 
-  if (state.endDate) {
-    const end = new Date(state.endDate);
-    end.setHours(23, 59, 59, 999);
-    params.toDate = end.toISOString();
+  if (end) {
+    const e = new Date(end);
+    e.setHours(23, 59, 59, 999);
+    params.toDate = e.toISOString();
   }
 
   return params;
