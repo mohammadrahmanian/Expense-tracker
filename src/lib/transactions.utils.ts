@@ -204,6 +204,7 @@ export type TransactionDateGroup = {
 
 export const groupTransactionsByDate = (
   transactions: Transaction[],
+  sortOrder: "asc" | "desc" = "desc",
 ): TransactionDateGroup[] => {
   const now = new Date();
   const currentYear = now.getFullYear();
@@ -242,7 +243,11 @@ export const groupTransactionsByDate = (
 
       return { dateKey: key, dateLabel, date, transactions: txs, dailyNet };
     })
-    .sort((a, b) => b.date.getTime() - a.date.getTime());
+    .sort((a, b) =>
+      sortOrder === "asc"
+        ? a.date.getTime() - b.date.getTime()
+        : b.date.getTime() - a.date.getTime(),
+    );
 };
 
 export const getCategoryById = (
