@@ -117,6 +117,15 @@ export const useTransactionFilters = () => {
   const [searchInput, setSearchInput] = useState("");
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Tick that updates at midnight so relative date presets (today/this_month/etc.)
+  // roll forward automatically without requiring a page reload.
+  const [dateTick, setDateTick] = useState(() => startOfDay(new Date()).getTime());
+  useEffect(() => {
+    const msUntilMidnight = startOfDay(new Date(Date.now() + 86_400_000)).getTime() - Date.now();
+    const timer = setTimeout(() => setDateTick(startOfDay(new Date()).getTime()), msUntilMidnight);
+    return () => clearTimeout(timer);
+  }, [dateTick]);
+
   useScrollToTopOnChange(state.currentPage, state.sortField, state.sortOrder);
 
   useEffect(() => {
@@ -134,8 +143,8 @@ export const useTransactionFilters = () => {
     dispatch({ type: "CLEAR_FILTERS" });
   };
 
-  const queryParams = useMemo(() => buildQueryParams(state), [state]);
-  const infiniteQueryParams = useMemo(() => buildInfiniteQueryParams(state), [state]);
+  const queryParams = useMemo(() => buildQueryParams(state), [state, dateTick]);
+  const infiniteQueryParams = useMemo(() => buildInfiniteQueryParams(state), [state, dateTick]);
   const activeFilters = hasActiveFilters(state);
 
   const dateFilterProps: DateFilterProps = useMemo(() => ({
