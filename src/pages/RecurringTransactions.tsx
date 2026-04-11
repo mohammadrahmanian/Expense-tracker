@@ -476,15 +476,7 @@ const RecurringTransactionCard: React.FC<RecurringTransactionCardProps> = ({
                 >
                   {transaction.type}
                 </Badge>
-                <Badge
-                  variant={transaction.isActive ? "default" : "secondary"}
-                  className={cn(
-                    "shrink-0",
-                    transaction.isActive
-                      ? "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
-                      : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400",
-                  )}
-                >
+                <Badge variant={transaction.isActive ? "default" : "secondary"}>
                   {transaction.isActive ? "Active" : "Inactive"}
                 </Badge>
               </div>

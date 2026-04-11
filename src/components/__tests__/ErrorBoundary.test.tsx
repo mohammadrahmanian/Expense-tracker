@@ -20,6 +20,7 @@ describe("ErrorBoundary", () => {
   });
 
   afterEach(() => {
+    // @ts-expect-error restoring original location after test override
     window.location = originalLocation;
   });
 

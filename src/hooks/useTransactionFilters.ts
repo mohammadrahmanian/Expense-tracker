@@ -1,30 +1,63 @@
+import { startOfDay, endOfDay } from "date-fns";
 import { useScrollToTopOnChange } from "@/hooks/useScrollToTopOnChange";
 import {
+  buildInfiniteQueryParams,
   buildQueryParams,
+  DatePreset,
   hasActiveFilters,
   TransactionFilterState,
+  type AmountRangeProps,
+  type DateFilterProps,
+  type SearchProps,
+  type TypeFilterProps,
+  type SortProps,
+  type PaginationProps,
 } from "@/lib/transactions.utils";
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+
+export type BulkFilterPayload = Partial<
+  Pick<
+    TransactionFilterState,
+    | "typeFilter"
+    | "categoryFilter"
+    | "datePreset"
+    | "startDate"
+    | "endDate"
+    | "minAmount"
+    | "maxAmount"
+    | "sortField"
+    | "sortOrder"
+  >
+>;
 
 type TransactionFilterAction =
   | { type: "SET_SEARCH_TERM"; payload: string }
   | { type: "SET_TYPE_FILTER"; payload: "all" | "INCOME" | "EXPENSE" }
   | { type: "SET_CATEGORY_FILTER"; payload: string }
+  | { type: "SET_DATE_PRESET"; payload: DatePreset }
+  | { type: "SET_CUSTOM_DATE"; payload: Date }
+  | { type: "SET_CUSTOM_RANGE"; payload: { from: Date; to: Date } }
   | { type: "SET_START_DATE"; payload: Date | undefined }
   | { type: "SET_END_DATE"; payload: Date | undefined }
+  | { type: "SET_MIN_AMOUNT"; payload: number | undefined }
+  | { type: "SET_MAX_AMOUNT"; payload: number | undefined }
   | { type: "SET_PAGE_SIZE"; payload: number }
   | { type: "SET_CURRENT_PAGE"; payload: number }
   | { type: "SORT"; payload: "date" | "amount" }
+  | { type: "APPLY_BULK_FILTERS"; payload: BulkFilterPayload }
   | { type: "CLEAR_FILTERS" };
 
 const initialState: TransactionFilterState = {
   searchTerm: "",
   typeFilter: "all",
   categoryFilter: "all",
+  datePreset: "this_month",
   startDate: undefined,
   endDate: undefined,
+  minAmount: undefined,
+  maxAmount: undefined,
   currentPage: 1,
-  pageSize: 50,
+  pageSize: 10,
   sortField: "date",
   sortOrder: "desc",
 };
@@ -40,10 +73,40 @@ const filterReducer = (
       return { ...state, typeFilter: action.payload, currentPage: 1 };
     case "SET_CATEGORY_FILTER":
       return { ...state, categoryFilter: action.payload, currentPage: 1 };
+    case "SET_DATE_PRESET":
+      return {
+        ...state,
+        datePreset: action.payload,
+        startDate: undefined,
+        endDate: undefined,
+        currentPage: 1,
+      };
+    case "SET_CUSTOM_DATE": {
+      const date = action.payload;
+      return {
+        ...state,
+        datePreset: "custom_date",
+        startDate: startOfDay(date),
+        endDate: endOfDay(date),
+        currentPage: 1,
+      };
+    }
+    case "SET_CUSTOM_RANGE":
+      return {
+        ...state,
+        datePreset: "custom_range",
+        startDate: startOfDay(action.payload.from),
+        endDate: endOfDay(action.payload.to),
+        currentPage: 1,
+      };
     case "SET_START_DATE":
-      return { ...state, startDate: action.payload, currentPage: 1 };
+      return { ...state, startDate: action.payload, datePreset: "custom_range", currentPage: 1 };
     case "SET_END_DATE":
-      return { ...state, endDate: action.payload, currentPage: 1 };
+      return { ...state, endDate: action.payload, datePreset: "custom_range", currentPage: 1 };
+    case "SET_MIN_AMOUNT":
+      return { ...state, minAmount: action.payload, currentPage: 1 };
+    case "SET_MAX_AMOUNT":
+      return { ...state, maxAmount: action.payload, currentPage: 1 };
     case "SET_PAGE_SIZE":
       return { ...state, pageSize: action.payload, currentPage: 1 };
     case "SET_CURRENT_PAGE":
@@ -60,14 +123,19 @@ const filterReducer = (
             : "desc",
         currentPage: 1,
       };
+    case "APPLY_BULK_FILTERS":
+      return { ...state, ...action.payload, currentPage: 1 };
     case "CLEAR_FILTERS":
       return {
         ...state,
         searchTerm: "",
         typeFilter: "all",
         categoryFilter: "all",
+        datePreset: "this_month",
         startDate: undefined,
         endDate: undefined,
+        minAmount: undefined,
+        maxAmount: undefined,
         currentPage: 1,
       };
   }
@@ -77,6 +145,15 @@ export const useTransactionFilters = () => {
   const [state, dispatch] = useReducer(filterReducer, initialState);
   const [searchInput, setSearchInput] = useState("");
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Tick that updates at midnight so relative date presets (today/this_month/etc.)
+  // roll forward automatically without requiring a page reload.
+  const [dateTick, setDateTick] = useState(() => startOfDay(new Date()).getTime());
+  useEffect(() => {
+    const msUntilMidnight = startOfDay(new Date(Date.now() + 86_400_000)).getTime() - Date.now();
+    const timer = setTimeout(() => setDateTick(startOfDay(new Date()).getTime()), msUntilMidnight);
+    return () => clearTimeout(timer);
+  }, [dateTick]);
 
   useScrollToTopOnChange(state.currentPage, state.sortField, state.sortOrder);
 
@@ -95,8 +172,72 @@ export const useTransactionFilters = () => {
     dispatch({ type: "CLEAR_FILTERS" });
   };
 
-  const queryParams = useMemo(() => buildQueryParams(state), [state]);
+  const queryParams = useMemo(() => buildQueryParams(state), [state, dateTick]);
+  const infiniteQueryParams = useMemo(() => buildInfiniteQueryParams(state), [state, dateTick]);
   const activeFilters = hasActiveFilters(state);
 
-  return { state, dispatch, queryParams, activeFilters, searchInput, setSearchInput, handleClearFilters };
+  const dateFilterProps: DateFilterProps = useMemo(() => ({
+    datePreset: state.datePreset,
+    startDate: state.startDate,
+    endDate: state.endDate,
+    onDatePresetChange: (v: DatePreset) => dispatch({ type: "SET_DATE_PRESET", payload: v }),
+    onCustomDateSelect: (d: Date) => dispatch({ type: "SET_CUSTOM_DATE", payload: d }),
+    onCustomRangeSelect: (from: Date, to: Date) => dispatch({ type: "SET_CUSTOM_RANGE", payload: { from, to } }),
+  }), [state.datePreset, state.startDate, state.endDate]);
+
+  const searchProps: SearchProps = useMemo(() => ({
+    searchTerm: searchInput,
+    onSearchTermChange: setSearchInput,
+  }), [searchInput]);
+
+  const typeFilterProps: TypeFilterProps = useMemo(() => ({
+    typeFilter: state.typeFilter,
+    onTypeFilterChange: (v: "all" | "INCOME" | "EXPENSE") => dispatch({ type: "SET_TYPE_FILTER", payload: v }),
+  }), [state.typeFilter]);
+
+  const sortProps: SortProps = useMemo(() => ({
+    sortField: state.sortField,
+    sortOrder: state.sortOrder,
+    onSort: (f: "date" | "amount") => dispatch({ type: "SORT", payload: f }),
+  }), [state.sortField, state.sortOrder]);
+
+  const paginationProps: PaginationProps = useMemo(() => ({
+    currentPage: state.currentPage,
+    pageSize: state.pageSize,
+    onPageChange: (p: number) => dispatch({ type: "SET_CURRENT_PAGE", payload: p }),
+    onPageSizeChange: (p: number) => dispatch({ type: "SET_PAGE_SIZE", payload: p }),
+  }), [state.currentPage, state.pageSize]);
+
+  const amountRangeProps: AmountRangeProps = useMemo(() => ({
+    minAmount: state.minAmount,
+    maxAmount: state.maxAmount,
+    onMinAmountChange: (v: number | undefined) => dispatch({ type: "SET_MIN_AMOUNT", payload: v }),
+    onMaxAmountChange: (v: number | undefined) => dispatch({ type: "SET_MAX_AMOUNT", payload: v }),
+  }), [state.minAmount, state.maxAmount]);
+
+  const onCategoryFilterChange = useCallback(
+    (v: string) => dispatch({ type: "SET_CATEGORY_FILTER", payload: v }),
+    [],
+  );
+
+  const applyBulkFilters = useCallback(
+    (payload: BulkFilterPayload) => dispatch({ type: "APPLY_BULK_FILTERS", payload }),
+    [],
+  );
+
+  return {
+    state,
+    queryParams,
+    infiniteQueryParams,
+    activeFilters,
+    handleClearFilters,
+    dateFilterProps,
+    searchProps,
+    typeFilterProps,
+    sortProps,
+    amountRangeProps,
+    paginationProps,
+    onCategoryFilterChange,
+    applyBulkFilters,
+  };
 };

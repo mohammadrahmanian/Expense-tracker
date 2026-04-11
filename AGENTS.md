@@ -68,6 +68,28 @@ const form = useForm<FormData>({
 <div className="bg-white text-black">
 ```
 
+**Never use raw hex color codes in class names.** Always use the design system color tokens defined in `tailwind.config.ts`.
+
+**Always use the reusable `Card` component** from `@/components/ui/card` when implementing a card container. Never recreate card styles with raw `div` elements.
+
+```typescript
+// ✅ Correct
+import { Card } from "@/components/ui/card";
+<Card className="p-5 flex flex-col gap-4">...</Card>
+
+// ❌ Wrong
+<div className="rounded-lg border border-neutral-200 bg-surface p-5">...</div>
+```
+
+```typescript
+// ✅ Correct
+<div className="bg-surface text-neutral-900 border-neutral-200">
+<div className="bg-gold-50 text-gold-500">
+
+// ❌ Wrong
+<div className="bg-[#FFFDF8] text-[#1A1A18] border-[#E8E2D8]">
+```
+
 ### API Calls
 
 **Always use service layer.** Never call axios directly in components.
@@ -133,6 +155,43 @@ TransactionForm/
 // ❌ Wrong
 TransactionForm.tsx      // 250 lines — everything in one file
 ```
+
+### Prop Drilling
+
+**When a component receives 10+ props, group related props into typed "prop bag" objects.** Define shared bag types in the relevant `*.utils.ts` file and have the owning hook return pre-built, memoized bags.
+
+```typescript
+// ✅ Correct — shared bag types in utils, hook returns bags
+// src/lib/transactions.utils.ts
+export type DateFilterProps = {
+  datePreset: DatePreset;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  onDatePresetChange: (preset: DatePreset) => void;
+  onCustomDateSelect: (date: Date) => void;
+  onCustomRangeSelect: (from: Date, to: Date) => void;
+};
+
+// Hook returns memoized bag
+const dateFilterProps: DateFilterProps = useMemo(() => ({ ... }), [deps]);
+
+// Page passes bag as single prop
+<TransactionsList dateFilter={dateFilterProps} />
+
+// Intermediate components forward the bag without destructuring
+<TransactionTabFilterControls dateFilter={props.dateFilter} />
+
+// ❌ Wrong — 30 flat props drilled through 3+ levels
+<TransactionsList datePreset={state.datePreset} startDate={state.startDate}
+  endDate={state.endDate} onDatePresetChange={(v) => dispatch({...})}
+  onCustomDateSelect={(d) => dispatch({...})} ... />
+```
+
+**Rules:**
+- Bag types live in the shared utils file (e.g., `transactions.utils.ts`), not in component files
+- Hooks encapsulate `dispatch` — never expose `dispatch` to page components
+- Use `useMemo` for bag objects to maintain referential stability
+- Leaf components destructure from the bag; intermediate components forward the bag object
 
 ---
 

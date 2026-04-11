@@ -3,15 +3,22 @@ import {
   ResponsiveDialog as Dialog,
   ResponsiveDialogContent as DialogContent,
   ResponsiveDialogDescription as DialogDescription,
-  ResponsiveDialogHeader as DialogHeader,
   ResponsiveDialogTitle as DialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { TransactionFormFooter } from "../TransactionForm/TransactionFormFooter";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 import { currencySymbols, useCurrency } from "@/contexts/CurrencyContext";
 import { useCreateCategory } from "@/hooks/mutations/useCreateCategory";
 import { useCreateTransaction } from "@/hooks/mutations/useCreateTransaction";
 import { useCategories } from "@/hooks/queries/useCategories";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { QuickExpenseFields } from "./QuickExpenseFields";
 import {
@@ -29,6 +36,7 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const isMobile = useIsMobile();
   const { currency } = useCurrency();
   const { data: categories = [], isLoading: categoriesLoading } =
     useCategories("EXPENSE");
@@ -37,7 +45,14 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
 
   const form = useForm<QuickExpenseFormData>({
     resolver: zodResolver(quickExpenseSchema),
-    defaultValues: { transactionName: "", amount: "", categoryName: "", date: new Date() },
+    defaultValues: {
+      transactionName: "",
+      amount: "",
+      categoryName: "",
+      date: new Date(),
+      isRecurring: false,
+      recurrenceFrequency: undefined,
+    },
   });
 
   const isPending = createCategory.isPending || createTransaction.isPending;
@@ -54,28 +69,69 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
     onSuccess: handleClose,
   });
 
+  const formContent = (
+    <>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <QuickExpenseFields
+          form={form}
+          currencySymbol={currencySymbols[currency]}
+          categories={categories}
+        />
+
+        <div className="-mx-6 mt-4 flex items-center gap-3 border-t border-neutral-200 px-6 pb-5 pt-4 dark:border-neutral-700">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleClose}
+            disabled={isPending}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="flex-1"
+            disabled={isPending || categoriesLoading}
+          >
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isPending ? "Adding..." : "Add Expense"}
+          </Button>
+        </div>
+      </form>
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+        <DrawerContent className="max-h-[90dvh]">
+          <div className="px-6 pt-2 pb-2">
+            <DrawerTitle className="text-[18px] font-semibold">
+              Add Expense
+            </DrawerTitle>
+            <DrawerDescription className="text-[13px] text-neutral-500">
+              Pick a category to get started
+            </DrawerDescription>
+          </div>
+          <div className="overflow-y-auto px-6">{formContent}</div>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-xl">
-        <DialogHeader>
-          <DialogTitle>Quick Add Expense</DialogTitle>
-          <DialogDescription>
-            Quickly add a Food, Health, or Household expense.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <QuickExpenseFields
-            form={form}
-            currencySymbol={currencySymbols[currency]}
-            categories={categories}
-          />
-          <TransactionFormFooter
-            isEditing={false}
-            isPending={isPending}
-            isCategoriesLoading={categoriesLoading}
-            onCancel={handleClose}
-          />
-        </form>
+      <DialogContent className="sm:max-w-[600px]">
+        <div className="-mx-6 sm:-mt-6 flex items-center justify-between border-b border-neutral-200 px-6 py-5 dark:border-neutral-700">
+          <div className="space-y-0.5">
+            <DialogTitle className="text-[18px] font-semibold">
+              Add Expense
+            </DialogTitle>
+            <DialogDescription className="text-[13px] text-neutral-500">
+              Pick a category to get started
+            </DialogDescription>
+          </div>
+        </div>
+        {formContent}
       </DialogContent>
     </Dialog>
   );
