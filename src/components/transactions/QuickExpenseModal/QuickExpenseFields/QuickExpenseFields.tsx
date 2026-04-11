@@ -4,6 +4,7 @@ import { UseFormReturn } from "react-hook-form";
 import { ChevronDown, ChevronRight, Pencil, Repeat, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ToggleChip } from "@/components/ui/toggle-chip";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Select,
   SelectContent,
@@ -131,22 +132,27 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
         </div>
 
         {/* More Options */}
-        <button
-          type="button"
-          onClick={() => setMoreOpen((prev) => !prev)}
-          className="flex items-center gap-1.5 text-[13px] font-medium text-gold-500"
-        >
-          <Settings className="h-3.5 w-3.5" />
-          <span>More options (notes, receipt...)</span>
-          {moreOpen ? (
-            <ChevronDown className="h-3.5 w-3.5" />
-          ) : (
-            <ChevronRight className="h-3.5 w-3.5" />
-          )}
-        </button>
-        {moreOpen && (
-          <MoreOptionsSection notes={notes} onNotesChange={setNotes} />
-        )}
+        <Collapsible open={moreOpen} onOpenChange={setMoreOpen}>
+          <CollapsibleTrigger asChild>
+            <button
+              type="button"
+              className="flex items-center gap-1.5 text-[13px] font-medium text-gold-500"
+            >
+              <Settings className="h-3.5 w-3.5" />
+              <span>More options (notes, receipt...)</span>
+              {moreOpen ? (
+                <ChevronDown className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronRight className="h-3.5 w-3.5" />
+              )}
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
+            <div className="px-px">
+              <MoreOptionsSection notes={notes} onNotesChange={setNotes} />
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </>
   );

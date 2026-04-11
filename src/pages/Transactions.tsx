@@ -5,7 +5,6 @@ import { TransactionsList } from "@/components/transactions/TransactionsList";
 import { TransactionsPageHeader } from "@/components/transactions/TransactionsPageHeader";
 import { TransactionsSummaryCards } from "@/components/transactions/TransactionsSummaryCards";
 import { MobileTransactionsView } from "@/components/transactions/mobile/MobileTransactionsView";
-import { Button } from "@/components/ui/button";
 import {
   ResponsiveDialog as Dialog,
   ResponsiveDialogContent as DialogContent,
@@ -19,7 +18,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useTransactionFilters } from "@/hooks/useTransactionFilters";
 import { calculatePageTotals } from "@/lib/transactions.utils";
 import { Transaction } from "@/types";
-import { Plus } from "lucide-react";
 import { useMemo, useState, type FC } from "react";
 
 export const Transactions: FC = () => {
@@ -54,13 +52,6 @@ export const Transactions: FC = () => {
   };
   const handleFormClose = () => { setIsFormOpen(false); setEditingTransaction(undefined); };
 
-  const addButton = (
-    <Button onClick={() => { setEditingTransaction(undefined); setIsFormOpen(true); }} disabled={deleteTransaction.isPending}>
-      <Plus className="h-4 w-4 mr-2" />
-      Add Transaction
-    </Button>
-  );
-
   return (
     <DashboardLayout>
       {/* Mobile View */}
@@ -86,7 +77,7 @@ export const Transactions: FC = () => {
 
       {/* Desktop View */}
       <div className="hidden md:block space-y-5">
-        <TransactionsPageHeader addTransactionTrigger={addButton} />
+        <TransactionsPageHeader />
 
         <TransactionsSummaryCards
           totalIncome={pageTotals.totalIncome}

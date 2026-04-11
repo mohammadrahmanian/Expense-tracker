@@ -1,7 +1,22 @@
-import { type FC } from "react";
+import { useState, type FC } from "react";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types";
 import { quickCategories } from "../QuickExpenseModal.types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
+
+const QUICK_NAMES = new Set(
+  quickCategories.filter((c) => c.name !== "Other").map((c) => c.name.toLowerCase()),
+);
 
 type QuickCategorySelectProps = {
   selectedCategory: string;
@@ -16,8 +31,30 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
   categories,
   error,
 }) => {
+  const isOtherCategory = selectedCategory !== "" && !QUICK_NAMES.has(selectedCategory.toLowerCase());
+  const [otherExpanded, setOtherExpanded] = useState(isOtherCategory);
+
   const findCategory = (name: string) =>
     categories.find((cat) => cat.name.toLowerCase() === name.toLowerCase());
+
+  const handleCardClick = (name: string) => {
+    if (name === "Other") {
+      setOtherExpanded(true);
+      if (!isOtherCategory) onSelect("");
+    } else {
+      setOtherExpanded(false);
+      onSelect(name);
+    }
+  };
+
+  const handleOtherSelect = (categoryId: string) => {
+    const cat = categories.find((c) => c.id === categoryId);
+    if (cat) onSelect(cat.name);
+  };
+
+  const selectedCategoryId = isOtherCategory
+    ? categories.find((c) => c.name.toLowerCase() === selectedCategory.toLowerCase())?.id
+    : undefined;
 
   return (
     <div className="space-y-4">
@@ -27,13 +64,16 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
         {quickCategories.map((cat) => {
           const Icon = cat.icon;
-          const isSelected = selectedCategory === cat.name;
+          const isSelected =
+            cat.name === "Other"
+              ? otherExpanded
+              : selectedCategory.toLowerCase() === cat.name.toLowerCase();
 
           return (
             <button
               key={cat.name}
               type="button"
-              onClick={() => onSelect(cat.name)}
+              onClick={() => handleCardClick(cat.name)}
               className={cn(
                 "flex flex-col items-center justify-center gap-1.5 h-20 rounded-md transition-colors cursor-pointer",
                 isSelected
@@ -47,7 +87,27 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
           );
         })}
       </div>
-      {selectedCategory && !findCategory(selectedCategory) && (
+
+      <Collapsible open={otherExpanded}>
+        <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
+          <div className="px-px pt-1">
+            <Select value={selectedCategoryId ?? ""} onValueChange={handleOtherSelect}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      {selectedCategory && !findCategory(selectedCategory) && !otherExpanded && (
         <p className="text-caption text-gold-700 bg-gold-50 border border-gold-200 rounded-md p-3 dark:bg-gold-900 dark:text-gold-200 dark:border-gold-700">
           &ldquo;{selectedCategory}&rdquo; category will be created
           automatically.
