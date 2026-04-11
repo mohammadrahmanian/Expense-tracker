@@ -11,6 +11,8 @@ type InfiniteTransactionParams = {
   toDate?: string;
   categoryId?: string;
   query?: string;
+  minAmount?: number;
+  maxAmount?: number;
 };
 
 const PAGE_SIZE = 20;

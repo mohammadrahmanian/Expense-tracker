@@ -1,13 +1,16 @@
 import { type FC } from "react";
 import { SlidersHorizontal } from "lucide-react";
-import { toast } from "sonner";
 
 type MobileTransactionsHeaderProps = {
   totalTransactions: number;
+  onFilterTap: () => void;
+  hasActiveFilters: boolean;
 };
 
 export const MobileTransactionsHeader: FC<MobileTransactionsHeaderProps> = ({
   totalTransactions,
+  onFilterTap,
+  hasActiveFilters,
 }) => (
   <div className="flex items-center justify-between px-0 pt-2.5 pb-4">
     <div className="flex items-center gap-2">
@@ -20,10 +23,13 @@ export const MobileTransactionsHeader: FC<MobileTransactionsHeaderProps> = ({
     </div>
     <button
       type="button"
-      onClick={() => toast.info("Filters coming soon!")}
-      className="flex h-9 w-9 items-center justify-center rounded-sm border border-border"
+      onClick={onFilterTap}
+      className="relative flex h-9 w-9 items-center justify-center rounded-sm border border-border"
     >
       <SlidersHorizontal className="h-[18px] w-[18px] text-muted-foreground" />
+      {hasActiveFilters && (
+        <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-primary" />
+      )}
     </button>
   </div>
 );

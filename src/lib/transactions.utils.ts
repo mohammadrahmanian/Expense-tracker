@@ -1,6 +1,8 @@
 import {
   startOfDay,
   endOfDay,
+  startOfWeek,
+  endOfWeek,
   startOfMonth,
   endOfMonth,
   subDays,
@@ -14,6 +16,7 @@ import { Category, Transaction } from "@/types";
 export type DatePreset =
   | "today"
   | "yesterday"
+  | "this_week"
   | "this_month"
   | "last_month"
   | "custom_date"
@@ -27,6 +30,8 @@ export type TransactionFilterState = {
   datePreset: DatePreset;
   startDate: Date | undefined;
   endDate: Date | undefined;
+  minAmount: number | undefined;
+  maxAmount: number | undefined;
   currentPage: number;
   pageSize: number;
   sortField: "date" | "amount";
@@ -58,6 +63,13 @@ export type SortProps = {
   onSort: (field: "date" | "amount") => void;
 };
 
+export type AmountRangeProps = {
+  minAmount: number | undefined;
+  maxAmount: number | undefined;
+  onMinAmountChange: (v: number | undefined) => void;
+  onMaxAmountChange: (v: number | undefined) => void;
+};
+
 export type PaginationProps = {
   currentPage: number;
   pageSize: number;
@@ -76,6 +88,11 @@ export const computeDateRange = (
       const yesterday = subDays(now, 1);
       return { start: startOfDay(yesterday), end: endOfDay(yesterday) };
     }
+    case "this_week":
+      return {
+        start: startOfWeek(now, { weekStartsOn: 1 }),
+        end: endOfWeek(now, { weekStartsOn: 1 }),
+      };
     case "this_month":
       return { start: startOfMonth(now), end: endOfMonth(now) };
     case "last_month": {
@@ -125,6 +142,8 @@ export const buildQueryParams = (state: TransactionFilterState) => {
     toDate?: string;
     categoryId?: string;
     query?: string;
+    minAmount?: number;
+    maxAmount?: number;
   } = {
     sort: state.sortField,
     order: state.sortOrder,
@@ -135,6 +154,8 @@ export const buildQueryParams = (state: TransactionFilterState) => {
   if (state.searchTerm) params.query = state.searchTerm;
   if (state.typeFilter !== "all") params.type = state.typeFilter;
   if (state.categoryFilter !== "all") params.categoryId = state.categoryFilter;
+  if (state.minAmount !== undefined) params.minAmount = state.minAmount;
+  if (state.maxAmount !== undefined) params.maxAmount = state.maxAmount;
 
   const { start, end } = resolveDateRange(state);
   Object.assign(params, formatDateBoundaries(start, end));
@@ -151,6 +172,8 @@ export const buildInfiniteQueryParams = (state: TransactionFilterState) => {
     toDate?: string;
     categoryId?: string;
     query?: string;
+    minAmount?: number;
+    maxAmount?: number;
   } = {
     sort: state.sortField,
     order: state.sortOrder,
@@ -159,6 +182,8 @@ export const buildInfiniteQueryParams = (state: TransactionFilterState) => {
   if (state.searchTerm) params.query = state.searchTerm;
   if (state.typeFilter !== "all") params.type = state.typeFilter;
   if (state.categoryFilter !== "all") params.categoryId = state.categoryFilter;
+  if (state.minAmount !== undefined) params.minAmount = state.minAmount;
+  if (state.maxAmount !== undefined) params.maxAmount = state.maxAmount;
 
   const { start, end } = resolveDateRange(state);
   Object.assign(params, formatDateBoundaries(start, end));
@@ -185,13 +210,17 @@ export const hasActiveFilters = (
     | "typeFilter"
     | "categoryFilter"
     | "datePreset"
+    | "minAmount"
+    | "maxAmount"
   >,
 ): boolean =>
   !!(
     state.searchTerm ||
     state.typeFilter !== "all" ||
     state.categoryFilter !== "all" ||
-    (state.datePreset && state.datePreset !== "this_month")
+    (state.datePreset && state.datePreset !== "this_month") ||
+    state.minAmount !== undefined ||
+    state.maxAmount !== undefined
   );
 
 export type TransactionDateGroup = {

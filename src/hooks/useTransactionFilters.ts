@@ -6,6 +6,7 @@ import {
   DatePreset,
   hasActiveFilters,
   TransactionFilterState,
+  type AmountRangeProps,
   type DateFilterProps,
   type SearchProps,
   type TypeFilterProps,
@@ -13,6 +14,21 @@ import {
   type PaginationProps,
 } from "@/lib/transactions.utils";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+
+export type BulkFilterPayload = Partial<
+  Pick<
+    TransactionFilterState,
+    | "typeFilter"
+    | "categoryFilter"
+    | "datePreset"
+    | "startDate"
+    | "endDate"
+    | "minAmount"
+    | "maxAmount"
+    | "sortField"
+    | "sortOrder"
+  >
+>;
 
 type TransactionFilterAction =
   | { type: "SET_SEARCH_TERM"; payload: string }
@@ -23,9 +39,12 @@ type TransactionFilterAction =
   | { type: "SET_CUSTOM_RANGE"; payload: { from: Date; to: Date } }
   | { type: "SET_START_DATE"; payload: Date | undefined }
   | { type: "SET_END_DATE"; payload: Date | undefined }
+  | { type: "SET_MIN_AMOUNT"; payload: number | undefined }
+  | { type: "SET_MAX_AMOUNT"; payload: number | undefined }
   | { type: "SET_PAGE_SIZE"; payload: number }
   | { type: "SET_CURRENT_PAGE"; payload: number }
   | { type: "SORT"; payload: "date" | "amount" }
+  | { type: "APPLY_BULK_FILTERS"; payload: BulkFilterPayload }
   | { type: "CLEAR_FILTERS" };
 
 const initialState: TransactionFilterState = {
@@ -35,6 +54,8 @@ const initialState: TransactionFilterState = {
   datePreset: "this_month",
   startDate: undefined,
   endDate: undefined,
+  minAmount: undefined,
+  maxAmount: undefined,
   currentPage: 1,
   pageSize: 10,
   sortField: "date",
@@ -82,6 +103,10 @@ const filterReducer = (
       return { ...state, startDate: action.payload, datePreset: "custom_range", currentPage: 1 };
     case "SET_END_DATE":
       return { ...state, endDate: action.payload, datePreset: "custom_range", currentPage: 1 };
+    case "SET_MIN_AMOUNT":
+      return { ...state, minAmount: action.payload, currentPage: 1 };
+    case "SET_MAX_AMOUNT":
+      return { ...state, maxAmount: action.payload, currentPage: 1 };
     case "SET_PAGE_SIZE":
       return { ...state, pageSize: action.payload, currentPage: 1 };
     case "SET_CURRENT_PAGE":
@@ -98,6 +123,8 @@ const filterReducer = (
             : "desc",
         currentPage: 1,
       };
+    case "APPLY_BULK_FILTERS":
+      return { ...state, ...action.payload, currentPage: 1 };
     case "CLEAR_FILTERS":
       return {
         ...state,
@@ -107,6 +134,8 @@ const filterReducer = (
         datePreset: "this_month",
         startDate: undefined,
         endDate: undefined,
+        minAmount: undefined,
+        maxAmount: undefined,
         currentPage: 1,
       };
   }
@@ -179,8 +208,20 @@ export const useTransactionFilters = () => {
     onPageSizeChange: (p: number) => dispatch({ type: "SET_PAGE_SIZE", payload: p }),
   }), [state.currentPage, state.pageSize]);
 
+  const amountRangeProps: AmountRangeProps = useMemo(() => ({
+    minAmount: state.minAmount,
+    maxAmount: state.maxAmount,
+    onMinAmountChange: (v: number | undefined) => dispatch({ type: "SET_MIN_AMOUNT", payload: v }),
+    onMaxAmountChange: (v: number | undefined) => dispatch({ type: "SET_MAX_AMOUNT", payload: v }),
+  }), [state.minAmount, state.maxAmount]);
+
   const onCategoryFilterChange = useCallback(
     (v: string) => dispatch({ type: "SET_CATEGORY_FILTER", payload: v }),
+    [],
+  );
+
+  const applyBulkFilters = useCallback(
+    (payload: BulkFilterPayload) => dispatch({ type: "APPLY_BULK_FILTERS", payload }),
     [],
   );
 
@@ -194,7 +235,9 @@ export const useTransactionFilters = () => {
     searchProps,
     typeFilterProps,
     sortProps,
+    amountRangeProps,
     paginationProps,
     onCategoryFilterChange,
+    applyBulkFilters,
   };
 };

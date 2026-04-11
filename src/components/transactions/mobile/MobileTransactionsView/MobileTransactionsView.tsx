@@ -1,16 +1,19 @@
-import { useMemo, type FC } from "react";
+import { useMemo, useState, type FC } from "react";
 import { MobileTransactionsHeader } from "@/components/transactions/mobile/MobileTransactionsHeader";
 import { MobileSearchBar } from "@/components/transactions/mobile/MobileSearchBar";
 import { MobilePillTabs } from "@/components/transactions/mobile/MobilePillTabs";
 import { MobileSummaryCards } from "@/components/transactions/mobile/MobileSummaryCards";
 import { MobileTransactionGroup } from "@/components/transactions/mobile/MobileTransactionGroup";
+import { MobileFilterBottomsheet } from "@/components/transactions/mobile/MobileFilterBottomsheet";
 import {
   calculatePageTotals,
   groupTransactionsByDate,
   type DateFilterProps,
   type SearchProps,
+  type TransactionFilterState,
   type TypeFilterProps,
 } from "@/lib/transactions.utils";
+import type { BulkFilterPayload } from "@/hooks/useTransactionFilters";
 import { Category, Transaction } from "@/types";
 import { Loader2 } from "lucide-react";
 import type { InfiniteData } from "@tanstack/react-query";
@@ -30,11 +33,16 @@ type MobileTransactionsViewProps = {
   typeFilter: TypeFilterProps;
   search: SearchProps;
   dateFilter: DateFilterProps;
+  filterState: TransactionFilterState;
+  hasActiveFilters: boolean;
+  onApplyBulkFilters: (payload: BulkFilterPayload) => void;
   onEdit: (transaction: Transaction) => void;
   formatAmount: (amount: number) => string;
 };
 
 export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (props) => {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
   const transactions = useMemo(
     () => props.infiniteData?.pages.flatMap((p) => p.items) ?? [],
     [props.infiniteData],
@@ -51,7 +59,11 @@ export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (props) =
 
   return (
     <div className="flex flex-col gap-0">
-      <MobileTransactionsHeader totalTransactions={props.totalTransactions} />
+      <MobileTransactionsHeader
+        totalTransactions={props.totalTransactions}
+        onFilterTap={() => setIsFilterOpen(true)}
+        hasActiveFilters={props.hasActiveFilters}
+      />
       <MobileSearchBar value={props.search.searchTerm} onChange={props.search.onSearchTermChange} />
       <MobilePillTabs
         typeFilter={props.typeFilter}
@@ -90,6 +102,14 @@ export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (props) =
           )}
         </>
       )}
+
+      <MobileFilterBottomsheet
+        open={isFilterOpen}
+        onOpenChange={setIsFilterOpen}
+        filterState={props.filterState}
+        categories={props.categories}
+        onApply={props.onApplyBulkFilters}
+      />
     </div>
   );
 };

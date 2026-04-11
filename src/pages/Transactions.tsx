@@ -28,6 +28,7 @@ export const Transactions: FC = () => {
   const {
     state, queryParams, infiniteQueryParams, activeFilters,
     dateFilterProps, searchProps, typeFilterProps, sortProps, paginationProps, onCategoryFilterChange,
+    applyBulkFilters,
   } = useTransactionFilters();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
@@ -75,6 +76,9 @@ export const Transactions: FC = () => {
           typeFilter={typeFilterProps}
           search={searchProps}
           dateFilter={dateFilterProps}
+          filterState={state}
+          hasActiveFilters={activeFilters}
+          onApplyBulkFilters={applyBulkFilters}
           onEdit={handleEdit}
           formatAmount={formatAmount}
         />
