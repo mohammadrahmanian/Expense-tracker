@@ -16,6 +16,7 @@ const ResponsiveDialogOverlay = React.forwardRef<
     ref={ref}
     className={cn(
       "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] sm:duration-200 sm:ease-out",
       className,
     )}
     {...props}
@@ -43,8 +44,8 @@ const ResponsiveDialogContent = React.forwardRef<
         "sm:data-[state=open]:slide-in-from-left-1/2 sm:data-[state=open]:slide-in-from-top-[48%]",
         // Mobile: bottom sheet
         "bottom-0 left-0 right-0 rounded-t-[10px] mobile-safe-bottom",
-        // Mobile animations (iOS-style slide)
-        "duration-300 ease-out data-[state=open]:animate-in data-[state=closed]:animate-out",
+        // Mobile animations (iOS-style slide with vaul-like easing)
+        "duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] sm:ease-out data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
         "data-[state=open]:slide-in-from-bottom-full data-[state=closed]:slide-out-to-bottom-full",
         // Mobile max height only
