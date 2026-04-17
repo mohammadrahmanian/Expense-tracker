@@ -102,7 +102,7 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
 
   if (isMobile) {
     return (
-      <Drawer open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <Drawer open={isOpen} onOpenChange={(open) => !open && handleClose()} dismissible={false}>
         <DrawerContent className="max-h-[90dvh]">
           <div className="px-6 pt-2 pb-2">
             <DrawerTitle className="text-[18px] font-semibold">
