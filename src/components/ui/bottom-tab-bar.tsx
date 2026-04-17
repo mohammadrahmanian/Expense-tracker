@@ -110,7 +110,7 @@ export const BottomTabBar: React.FC = () => {
         role="navigation"
         aria-label="Bottom navigation"
       >
-        <div className="bg-surface border-t border-neutral-200 pt-2.5 dark:bg-neutral-900 dark:border-neutral-700">
+        <div className="bg-surface border-t border-neutral-200 pt-2.5 pb-safe-bottom dark:bg-neutral-900 dark:border-neutral-700">
           <div className="flex items-end">
             {leftTabs.map(renderTab)}
 
