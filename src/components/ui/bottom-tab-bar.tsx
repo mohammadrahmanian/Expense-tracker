@@ -128,9 +128,6 @@ export const BottomTabBar: React.FC = () => {
 
             {rightTabs.map(renderTab)}
           </div>
-
-          {/* Safe area for iOS home indicator */}
-          <div className="h-[34px]" />
         </div>
       </nav>
 
