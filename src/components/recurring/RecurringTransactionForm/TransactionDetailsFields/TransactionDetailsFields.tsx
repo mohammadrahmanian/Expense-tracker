@@ -74,7 +74,7 @@ export const TransactionDetailsFields: FC<TransactionDetailsFieldsProps> = ({
           id="description"
           placeholder="Add a note about this recurring transaction..."
           {...register("description")}
-          className={errors.description ? "border-red-500" : ""}
+          aria-invalid={!!errors.description}
           maxLength={256}
           rows={2}
         />
