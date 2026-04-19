@@ -37,8 +37,8 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
 
   const categoryName = watch("categoryName");
   const isRecurring = watch("isRecurring");
+  const notes = watch("notes") ?? "";
   const [moreOpen, setMoreOpen] = useState(false);
-  const [notes, setNotes] = useState("");
 
   return (
     <>
@@ -139,7 +139,7 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
               className="flex items-center gap-1.5 text-[13px] font-medium text-gold-500"
             >
               <Settings className="h-3.5 w-3.5" />
-              <span>More options (notes, receipt...)</span>
+              <span>More options (notes)</span>
               {moreOpen ? (
                 <ChevronDown className="h-3.5 w-3.5" />
               ) : (
@@ -149,7 +149,7 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
           </CollapsibleTrigger>
           <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
             <div className="px-px">
-              <MoreOptionsSection notes={notes} onNotesChange={setNotes} />
+              <MoreOptionsSection notes={notes} onNotesChange={(v) => setValue("notes", v)} />
             </div>
           </CollapsibleContent>
         </Collapsible>
