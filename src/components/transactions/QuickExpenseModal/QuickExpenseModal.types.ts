@@ -1,4 +1,14 @@
-import { Car, Ellipsis, FileText, ShoppingBag, Tv, Utensils } from "lucide-react";
+import {
+  BanknoteArrowDown,
+  Car,
+  Coins,
+  Ellipsis,
+  FileText,
+  HandCoins,
+  ShoppingBag,
+  Tv,
+  Utensils,
+} from "lucide-react";
 import { z } from "zod";
 
 export const quickCategories = [
@@ -8,6 +18,14 @@ export const quickCategories = [
   { name: "Bills", icon: FileText, color: "#8B7A2B" },
   { name: "Fun", icon: Tv, color: "#2D8C45" },
   { name: "Other", icon: Ellipsis, color: "#9C958E" },
+] as const;
+
+/** Fixed income quick-pick cards (API categories not in this set appear under Other). */
+export const quickIncomeCards = [
+  { name: "Salary", icon: BanknoteArrowDown },
+  { name: "Bonus", icon: HandCoins },
+  { name: "Refund", icon: Coins },
+  { name: "Other", icon: Ellipsis },
 ] as const;
 
 export const quickExpenseSchema = z.object({

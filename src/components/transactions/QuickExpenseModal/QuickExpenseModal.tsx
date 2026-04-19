@@ -112,10 +112,10 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
           </div>
           <Segment value={transactionKind} onValueChange={handleTabChange}>
             <SegmentList>
-              <SegmentItem value="expense" variant="success">
+              <SegmentItem value="expense" variant="default">
                 Expense
               </SegmentItem>
-              <SegmentItem value="income" variant="success">
+              <SegmentItem value="income" variant="default">
                 Income
               </SegmentItem>
             </SegmentList>
