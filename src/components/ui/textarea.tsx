@@ -9,9 +9,9 @@ const textareaVariants = cva(
     variants: {
       variant: {
         default:
-          "rounded-sm border border-neutral-200 bg-white px-3 py-2.5 text-body focus-visible:outline-none focus-visible:border-2 focus-visible:border-gold-500 focus-visible:px-[11px] focus-visible:py-[9px] disabled:bg-surface aria-[invalid=true]:border-danger-500 aria-[invalid=true]:bg-danger-50 dark:bg-neutral-800 dark:border-neutral-700",
+          "rounded-sm border border-neutral-200 bg-white px-3 py-2.5 text-body focus-visible:outline-none focus-visible:border-2 focus-visible:border-gold-500 focus-visible:px-[11px] focus-visible:py-[9px] disabled:bg-surface aria-[invalid=true]:border-danger-500 aria-[invalid=true]:bg-danger-50 dark:bg-neutral-800 dark:border-neutral-700 dark:aria-[invalid=true]:bg-danger-700/20",
         underlined:
-          "rounded-t-sm rounded-b-none border-0 border-b border-b-neutral-400 bg-neutral-100 px-3 py-2.5 text-base outline-none focus-visible:border-b-2 focus-visible:border-b-gold-500 aria-[invalid=true]:border-b-2 aria-[invalid=true]:border-b-danger-500 aria-[invalid=true]:bg-danger-50 dark:border-b-neutral-600 dark:bg-neutral-800 dark:focus-visible:border-b-2 dark:focus-visible:border-b-gold-500 dark:aria-[invalid=true]:border-b-2 dark:aria-[invalid=true]:border-b-danger-500",
+          "rounded-t-sm rounded-b-none border-0 border-b border-b-neutral-400 bg-neutral-100 px-3 py-2.5 text-base outline-none focus-visible:border-b-2 focus-visible:border-b-gold-500 aria-[invalid=true]:border-b-2 aria-[invalid=true]:border-b-danger-500 aria-[invalid=true]:bg-danger-50 dark:border-b-neutral-600 dark:bg-neutral-800 dark:focus-visible:border-b-2 dark:focus-visible:border-b-gold-500 dark:aria-[invalid=true]:border-b-2 dark:aria-[invalid=true]:border-b-danger-500 dark:aria-[invalid=true]:bg-danger-700/20",
       },
     },
     defaultVariants: {

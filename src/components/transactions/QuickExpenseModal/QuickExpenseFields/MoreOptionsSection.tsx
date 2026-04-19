@@ -1,5 +1,6 @@
 import { type FC } from "react";
 
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 type MoreOptionsSectionProps = {
@@ -15,10 +16,14 @@ export const MoreOptionsSection: FC<MoreOptionsSectionProps> = ({
     <div className="space-y-4 pt-2">
       {/* Notes Field */}
       <div className="space-y-2 pb-1">
-        <span className="text-overline text-neutral-500 uppercase tracking-[1.5px]">
+        <Label
+          htmlFor="notes"
+          className="text-overline text-neutral-500 uppercase tracking-[1.5px]"
+        >
           Notes
-        </span>
+        </Label>
         <Textarea
+          id="notes"
           variant="underlined"
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
