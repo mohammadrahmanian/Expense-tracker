@@ -28,6 +28,7 @@ export const quickExpenseSchema = z.object({
     ),
   categoryName: z.string().min(1, "Category is required"),
   date: z.date(),
+  notes: z.string().optional(),
   isRecurring: z.boolean().default(false),
   recurrenceFrequency: z
     .enum(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"])

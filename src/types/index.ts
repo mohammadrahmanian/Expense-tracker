@@ -21,6 +21,7 @@ export interface Transaction {
   categoryId: string;
   category?: Category;
   userId: string;
+  description?: string;
   isRecurring?: boolean;
   recurrenceFrequency?: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
   createdAt: Date;
