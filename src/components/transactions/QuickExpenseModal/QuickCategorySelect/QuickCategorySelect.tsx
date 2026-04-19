@@ -56,6 +56,11 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
     ? categories.find((c) => c.name.toLowerCase() === selectedCategory.toLowerCase())?.id
     : undefined;
 
+  /** Quick grid already covers these names; only list remaining expense categories here */
+  const otherSelectCategories = categories.filter(
+    (cat) => !QUICK_NAMES.has(cat.name.toLowerCase()),
+  );
+
   return (
     <div className="space-y-4">
       <span className="text-overline text-neutral-500 uppercase tracking-[1.5px]">
@@ -92,11 +97,11 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
         <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
           <div className="px-px pt-1">
             <Select value={selectedCategoryId ?? ""} onValueChange={handleOtherSelect}>
-              <SelectTrigger className="rounded-t-sm rounded-b-none border-0 border-b border-b-neutral-400 bg-neutral-100 data-[state=open]:border-b-2 data-[state=open]:border-b-gold-500 data-[state=open]:rounded-b-none focus-visible:border-b-2 focus-visible:border-b-gold-500 dark:border-b-neutral-600 dark:bg-neutral-800 dark:data-[state=open]:border-b-2 dark:data-[state=open]:border-b-gold-500 dark:focus-visible:border-b-2 dark:focus-visible:border-b-gold-500">
+              <SelectTrigger variant="underlined">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((cat) => (
+                {otherSelectCategories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>
                     {cat.name}
                   </SelectItem>

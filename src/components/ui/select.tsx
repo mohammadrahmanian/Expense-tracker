@@ -1,8 +1,26 @@
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
+import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+
+const selectTriggerVariants = cva(
+  "flex h-10 w-full items-center justify-between px-3 py-2 text-body text-foreground data-[placeholder]:text-neutral-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface [&>span]:line-clamp-1",
+  {
+    variants: {
+      variant: {
+        default:
+          "rounded-sm border border-neutral-200 bg-white focus-visible:border-2 focus-visible:border-gold-500 focus-visible:px-[11px] data-[state=open]:border-2 data-[state=open]:border-gold-500 data-[state=open]:px-[11px] dark:border-neutral-700 dark:bg-neutral-800",
+        underlined:
+          "rounded-t-sm rounded-b-none border-0 border-b border-b-neutral-400 bg-neutral-100 data-[state=open]:rounded-b-none data-[state=open]:border-b-2 data-[state=open]:border-b-gold-500 focus-visible:border-b-2 focus-visible:border-b-gold-500 dark:border-b-neutral-600 dark:bg-neutral-800 dark:data-[state=open]:border-b-2 dark:data-[state=open]:border-b-gold-500 dark:focus-visible:border-b-2 dark:focus-visible:border-b-gold-500",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  },
+);
 
 const Select = SelectPrimitive.Root;
 
@@ -10,16 +28,18 @@ const SelectGroup = SelectPrimitive.Group;
 
 const SelectValue = SelectPrimitive.Value;
 
+export type SelectTriggerProps = React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Trigger
+> &
+  VariantProps<typeof selectTriggerVariants>;
+
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  SelectTriggerProps
+>(({ className, variant, children, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
-    className={cn(
-      "flex h-10 w-full items-center justify-between rounded-sm border border-neutral-200 bg-white px-3 py-2 text-body text-foreground data-[placeholder]:text-neutral-500 focus:outline-none focus-visible:border-2 focus-visible:border-gold-500 focus-visible:px-[11px] data-[state=open]:border-2 data-[state=open]:border-gold-500 data-[state=open]:px-[11px] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface dark:bg-neutral-800 dark:border-neutral-700 [&>span]:line-clamp-1",
-      className,
-    )}
+    className={cn(selectTriggerVariants({ variant }), className)}
     {...props}
   >
     {children}
@@ -149,6 +169,7 @@ export {
   SelectGroup,
   SelectValue,
   SelectTrigger,
+  selectTriggerVariants,
   SelectContent,
   SelectLabel,
   SelectItem,
