@@ -22,10 +22,10 @@ export const expenseCategories = [
 
 /** Fixed income quick-pick cards (API categories not in this set appear under Other). */
 export const incomeCategories = [
-  { name: "Salary", icon: BanknoteArrowDown },
-  { name: "Bonus", icon: HandCoins },
-  { name: "Refund", icon: Coins },
-  { name: "Other", icon: Ellipsis },
+  { name: "Salary", icon: BanknoteArrowDown, color: "#2D8C45" },
+  { name: "Bonus", icon: HandCoins, color: "#B8860B" },
+  { name: "Refund", icon: Coins, color: "#2B6CB0" },
+  { name: "Other", icon: Ellipsis, color: "#9C958E" },
 ] as const;
 
 export const quickExpenseSchema = z.object({

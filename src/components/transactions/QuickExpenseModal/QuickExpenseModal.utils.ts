@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import {
   QuickExpenseFormData,
   expenseCategories,
+  incomeCategories,
 } from "./QuickExpenseModal.types";
 
 type CreateCategoryInput = Omit<
@@ -42,7 +43,8 @@ export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
           deps.transactionType === "EXPENSE"
             ? expenseCategories.find((c) => c.name === data.categoryName)
                 ?.color || INCOME_NEW_CATEGORY_FALLBACK_COLOR
-            : INCOME_NEW_CATEGORY_FALLBACK_COLOR;
+            : incomeCategories.find((c) => c.name === data.categoryName)
+                ?.color || INCOME_NEW_CATEGORY_FALLBACK_COLOR;
         category = await deps.createCategoryAsync({
           name: data.categoryName,
           type: deps.transactionType,
