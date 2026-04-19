@@ -92,7 +92,7 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
         <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
           <div className="px-px pt-1">
             <Select value={selectedCategoryId ?? ""} onValueChange={handleOtherSelect}>
-              <SelectTrigger>
+              <SelectTrigger className="rounded-t-sm rounded-b-none border-0 border-b border-b-neutral-400 bg-neutral-100 data-[state=open]:border-b-2 data-[state=open]:border-b-gold-500 data-[state=open]:rounded-b-none focus-visible:border-b-2 focus-visible:border-b-gold-500 dark:border-b-neutral-600 dark:bg-neutral-800 dark:data-[state=open]:border-b-2 dark:data-[state=open]:border-b-gold-500 dark:focus-visible:border-b-2 dark:focus-visible:border-b-gold-500">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
