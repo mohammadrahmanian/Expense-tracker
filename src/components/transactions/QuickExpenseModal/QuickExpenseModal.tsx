@@ -36,12 +36,16 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
   const [transactionKind, setTransactionKind] =
     useState<TransactionKind>("expense");
 
-  const { data: expenseCategories = [], isLoading: expenseCategoriesLoading } =
-    useCategories("EXPENSE");
-  const { data: incomeCategories = [], isLoading: incomeCategoriesLoading } =
-    useCategories("INCOME");
+  const {
+    data: apiExpenseCategories = [],
+    isLoading: expenseCategoriesLoading,
+  } = useCategories("EXPENSE");
+  const {
+    data: apiIncomeCategories = [],
+    isLoading: incomeCategoriesLoading,
+  } = useCategories("INCOME");
 
-  const createCategory = useCreateCategory();
+  const createCategory = useCreateCategory({ showErrorToast: false });
   const createTransaction = useCreateTransaction();
 
   const form = useForm<QuickExpenseFormData>({
@@ -59,14 +63,16 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
   const isPending = createCategory.isPending || createTransaction.isPending;
 
   const activeCategories =
-    transactionKind === "income" ? incomeCategories : expenseCategories;
+    transactionKind === "income"
+      ? apiIncomeCategories
+      : apiExpenseCategories;
   const categoriesLoading =
     transactionKind === "income"
       ? incomeCategoriesLoading
       : expenseCategoriesLoading;
 
   const incomeCategoriesEmpty =
-    transactionKind === "income" && incomeCategories.length === 0;
+    transactionKind === "income" && apiIncomeCategories.length === 0;
 
   const handleClose = () => {
     form.reset();

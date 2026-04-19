@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 
-export const quickCategories = [
+export const expenseCategories = [
   { name: "Food", icon: Utensils, color: "#B8860B" },
   { name: "Transport", icon: Car, color: "#6B6560" },
   { name: "Shopping", icon: ShoppingBag, color: "#2B6CB0" },
@@ -21,7 +21,7 @@ export const quickCategories = [
 ] as const;
 
 /** Fixed income quick-pick cards (API categories not in this set appear under Other). */
-export const quickIncomeCards = [
+export const incomeCategories = [
   { name: "Salary", icon: BanknoteArrowDown },
   { name: "Bonus", icon: HandCoins },
   { name: "Refund", icon: Coins },

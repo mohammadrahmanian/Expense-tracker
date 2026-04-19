@@ -1,7 +1,7 @@
 import { useState, type FC } from "react";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types";
-import { quickIncomeCards } from "../QuickExpenseModal.types";
+import { incomeCategories } from "../QuickExpenseModal.types";
 import {
   Select,
   SelectContent,
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/collapsible";
 
 const QUICK_INCOME_NAMES = new Set(
-  quickIncomeCards
+  incomeCategories
     .filter((c) => c.name !== "Other")
     .map((c) => c.name.toLowerCase()),
 );
@@ -86,7 +86,7 @@ export const QuickIncomeCategorySelect: FC<QuickIncomeCategorySelectProps> = ({
         Category
       </span>
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
-        {quickIncomeCards.map((cat) => {
+        {incomeCategories.map((cat) => {
           const Icon = cat.icon;
           const isSelected =
             cat.name === "Other"

@@ -1,8 +1,9 @@
 import { normalizeAmount } from "@/lib/amount-utils";
 import { Category, Transaction } from "@/types";
+import { toast } from "sonner";
 import {
   QuickExpenseFormData,
-  quickCategories,
+  expenseCategories,
 } from "./QuickExpenseModal.types";
 
 type CreateCategoryInput = Omit<
@@ -39,7 +40,7 @@ export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
       try {
         const color =
           deps.transactionType === "EXPENSE"
-            ? quickCategories.find((c) => c.name === data.categoryName)
+            ? expenseCategories.find((c) => c.name === data.categoryName)
                 ?.color || INCOME_NEW_CATEGORY_FALLBACK_COLOR
             : INCOME_NEW_CATEGORY_FALLBACK_COLOR;
         category = await deps.createCategoryAsync({
@@ -48,6 +49,7 @@ export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
           color,
         });
       } catch {
+        toast.error("Category creation failed. Try again!");
         return;
       }
     }
