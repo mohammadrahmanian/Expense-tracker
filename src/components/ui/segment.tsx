@@ -13,12 +13,12 @@ const Segment = React.forwardRef<
 Segment.displayName = "Segment";
 
 const segmentItemVariants = cva(
-  "flex h-8 min-w-[6rem] flex-1 basis-0 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-4 text-[13px] font-semibold text-neutral-600 transition-colors hover:bg-neutral-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:text-neutral-400 dark:hover:bg-neutral-700/60",
+  "flex h-8 min-w-[6rem] flex-1 basis-0 shrink-0 items-center justify-center whitespace-nowrap rounded-sm border border-transparent px-4 text-[13px] font-semibold text-neutral-600 transition-colors hover:bg-neutral-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:text-neutral-400 dark:hover:bg-neutral-700/60",
   {
     variants: {
       variant: {
         default:
-          "data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:bg-primary/90 dark:data-[state=active]:hover:bg-primary/90",
+          "data-[state=active]:border-primary data-[state=active]:bg-primary-bg data-[state=active]:text-primary data-[state=active]:hover:bg-primary-bg/90 dark:data-[state=active]:hover:bg-primary-bg/90",
         success:
           "data-[state=active]:border-success-300 data-[state=active]:bg-success-50 data-[state=active]:text-success-700 data-[state=active]:hover:bg-success-100 dark:data-[state=active]:border-success-500 dark:data-[state=active]:bg-success-700/25 dark:data-[state=active]:text-success-300 dark:data-[state=active]:hover:bg-success-700/35",
         error:
@@ -39,7 +39,7 @@ const SegmentList = React.forwardRef<
     <TabsPrimitive.List
       ref={ref}
       className={cn(
-        "flex h-10 min-w-full items-stretch gap-1 rounded-lg bg-neutral-100 p-1 dark:bg-neutral-900/60",
+        "flex h-10 min-w-full items-stretch gap-1 rounded-sm bg-neutral-100 p-1 dark:bg-neutral-900/60",
         className,
       )}
       {...props}

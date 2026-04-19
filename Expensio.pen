@@ -50942,7 +50942,20 @@
                   "type": "ref",
                   "ref": "r:fVm0i",
                   "width": "fill_container",
-                  "name": "seg1"
+                  "name": "seg1",
+                  "descendants": {
+                    "r:g71bp": {
+                      "fill": "$r:primary-bg",
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$r:primary"
+                      }
+                    },
+                    "r:t8MJN": {
+                      "fill": "$primary"
+                    }
+                  }
                 }
               ]
             },
