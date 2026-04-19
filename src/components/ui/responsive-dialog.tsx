@@ -54,9 +54,6 @@ const ResponsiveDialogContent = React.forwardRef<
       )}
       {...props}
     >
-      {/* Mobile drag indicator */}
-      <div className="mx-auto w-12 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-2 mb-4 sm:hidden" />
-
       {/* Scrollable content area */}
       <div className="flex-auto min-h-0 overflow-y-auto px-6 sm:pt-6 sm:max-h-[90vh]">
         {children}
