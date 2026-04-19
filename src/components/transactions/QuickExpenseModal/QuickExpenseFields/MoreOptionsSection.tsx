@@ -20,7 +20,7 @@ export const MoreOptionsSection: FC<MoreOptionsSectionProps> = ({
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
           placeholder="Add any additional notes..."
-          className="w-full rounded-md bg-neutral-100 p-3 text-body text-foreground placeholder:text-neutral-500 outline-none focus-visible:ring-1 focus-visible:ring-gold-500 resize-none dark:bg-neutral-800 dark:placeholder:text-neutral-500"
+          className="w-full rounded-md bg-neutral-100 p-3 text-[16px] text-foreground placeholder:text-neutral-500 outline-none focus-visible:ring-1 focus-visible:ring-gold-500 resize-none dark:bg-neutral-800 dark:placeholder:text-neutral-500"
           rows={3}
         />
       </div>
