@@ -16,6 +16,7 @@ type CreateTransactionInput = Omit<
 
 interface QuickExpenseSubmitDeps {
   categories: Category[];
+  transactionType: "INCOME" | "EXPENSE";
   createCategoryAsync: (data: CreateCategoryInput) => Promise<Category>;
   createTransaction: (
     data: CreateTransactionInput,
@@ -23,6 +24,8 @@ interface QuickExpenseSubmitDeps {
   ) => void;
   onSuccess: () => void;
 }
+
+const INCOME_NEW_CATEGORY_FALLBACK_COLOR = "#6366f1";
 
 export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
   return async (data: QuickExpenseFormData) => {
@@ -34,26 +37,31 @@ export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
 
     if (!category) {
       try {
+        const color =
+          deps.transactionType === "EXPENSE"
+            ? quickCategories.find((c) => c.name === data.categoryName)
+                ?.color || INCOME_NEW_CATEGORY_FALLBACK_COLOR
+            : INCOME_NEW_CATEGORY_FALLBACK_COLOR;
         category = await deps.createCategoryAsync({
           name: data.categoryName,
-          type: "EXPENSE",
-          color:
-            quickCategories.find((c) => c.name === data.categoryName)?.color ||
-            "#6366f1",
+          type: deps.transactionType,
+          color,
         });
       } catch {
         return;
       }
     }
 
+    const kindLabel =
+      deps.transactionType === "INCOME" ? "income" : "expense";
     const title =
-      data.transactionName?.trim() || `${data.categoryName} expense`;
+      data.transactionName?.trim() || `${data.categoryName} ${kindLabel}`;
 
     deps.createTransaction(
       {
         title,
         amount: numericAmount,
-        type: "EXPENSE",
+        type: deps.transactionType,
         categoryId: category.id,
         date: data.date,
         description: data.notes || undefined,

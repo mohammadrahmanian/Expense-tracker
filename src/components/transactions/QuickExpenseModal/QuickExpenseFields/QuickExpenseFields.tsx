@@ -12,21 +12,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { QuickCategorySelect } from "../QuickCategorySelect";
+import {
+  QuickCategorySelect,
+  QuickIncomeCategorySelect,
+} from "../QuickCategorySelect";
 import { type QuickExpenseFormData } from "../QuickExpenseModal.types";
 import { QuickDateChip } from "./QuickDateChip";
 import { MoreOptionsSection } from "./MoreOptionsSection";
+
+type TransactionKind = "expense" | "income";
 
 type QuickExpenseFieldsProps = {
   form: UseFormReturn<QuickExpenseFormData>;
   currencySymbol: string;
   categories: Category[];
+  transactionKind: TransactionKind;
 };
 
 export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
   form,
   currencySymbol,
   categories,
+  transactionKind,
 }) => {
   const {
     register,
@@ -42,16 +49,27 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
 
   return (
     <>
-      {/* Category Grid Section */}
-      <div className="py-6">
-        <QuickCategorySelect
-          selectedCategory={categoryName}
-          onSelect={(name) =>
-            setValue("categoryName", name, { shouldValidate: true })
-          }
-          categories={categories}
-          error={errors.categoryName?.message}
-        />
+      {/* Category Grid Section — key remounts picker so tab switch resets local UI (e.g. Other) */}
+      <div key={transactionKind} className="py-6">
+        {transactionKind === "expense" ? (
+          <QuickCategorySelect
+            selectedCategory={categoryName}
+            onSelect={(name) =>
+              setValue("categoryName", name, { shouldValidate: true })
+            }
+            categories={categories}
+            error={errors.categoryName?.message}
+          />
+        ) : (
+          <QuickIncomeCategorySelect
+            selectedCategory={categoryName}
+            onSelect={(name) =>
+              setValue("categoryName", name, { shouldValidate: true })
+            }
+            categories={categories}
+            error={errors.categoryName?.message}
+          />
+        )}
       </div>
 
       {/* Form Section */}
