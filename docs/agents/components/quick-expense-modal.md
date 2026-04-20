@@ -58,8 +58,8 @@ Flow:
 1. Parse `amount` via `normalizeAmount` (`,` → `.`) then `parseFloat`.
 2. Find category by **case-insensitive** name match in `categories`.
 3. If not found, create it via `createCategoryAsync` (`useCreateCategory`’s `mutateAsync`):
-   - EXPENSE: use color from matching `expenseCategories` entry, fallback `"#6366f1"`.
-   - INCOME: always `"#6366f1"` (`INCOME_NEW_CATEGORY_FALLBACK_COLOR`).
+   - EXPENSE: use color from the matching `expenseCategories` entry (`expenseCategories.find((c) => c.name === data.categoryName)?.color` in `QuickExpenseModal.utils.ts`); if none, `INCOME_NEW_CATEGORY_FALLBACK_COLOR` (`"#6366f1"`).
+   - INCOME: use color from the matching `incomeCategories` entry (`incomeCategories.find((c) => c.name === data.categoryName)?.color` in `QuickExpenseModal.utils.ts`); if none, `INCOME_NEW_CATEGORY_FALLBACK_COLOR` (`"#6366f1"`).
 4. Title = `transactionName.trim()` or `"{categoryName} expense|income"`.
 5. Call `createTransaction({ ... }, { onSuccess })` — only after a category exists (found or created).
 
