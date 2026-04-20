@@ -93,6 +93,6 @@ Applies when the chosen name has **no** matching API category and **`createCateg
 ## Common edit recipes
 
 - **New form field** → add to `quickExpenseSchema`, extend `defaultValues` in `QuickExpenseModal.tsx`, render in `QuickExpenseFields.tsx`, pass through to `createTransaction` payload in `QuickExpenseModal.utils.ts`.
-- **New quick category** → add to `expenseCategories` / `incomeCategories` in `QuickExpenseModal.types.ts` (icon from `lucide-react`, color for expense only).
+- **New quick category** → add an entry to `expenseCategories` or `incomeCategories` in `QuickExpenseModal.types.ts`. Each record has `name`, `icon` (from `lucide-react`), and `color` — set `color` for both lists so `createQuickExpenseSubmitHandler` in `QuickExpenseModal.utils.ts` can resolve it when auto-creating a missing category.
 - **Change submit behavior** → edit `createQuickExpenseSubmitHandler` only; keep `QuickExpenseModal.tsx` declarative.
 - **Don't** move form state out of RHF, don't add a second source of truth for `categoryName`, don't fetch categories inside child components.
