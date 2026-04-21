@@ -3,7 +3,7 @@ import { categoriesService } from "@/services/api";
 import { queryKeys } from "@/lib/query-keys";
 import { toast } from "sonner";
 import type { Category } from "@/types";
-import { createMutationErrorHandler } from "@/lib/mutation-error-handler";
+import { handleApiError } from "@/lib/error-handling";
 
 /**
  * Hook for creating a new category
@@ -25,8 +25,14 @@ import { createMutationErrorHandler } from "@/lib/mutation-error-handler";
  * };
  * ```
  */
-export function useCreateCategory() {
+export type UseCreateCategoryOptions = {
+  /** When false, errors are still logged via handleApiError but no toast (caller shows its own). Default true. */
+  showErrorToast?: boolean;
+};
+
+export function useCreateCategory(options?: UseCreateCategoryOptions) {
   const queryClient = useQueryClient();
+  const showErrorToast = options?.showErrorToast ?? true;
 
   return useMutation({
     mutationFn: (
@@ -37,9 +43,11 @@ export function useCreateCategory() {
       queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
       toast.success("Category created successfully");
     },
-    onError: createMutationErrorHandler({
-      action: "create category",
-      feature: "CATEGORIES",
-    }),
+    onError: (error) => {
+      handleApiError(error, { action: "create category", feature: "CATEGORIES" }, {
+        reportToSentry: false,
+        showToast: showErrorToast,
+      });
+    },
   });
 }

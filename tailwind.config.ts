@@ -50,6 +50,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          bg: "hsl(var(--primary-bg))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -140,7 +141,7 @@ export default {
       },
       borderRadius: {
         lg: "14px",
-        md: "var(--radius)",
+        md: "8px",
         sm: "4px",
         xl: "16px",
         icon: "12px",

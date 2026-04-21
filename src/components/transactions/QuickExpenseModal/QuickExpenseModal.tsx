@@ -2,23 +2,12 @@ import { type FC } from "react";
 import {
   ResponsiveDialog as Dialog,
   ResponsiveDialogContent as DialogContent,
-  ResponsiveDialogDescription as DialogDescription,
-  ResponsiveDialogTitle as DialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { Button } from "@/components/ui/button";
-import { currencySymbols, useCurrency } from "@/contexts/CurrencyContext";
-import { useCreateCategory } from "@/hooks/mutations/useCreateCategory";
-import { useCreateTransaction } from "@/hooks/mutations/useCreateTransaction";
-import { useCategories } from "@/hooks/queries/useCategories";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
 import { QuickExpenseFields } from "./QuickExpenseFields";
-import {
-  type QuickExpenseFormData,
-  quickExpenseSchema,
-} from "./QuickExpenseModal.types";
-import { createQuickExpenseSubmitHandler } from "./QuickExpenseModal.utils";
+import { QuickExpenseModalHeader } from "./QuickExpenseModalHeader";
+import { useQuickExpenseModal } from "./useQuickExpenseModal";
 
 type QuickExpenseModalProps = {
   isOpen: boolean;
@@ -29,56 +18,37 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { currency } = useCurrency();
-  const { data: categories = [], isLoading: categoriesLoading } =
-    useCategories("EXPENSE");
-  const createCategory = useCreateCategory();
-  const createTransaction = useCreateTransaction();
-
-  const form = useForm<QuickExpenseFormData>({
-    resolver: zodResolver(quickExpenseSchema),
-    defaultValues: {
-      transactionName: "",
-      amount: "",
-      categoryName: "",
-      date: new Date(),
-      isRecurring: false,
-      recurrenceFrequency: undefined,
-    },
-  });
-
-  const isPending = createCategory.isPending || createTransaction.isPending;
-
-  const handleClose = () => {
-    form.reset();
-    onClose();
-  };
-
-  const onSubmit = createQuickExpenseSubmitHandler({
-    categories,
-    createCategoryAsync: createCategory.mutateAsync,
-    createTransaction: createTransaction.mutate,
-    onSuccess: handleClose,
-  });
+  const {
+    form,
+    transactionKind,
+    handleTabChange,
+    title,
+    description,
+    submitLabel,
+    handleClose,
+    onSubmit,
+    isPending,
+    categoriesLoading,
+    incomeCategoriesEmpty,
+    currencySymbol,
+    activeCategories,
+  } = useQuickExpenseModal({ onClose });
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="sm:max-w-[600px]">
-        <div className="-mx-6 sm:-mt-6 flex items-center justify-between border-b border-neutral-200 px-6 py-5 dark:border-neutral-700">
-          <div className="space-y-0.5">
-            <DialogTitle className="text-[18px] font-semibold">
-              Add Expense
-            </DialogTitle>
-            <DialogDescription className="text-[13px] text-neutral-500">
-              Pick a category to get started
-            </DialogDescription>
-          </div>
-        </div>
+        <QuickExpenseModalHeader
+          title={title}
+          description={description}
+          tabValue={transactionKind}
+          onTabChange={handleTabChange}
+        />
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <QuickExpenseFields
             form={form}
-            currencySymbol={currencySymbols[currency]}
-            categories={categories}
+            currencySymbol={currencySymbol}
+            categories={activeCategories}
+            transactionKind={transactionKind}
           />
 
           <div className="-mx-6 mt-4 flex items-center gap-3 border-t border-neutral-200 px-6 pb-5 pt-4 dark:border-neutral-700">
@@ -93,10 +63,14 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
             <Button
               type="submit"
               className="flex-1"
-              disabled={isPending || categoriesLoading}
+              disabled={
+                isPending ||
+                categoriesLoading ||
+                incomeCategoriesEmpty
+              }
             >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isPending ? "Adding..." : "Add Expense"}
+              {isPending ? "Adding..." : submitLabel}
             </Button>
           </div>
         </form>

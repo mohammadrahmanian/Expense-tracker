@@ -1,7 +1,7 @@
 import { useState, type FC } from "react";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types";
-import { expenseCategories } from "../QuickExpenseModal.types";
+import { incomeCategories } from "../QuickExpenseModal.types";
 import {
   Select,
   SelectContent,
@@ -14,26 +14,28 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 
-const QUICK_NAMES = new Set(
-  expenseCategories
+const QUICK_INCOME_NAMES = new Set(
+  incomeCategories
     .filter((c) => c.name !== "Other")
     .map((c) => c.name.toLowerCase()),
 );
 
-type QuickCategorySelectProps = {
+type QuickIncomeCategorySelectProps = {
   selectedCategory: string;
   onSelect: (name: string) => void;
   categories: Category[];
   error?: string;
 };
 
-export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
+export const QuickIncomeCategorySelect: FC<QuickIncomeCategorySelectProps> = ({
   selectedCategory,
   onSelect,
   categories,
   error,
 }) => {
-  const isOtherCategory = selectedCategory !== "" && !QUICK_NAMES.has(selectedCategory.toLowerCase());
+  const isOtherCategory =
+    selectedCategory !== "" &&
+    !QUICK_INCOME_NAMES.has(selectedCategory.toLowerCase());
   const [otherExpanded, setOtherExpanded] = useState(isOtherCategory);
 
   const findCategory = (name: string) =>
@@ -55,21 +57,36 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
   };
 
   const selectedCategoryId = isOtherCategory
-    ? categories.find((c) => c.name.toLowerCase() === selectedCategory.toLowerCase())?.id
+    ? categories.find(
+        (c) => c.name.toLowerCase() === selectedCategory.toLowerCase(),
+      )?.id
     : undefined;
 
-  /** Quick grid already covers these names; only list remaining expense categories here */
   const otherSelectCategories = categories.filter(
-    (cat) => !QUICK_NAMES.has(cat.name.toLowerCase()),
+    (cat) => !QUICK_INCOME_NAMES.has(cat.name.toLowerCase()),
   );
+
+  if (categories.length === 0) {
+    return (
+      <div className="space-y-4">
+        <span className="text-overline text-neutral-500 uppercase tracking-[1.5px]">
+          Category
+        </span>
+        <p className="rounded-md border border-neutral-200 bg-neutral-50 p-4 text-[13px] text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900/40 dark:text-neutral-400">
+          You don&apos;t have any income categories yet. Add categories in your
+          category settings, then come back here to record income.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
       <span className="text-overline text-neutral-500 uppercase tracking-[1.5px]">
         Category
       </span>
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-        {expenseCategories.map((cat) => {
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+        {incomeCategories.map((cat) => {
           const Icon = cat.icon;
           const isSelected =
             cat.name === "Other"
@@ -82,9 +99,9 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
               type="button"
               onClick={() => handleCardClick(cat.name)}
               className={cn(
-                "flex flex-col items-center justify-center gap-1.5 h-20 rounded-md transition-colors cursor-pointer",
+                "flex h-20 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-md transition-colors",
                 isSelected
-                  ? "bg-gold-50 border-2 border-gold-500 text-gold-500 dark:bg-gold-500/10 dark:border-gold-500 dark:text-gold-400"
+                  ? "border-2 border-gold-500 bg-gold-50 text-gold-500 dark:bg-gold-500/10 dark:border-gold-500 dark:text-gold-400"
                   : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700",
               )}
             >
@@ -98,7 +115,10 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
       <Collapsible open={otherExpanded}>
         <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
           <div className="px-px pt-1">
-            <Select value={selectedCategoryId ?? ""} onValueChange={handleOtherSelect}>
+            <Select
+              value={selectedCategoryId ?? ""}
+              onValueChange={handleOtherSelect}
+            >
               <SelectTrigger variant="underlined">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
