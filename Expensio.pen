@@ -1,5 +1,5 @@
 {
-  "version": "2.9",
+  "version": "2.11",
   "children": [
     {
       "type": "frame",
@@ -7979,7 +7979,7 @@
                               "type": "icon_font",
                               "id": "yOvBw",
                               "name": "biIconL",
-                              "width": 669.1039999999999,
+                              "width": 765.1039999999999,
                               "height": 16,
                               "iconFontName": "lock",
                               "iconFontFamily": "lucide",
@@ -50926,6 +50926,41 @@
             },
             {
               "type": "frame",
+              "id": "ZDUyD",
+              "name": "Segment Section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "padding": [
+                20,
+                24,
+                0,
+                24
+              ],
+              "children": [
+                {
+                  "id": "QB9Ht",
+                  "type": "ref",
+                  "ref": "r:fVm0i",
+                  "width": "fill_container",
+                  "name": "seg1",
+                  "descendants": {
+                    "r:g71bp": {
+                      "fill": "$r:primary-bg",
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$r:primary"
+                      }
+                    },
+                    "r:t8MJN": {
+                      "fill": "$primary"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "PXRbu",
               "name": "Category Grid Section",
               "width": "fill_container",
@@ -51577,6 +51612,28 @@
                       "fill": "$foreground-secondary"
                     }
                   ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "fS0RT",
+              "name": "Segment Section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "padding": [
+                20,
+                24,
+                0,
+                24
+              ],
+              "children": [
+                {
+                  "id": "pw43P",
+                  "type": "ref",
+                  "ref": "r:fVm0i",
+                  "width": "fill_container",
+                  "name": "seg2"
                 }
               ]
             },
@@ -60503,7 +60560,8 @@
                           "fill": "$foreground-muted",
                           "content": "Min",
                           "fontFamily": "Space Grotesk",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -60552,7 +60610,8 @@
                           "fill": "$foreground-muted",
                           "content": "Max",
                           "fontFamily": "Space Grotesk",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -61529,5 +61588,8 @@
       "type": "color",
       "value": "#211B12"
     }
+  },
+  "imports": {
+    "r": "Expensio.lib.pen"
   }
 }

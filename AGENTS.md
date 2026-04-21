@@ -195,6 +195,24 @@ const dateFilterProps: DateFilterProps = useMemo(() => ({ ... }), [deps]);
 
 ---
 
+## Component Lookup Table
+
+Before reading a component's source, check this table. Each entry points to a short context file (`docs/agents/components/*.md`) that summarizes purpose, folder layout, state/data flow, schema, and common edit recipes — enough to work on the component **without** loading its full implementation into context.
+
+**How to use this table:**
+
+1. When a task mentions one of the components below (by name, folder, or file), **read the linked context file first** instead of opening the component's `.tsx` files.
+2. If the context file answers your question, proceed with the change. Only open the actual source files for details the context file doesn't cover (e.g. exact JSX, styling tweaks).
+3. If you edit a component's behavior, schema, folder layout, or submit/data flow, **update the matching context file in the same change** so it stays accurate. If a listed file becomes stale or wrong, fix it before continuing.
+4. When adding a new non-trivial component, create a new entry here and a matching `docs/agents/components/<name>.md` following the same shape (Purpose, Entry point, Folder layout, State & data flow, Schema if any, Submit/flow, UI notes, Common edit recipes).
+5. Never cite or rely on this table for information it doesn't contain — fall back to reading source.
+
+| Component              | Path                                                        | Context file                                                                  |
+| ---------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `QuickExpenseModal`    | `src/components/transactions/QuickExpenseModal/`            | [quick-expense-modal.md](docs/agents/components/quick-expense-modal.md)       |
+
+---
+
 ## Documentation Index
 
 - **App overview & tech stack**: [overview.md](docs/agents/overview.md) - Understanding the project
