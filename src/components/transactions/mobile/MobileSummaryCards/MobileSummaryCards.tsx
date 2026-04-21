@@ -36,7 +36,7 @@ export const MobileSummaryCards: FC<MobileSummaryCardsProps> = ({
         isLoading={isLoading}
       />
     </div>
-    <div className="flex items-center gap-2 rounded-md border border-gold-500 bg-gold-50 px-4 py-2.5 dark:bg-gold-900/40">
+    <div className="flex items-center gap-2 rounded-md border border-border bg-surface px-4 py-2.5 dark:bg-neutral-900">
       <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-primary">
         <Wallet className="h-3.5 w-3.5 text-white" />
       </div>
