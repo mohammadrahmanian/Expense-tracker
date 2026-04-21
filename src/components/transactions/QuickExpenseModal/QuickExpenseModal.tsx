@@ -1,27 +1,13 @@
-import { type FC, useState } from "react";
+import { type FC } from "react";
 import {
   ResponsiveDialog as Dialog,
   ResponsiveDialogContent as DialogContent,
-  ResponsiveDialogDescription as DialogDescription,
-  ResponsiveDialogTitle as DialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { Button } from "@/components/ui/button";
-import { Segment, SegmentItem, SegmentList } from "@/components/ui/segment";
-import { currencySymbols, useCurrency } from "@/contexts/CurrencyContext";
-import { useCreateCategory } from "@/hooks/mutations/useCreateCategory";
-import { useCreateTransaction } from "@/hooks/mutations/useCreateTransaction";
-import { useCategories } from "@/hooks/queries/useCategories";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
 import { QuickExpenseFields } from "./QuickExpenseFields";
-import {
-  type QuickExpenseFormData,
-  quickExpenseSchema,
-} from "./QuickExpenseModal.types";
-import { createQuickExpenseSubmitHandler } from "./QuickExpenseModal.utils";
-
-type TransactionKind = "expense" | "income";
+import { QuickExpenseModalHeader } from "./QuickExpenseModalHeader";
+import { useQuickExpenseModal } from "./useQuickExpenseModal";
 
 type QuickExpenseModalProps = {
   isOpen: boolean;
@@ -32,105 +18,35 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { currency } = useCurrency();
-  const [transactionKind, setTransactionKind] =
-    useState<TransactionKind>("expense");
-
   const {
-    data: apiExpenseCategories = [],
-    isLoading: expenseCategoriesLoading,
-  } = useCategories("EXPENSE");
-  const {
-    data: apiIncomeCategories = [],
-    isLoading: incomeCategoriesLoading,
-  } = useCategories("INCOME");
-
-  const createCategory = useCreateCategory({ showErrorToast: false });
-  const createTransaction = useCreateTransaction();
-
-  const form = useForm<QuickExpenseFormData>({
-    resolver: zodResolver(quickExpenseSchema),
-    defaultValues: {
-      transactionName: "",
-      amount: "",
-      categoryName: "",
-      date: new Date(),
-      isRecurring: false,
-      recurrenceFrequency: undefined,
-    },
-  });
-
-  const isPending = createCategory.isPending || createTransaction.isPending;
-
-  const activeCategories =
-    transactionKind === "income"
-      ? apiIncomeCategories
-      : apiExpenseCategories;
-  const categoriesLoading =
-    transactionKind === "income"
-      ? incomeCategoriesLoading
-      : expenseCategoriesLoading;
-
-  const incomeCategoriesEmpty =
-    transactionKind === "income" && apiIncomeCategories.length === 0;
-
-  const handleClose = () => {
-    form.reset();
-    setTransactionKind("expense");
-    onClose();
-  };
-
-  const onSubmit = createQuickExpenseSubmitHandler({
-    categories: activeCategories,
-    transactionType: transactionKind === "income" ? "INCOME" : "EXPENSE",
-    createCategoryAsync: createCategory.mutateAsync,
-    createTransaction: createTransaction.mutate,
-    onSuccess: handleClose,
-  });
-
-  const handleTabChange = (value: string) => {
-    if (value !== "expense" && value !== "income") return;
-    setTransactionKind(value);
-    form.setValue("categoryName", "", { shouldValidate: false });
-    form.clearErrors("categoryName");
-  };
-
-  const title =
-    transactionKind === "income" ? "Add Income" : "Add Expense";
-  const description =
-    transactionKind === "income"
-      ? "Pick an income category to get started"
-      : "Pick a category to get started";
-  const submitLabel =
-    transactionKind === "income" ? "Add Income" : "Add Expense";
+    form,
+    transactionKind,
+    handleTabChange,
+    title,
+    description,
+    submitLabel,
+    handleClose,
+    onSubmit,
+    isPending,
+    categoriesLoading,
+    incomeCategoriesEmpty,
+    currencySymbol,
+    activeCategories,
+  } = useQuickExpenseModal({ onClose });
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="sm:max-w-[600px]">
-        <div className="-mx-6 sm:-mt-6 flex flex-col gap-4 border-b border-neutral-200 px-6 py-5 dark:border-neutral-700">
-          <div className="space-y-0.5">
-            <DialogTitle className="text-[18px] font-semibold">
-              {title}
-            </DialogTitle>
-            <DialogDescription className="text-[13px] text-neutral-500">
-              {description}
-            </DialogDescription>
-          </div>
-          <Segment value={transactionKind} onValueChange={handleTabChange}>
-            <SegmentList>
-              <SegmentItem value="expense" variant="default">
-                Expense
-              </SegmentItem>
-              <SegmentItem value="income" variant="default">
-                Income
-              </SegmentItem>
-            </SegmentList>
-          </Segment>
-        </div>
+        <QuickExpenseModalHeader
+          title={title}
+          description={description}
+          tabValue={transactionKind}
+          onTabChange={handleTabChange}
+        />
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <QuickExpenseFields
             form={form}
-            currencySymbol={currencySymbols[currency]}
+            currencySymbol={currencySymbol}
             categories={activeCategories}
             transactionKind={transactionKind}
           />
