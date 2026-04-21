@@ -13,7 +13,7 @@ Modal dialog that lets the user create **one** transaction (Expense **or** Incom
 
 ## Folder layout
 
-```
+```text
 QuickExpenseModal/
 ├── QuickExpenseModal.tsx             # smart container: dialog shell, tabs, form, submit
 ├── QuickExpenseModal.types.ts        # Zod schema + fixed category lists
