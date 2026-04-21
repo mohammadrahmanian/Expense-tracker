@@ -27,7 +27,7 @@ interface QuickExpenseSubmitDeps {
   onSuccess: () => void;
 }
 
-const INCOME_NEW_CATEGORY_FALLBACK_COLOR = "#6366f1";
+const NEW_CATEGORY_FALLBACK_COLOR = "#6366f1";
 
 export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
   return async (data: QuickExpenseFormData) => {
@@ -41,10 +41,14 @@ export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
       try {
         const color =
           deps.transactionType === "EXPENSE"
-            ? expenseCategories.find((c) => c.name === data.categoryName)
-                ?.color || INCOME_NEW_CATEGORY_FALLBACK_COLOR
-            : incomeCategories.find((c) => c.name === data.categoryName)
-                ?.color || INCOME_NEW_CATEGORY_FALLBACK_COLOR;
+            ? expenseCategories.find(
+                (c) =>
+                  c.name.toLowerCase() === data.categoryName.toLowerCase(),
+              )?.color || NEW_CATEGORY_FALLBACK_COLOR
+            : incomeCategories.find(
+                (c) =>
+                  c.name.toLowerCase() === data.categoryName.toLowerCase(),
+              )?.color || NEW_CATEGORY_FALLBACK_COLOR;
         category = await deps.createCategoryAsync({
           name: data.categoryName,
           type: deps.transactionType,
