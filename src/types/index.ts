@@ -10,6 +10,11 @@ export interface Category {
   name: string;
   color: string;
   type: "INCOME" | "EXPENSE";
+  /** Lucide icon name, e.g. "utensils" */
+  icon?: string;
+  parentId?: string | null;
+  /** Monthly budget in USD */
+  monthlyBudget?: number | null;
 }
 
 export interface Transaction {

@@ -1,9 +1,11 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { CategoryFormDialog } from "@/components/categories/CategoryFormDialog";
 import { CategoryList } from "@/components/categories/CategoryList";
+import { Button } from "@/components/ui/button";
 import { Category } from "@/types";
 import { useCategories } from "@/hooks/queries/useCategories";
 import { useDeleteCategory } from "@/hooks/mutations/useDeleteCategory";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 
 const Categories = () => {
@@ -50,13 +52,21 @@ const Categories = () => {
       )}
       {!isLoading && !error && (
         <div className="space-y-6">
-          <div className="flex justify-end items-center">
+          <div className="flex justify-end items-center gap-2">
+            <Button
+              onClick={() => {
+                setEditingCategory(undefined);
+                setIsFormOpen(true);
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Category
+            </Button>
             <CategoryFormDialog
               isOpen={isFormOpen}
               onOpenChange={setIsFormOpen}
               editingCategory={editingCategory}
               onSuccess={handleFormSuccess}
-              onNewClick={() => setEditingCategory(undefined)}
             />
           </div>
           <CategoryList
