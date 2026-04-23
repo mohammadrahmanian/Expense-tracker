@@ -37,6 +37,7 @@ export const IconPicker: FC<IconPickerProps> = ({ value, onChange, error }) => (
                 "flex h-12 items-center justify-center rounded-md border border-border bg-surface transition-shadow",
                 selected && "border-primary ring-2 ring-primary-bg ring-offset-0 dark:ring-primary/40",
               )}
+              aria-label={name}
               aria-pressed={selected}
             >
               <Icon className={cn("h-5 w-5", selected ? "text-primary" : "text-neutral-600 dark:text-neutral-400")} />
@@ -56,6 +57,7 @@ export const IconPicker: FC<IconPickerProps> = ({ value, onChange, error }) => (
                 "flex h-12 items-center justify-center rounded-md border border-border bg-surface transition-shadow",
                 selected && "border-primary ring-2 ring-primary-bg ring-offset-0 dark:ring-primary/40",
               )}
+              aria-label={name}
               aria-pressed={selected}
             >
               <Icon className={cn("h-5 w-5", selected ? "text-primary" : "text-neutral-600 dark:text-neutral-400")} />
