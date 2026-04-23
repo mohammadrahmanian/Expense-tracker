@@ -1,4 +1,4 @@
-import { type FC } from "react";
+import { type FC, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { currencySymbols, useCurrency } from "@/contexts/CurrencyContext";
@@ -21,6 +21,16 @@ export const MonthlyBudgetField: FC<MonthlyBudgetFieldProps> = ({ value, onChang
   const { currency } = useCurrency();
   const symbol = currencySymbols[currency];
 
+  const [inputValue, setInputValue] = useState(() => (value === null ? "" : String(value)));
+
+  useEffect(() => {
+    setInputValue(value === null ? "" : String(value));
+  }, [value]);
+
+  const commitParsed = () => {
+    onChange(parseBudget(inputValue));
+  };
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-1">
       <div className="flex items-center justify-between">
@@ -42,8 +52,14 @@ export const MonthlyBudgetField: FC<MonthlyBudgetFieldProps> = ({ value, onChang
           inputMode="decimal"
           placeholder="0.00"
           className="h-9 flex-1 border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
-          value={value === null ? "" : String(value)}
-          onChange={(e) => onChange(parseBudget(e.target.value))}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onBlur={commitParsed}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              commitParsed();
+            }
+          }}
         />
         <span className="shrink-0 text-[11px] text-muted-foreground">/ month</span>
       </div>
