@@ -8,7 +8,8 @@ import { createMutationErrorHandler } from "@/lib/mutation-error-handler";
 /**
  * Hook for creating a new transaction
  *
- * Automatically invalidates transactions and dashboard queries on success.
+ * On success, automatically invalidates React Query caches for transactions,
+ * categories, dashboard, and reports so dependent views refetch fresh data.
  *
  * @returns Mutation function and status
  *
@@ -35,7 +36,7 @@ export function useCreateTransaction() {
       data: Omit<Transaction, "id" | "createdAt" | "updatedAt" | "userId">,
     ) => transactionsService.create(data),
     onSuccess: () => {
-      // Invalidate queries to refetch updated data
+      // Invalidate transactions, categories, dashboard, and reports
       queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
