@@ -16,7 +16,6 @@ export function useCategoriesPage() {
     isLoading: totalsLoading,
     error: totalsError,
   } = useMonthlyCategoryTotals();
-  console.log("data", totalsByCategoryId);
   const deleteCategory = useDeleteCategory();
 
   const searchLower = search.trim().toLowerCase();
