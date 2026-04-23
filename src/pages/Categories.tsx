@@ -1,94 +1,75 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { CategoriesPageHeader } from "@/components/categories/CategoriesPageHeader";
+import { CategoryCardGrid } from "@/components/categories/CategoryCardGrid";
 import { CategoryFormDialog } from "@/components/categories/CategoryFormDialog";
-import { CategoryList } from "@/components/categories/CategoryList";
-import { Button } from "@/components/ui/button";
-import { Category } from "@/types";
-import { useCategories } from "@/hooks/queries/useCategories";
-import { useDeleteCategory } from "@/hooks/mutations/useDeleteCategory";
-import { Plus } from "lucide-react";
-import { useState } from "react";
+import { CategorySearchField } from "@/components/categories/CategorySearchField";
+import { CategoryStatsRow } from "@/components/categories/CategoryStatsRow";
+import { CategoryTypeTabs } from "@/components/categories/CategoryTypeTabs";
+import { useCategoriesPage } from "@/hooks/useCategoriesPage";
 
-const Categories = () => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | undefined>();
-
-  const { data: categories = [], isLoading, error } = useCategories();
-  const deleteCategory = useDeleteCategory();
-
-  const handleEdit = (category: Category) => {
-    setEditingCategory(category);
-    setIsFormOpen(true);
-  };
-
-  const handleDelete = async (categoryId: string) => {
-    if (confirm("Are you sure you want to delete this category? This action cannot be undone.")) {
-      try {
-        await deleteCategory.mutateAsync(categoryId);
-      } catch {
-        // Error toast handled by mutation hook
-      }
-    }
-  };
-
-  const handleFormSuccess = () => {
-    setIsFormOpen(false);
-    setEditingCategory(undefined);
-  };
-
-  const incomeCategories = categories.filter((cat) => cat.type === "INCOME");
-  const expenseCategories = categories.filter((cat) => cat.type === "EXPENSE");
+export const Categories = () => {
+  const {
+    activeType,
+    setActiveType,
+    search,
+    setSearch,
+    isFormOpen,
+    setIsFormOpen,
+    editingCategory,
+    totalsByCategoryId,
+    visibleCategories,
+    totalCount,
+    totalBudget,
+    totalAmount,
+    emptyMessage,
+    handleEdit,
+    handleDelete,
+    handleFormSuccess,
+    openAdd,
+    isBusy,
+    loadError,
+  } = useCategoriesPage();
 
   return (
     <DashboardLayout>
-      {isLoading && (
-        <div className="flex items-center justify-center h-64">
-          <p className="text-gray-500 dark:text-gray-400">Loading categories...</p>
+      {isBusy && (
+        <div className="flex h-64 items-center justify-center">
+          <p className="text-muted-foreground">Loading categories...</p>
         </div>
       )}
-      {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
-          <p className="text-red-600 dark:text-red-400">Failed to load categories. Please try again.</p>
+      {loadError && !isBusy && (
+        <div className="mb-4 rounded-lg border border-danger-300 bg-danger-50 p-4 dark:border-danger-700 dark:bg-danger-950/30">
+          <p className="text-danger-500">
+            Failed to load categories. Please try again.
+          </p>
         </div>
       )}
-      {!isLoading && !error && (
-        <div className="space-y-6">
-          <div className="flex justify-end items-center gap-2">
-            <Button
-              onClick={() => {
-                setEditingCategory(undefined);
-                setIsFormOpen(true);
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Category
-            </Button>
-            <CategoryFormDialog
-              isOpen={isFormOpen}
-              onOpenChange={setIsFormOpen}
-              editingCategory={editingCategory}
-              onSuccess={handleFormSuccess}
-            />
-          </div>
-          <CategoryList
-            title="Income Categories"
-            categories={incomeCategories}
-            indicatorColor="#22c55e"
-            emptyMessage="No income categories yet. Create your first one!"
+      {!isBusy && !loadError && (
+        <div className="flex flex-col gap-6">
+          <CategoriesPageHeader onAdd={openAdd} />
+          <CategoryTypeTabs value={activeType} onChange={setActiveType} />
+          <CategorySearchField value={search} onChange={setSearch} />
+          <CategoryStatsRow
+            totalCount={totalCount}
+            totalBudget={totalBudget}
+            totalAmount={totalAmount}
+            type={activeType}
+          />
+          <CategoryCardGrid
+            categories={visibleCategories}
+            totalsByCategoryId={totalsByCategoryId}
+            emptyMessage={emptyMessage}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
-          <CategoryList
-            title="Expense Categories"
-            categories={expenseCategories}
-            indicatorColor="#ef4444"
-            emptyMessage="No expense categories yet. Create your first one!"
-            onEdit={handleEdit}
-            onDelete={handleDelete}
+          <CategoryFormDialog
+            isOpen={isFormOpen}
+            onOpenChange={setIsFormOpen}
+            editingCategory={editingCategory}
+            onSuccess={handleFormSuccess}
           />
         </div>
       )}
     </DashboardLayout>
   );
 };
-
-export default Categories;

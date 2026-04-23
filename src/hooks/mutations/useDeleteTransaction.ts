@@ -30,6 +30,7 @@ export function useDeleteTransaction() {
     onSuccess: () => {
       // Invalidate queries to refetch updated data
       queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.reports.all });
       toast.success("Transaction deleted successfully");
