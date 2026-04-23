@@ -36,13 +36,31 @@ export const useCategoryForm = (
     }
   }, [watchedType, watchedParentId, categories, setValue]);
 
-  const parentOptions = useMemo(
-    () =>
-      categories.filter(
-        (c) => c.type === watchedType && (!editingId || c.id !== editingId),
-      ),
-    [categories, watchedType, editingId],
-  );
+  const parentOptions = useMemo(() => {
+    const excludedForCycle = new Set<string>();
+    if (editingId) {
+      excludedForCycle.add(editingId);
+      const childrenByParent = new Map<string, string[]>();
+      for (const c of categories) {
+        const p = c.parentId ?? null;
+        if (p == null) continue;
+        const list = childrenByParent.get(p);
+        if (list) list.push(c.id);
+        else childrenByParent.set(p, [c.id]);
+      }
+      const stack = [...(childrenByParent.get(editingId) ?? [])];
+      while (stack.length > 0) {
+        const id = stack.pop()!;
+        if (excludedForCycle.has(id)) continue;
+        excludedForCycle.add(id);
+        const kids = childrenByParent.get(id);
+        if (kids) for (const kid of kids) stack.push(kid);
+      }
+    }
+    return categories.filter(
+      (c) => c.type === watchedType && !excludedForCycle.has(c.id),
+    );
+  }, [categories, watchedType, editingId]);
 
   useEffect(() => {
     if (!isOpen) return;
