@@ -1,26 +1,35 @@
 import { useQuery } from "@tanstack/react-query";
+import { endOfMonth, startOfMonth } from "date-fns";
 import { transactionsService } from "@/services/api";
 import { queryKeys } from "@/lib/query-keys";
 import type { Transaction } from "@/types";
 
-/** Sum of amounts and transaction count per category for the current UTC month. */
+/** Sum of amounts and transaction count per category for the current local month. */
 export type MonthlyCategoryTotals = Record<
   string,
   { spent: number; count: number }
 >;
 
-function currentUtcYearMonth(): { year: number; month: number } {
-  const now = new Date();
-  return { year: now.getUTCFullYear(), month: now.getUTCMonth() };
-}
-
-function monthRangeIso(year: number, month: number): {
+/**
+ * Resolves the current month range in the user's local timezone and serializes
+ * the boundaries to ISO (UTC) strings so stored UTC timestamps are compared
+ * against the user's local month. This is the single source of truth for the
+ * month range used by {@link useMonthlyCategoryTotals}.
+ */
+export function getLocalMonthRange(now: Date = new Date()): {
+  year: number;
+  month: number;
   fromDate: string;
   toDate: string;
 } {
-  const from = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
-  const to = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
-  return { fromDate: from.toISOString(), toDate: to.toISOString() };
+  const start = startOfMonth(now);
+  const end = endOfMonth(now);
+  return {
+    year: start.getFullYear(),
+    month: start.getMonth(),
+    fromDate: start.toISOString(),
+    toDate: end.toISOString(),
+  };
 }
 
 async function fetchTransactionsInRange(
@@ -62,15 +71,17 @@ function aggregateByCategory(transactions: Transaction[]): MonthlyCategoryTotals
 }
 
 /**
- * Fetches all transactions in the current UTC month and aggregates amount + count per categoryId.
+ * Fetches all transactions in the current local-timezone month and aggregates
+ * amount + count per categoryId. The month range is derived via
+ * {@link getLocalMonthRange} so stored UTC timestamps map to the user's local
+ * month for budget comparisons (no off-by-one for negative UTC offsets).
  */
 export function useMonthlyCategoryTotals() {
-  const { year, month } = currentUtcYearMonth();
+  const { year, month, fromDate, toDate } = getLocalMonthRange();
 
   return useQuery({
     queryKey: queryKeys.categories.monthlyTotals(year, month),
     queryFn: async (): Promise<MonthlyCategoryTotals> => {
-      const { fromDate, toDate } = monthRangeIso(year, month);
       const transactions = await fetchTransactionsInRange(fromDate, toDate);
       return aggregateByCategory(transactions);
     },

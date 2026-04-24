@@ -26,25 +26,26 @@ export const Categories = () => {
     handleDelete,
     handleFormSuccess,
     openAdd,
-    isBusy,
+    isLoading,
+    totalsLoading,
     loadError,
   } = useCategoriesPage();
 
   return (
     <DashboardLayout>
-      {isBusy && (
+      {isLoading && (
         <div className="flex h-64 items-center justify-center">
           <p className="text-muted-foreground">Loading categories...</p>
         </div>
       )}
-      {loadError && !isBusy && (
+      {loadError && !isLoading && (
         <div className="mb-4 rounded-lg border border-danger-300 bg-danger-50 p-4 dark:border-danger-700 dark:bg-danger-950/30">
           <p className="text-danger-500">
             Failed to load categories. Please try again.
           </p>
         </div>
       )}
-      {!isBusy && !loadError && (
+      {!isLoading && !loadError && (
         <div className="flex flex-col gap-6">
           <CategoriesPageHeader onAdd={openAdd} />
           <CategoryTypeTabs value={activeType} onChange={setActiveType} />
@@ -58,6 +59,7 @@ export const Categories = () => {
           <CategoryCardGrid
             categories={visibleCategories}
             totalsByCategoryId={totalsByCategoryId}
+            totalsLoading={totalsLoading}
             emptyMessage={emptyMessage}
             onEdit={handleEdit}
             onDelete={handleDelete}

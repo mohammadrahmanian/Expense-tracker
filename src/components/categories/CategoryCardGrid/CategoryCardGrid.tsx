@@ -6,6 +6,7 @@ import { CategoryCard } from "@/components/categories/CategoryCard";
 type CategoryCardGridProps = {
   categories: Category[];
   totalsByCategoryId: MonthlyCategoryTotals;
+  totalsLoading: boolean;
   emptyMessage: string;
   onEdit: (category: Category) => void;
   onDelete: (categoryId: string) => void;
@@ -14,6 +15,7 @@ type CategoryCardGridProps = {
 export const CategoryCardGrid: FC<CategoryCardGridProps> = ({
   categories,
   totalsByCategoryId,
+  totalsLoading,
   emptyMessage,
   onEdit,
   onDelete,
@@ -36,6 +38,7 @@ export const CategoryCardGrid: FC<CategoryCardGridProps> = ({
             category={category}
             monthlySpent={t.spent}
             monthlyCount={t.count}
+            totalsLoading={totalsLoading}
             onEdit={onEdit}
             onDelete={onDelete}
           />

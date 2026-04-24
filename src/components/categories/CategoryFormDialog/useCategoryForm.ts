@@ -82,7 +82,10 @@ export const useCategoryForm = (
   }, [isOpen, editingCategory, reset]);
 
   const onSubmit = async (data: CategoryFormData) => {
-    const payload = { ...data, budgetPeriod: "MONTHLY" as const };
+    const payload = {
+      ...data,
+      budgetPeriod: data.budgetAmount == null ? null : ("MONTHLY" as const),
+    };
     try {
       if (editingCategory) {
         await updateCategory.mutateAsync({ id: editingCategory.id, updates: payload });

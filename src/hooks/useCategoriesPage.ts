@@ -11,11 +11,8 @@ export function useCategoriesPage() {
   const [editingCategory, setEditingCategory] = useState<Category | undefined>();
 
   const { data: categories = [], isLoading, error } = useCategories();
-  const {
-    data: totalsByCategoryId = {},
-    isLoading: totalsLoading,
-    error: totalsError,
-  } = useMonthlyCategoryTotals();
+  const { data: totalsByCategoryId = {}, isLoading: totalsLoading } =
+    useMonthlyCategoryTotals();
   const deleteCategory = useDeleteCategory();
 
   const searchLower = search.trim().toLowerCase();
@@ -98,7 +95,10 @@ export function useCategoriesPage() {
     handleDelete,
     handleFormSuccess,
     openAdd,
+    isLoading,
+    totalsLoading,
+    /** True while categories or monthly totals are loading (for callers that need combined pending state). */
     isBusy: isLoading || totalsLoading,
-    loadError: error ?? totalsError,
+    loadError: error,
   };
 }

@@ -4,6 +4,7 @@ import {
   ResponsiveDialogContent as DialogContent,
   ResponsiveDialogTitle as DialogTitle,
 } from "@/components/ui/responsive-dialog";
+import { useMonthlyCategoryTotals } from "@/hooks/queries/useMonthlyCategoryTotals";
 import { Category } from "@/types";
 import { FormPanel } from "./FormPanel";
 import { LivePreviewPanel } from "./LivePreviewPanel";
@@ -34,6 +35,12 @@ export const CategoryFormDialog: FC<CategoryFormDialogProps> = ({
     categories,
   } = useCategoryForm(isOpen, editingCategory, onSuccess, onOpenChange);
 
+  const { data: monthlyTotals } = useMonthlyCategoryTotals();
+  const spent =
+    editingCategory != null
+      ? (monthlyTotals?.[editingCategory.id]?.spent ?? 0)
+      : 0;
+
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="overflow-hidden p-0 sm:bottom-auto sm:max-h-[90vh] sm:max-w-[900px]">
@@ -47,6 +54,7 @@ export const CategoryFormDialog: FC<CategoryFormDialogProps> = ({
             color={watch("color")}
             parentId={watch("parentId")}
             budgetAmount={watch("budgetAmount")}
+            spent={spent}
             categories={categories}
           />
           <FormPanel
