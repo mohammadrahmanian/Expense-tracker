@@ -14,7 +14,7 @@ const parseBudget = (raw: string): number | null => {
   if (raw === "" || raw === ".") return null;
   const n = Number.parseFloat(raw);
   if (!Number.isFinite(n)) return null;
-  return n;
+  return Math.max(0, n);
 };
 
 export const MonthlyBudgetField: FC<MonthlyBudgetFieldProps> = ({ value, onChange, error }) => {

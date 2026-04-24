@@ -25,7 +25,7 @@ export const LivePreviewPanel: FC<LivePreviewPanelProps> = ({
   const { formatAmount } = useCurrency();
   const Icon = ICON_BY_NAME[iconName] ?? ICON_BY_NAME["utensils"];
   const parentLabel = parentId
-    ? categories.find((c) => c.id === parentId)?.name ?? "Category"
+    ? categories.find((c) => c.id === parentId)?.name ?? "Unresolved parent category"
     : "Top-level category";
   const budgetCap = budgetAmount ?? 0;
 

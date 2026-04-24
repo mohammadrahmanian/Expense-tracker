@@ -4,6 +4,9 @@ import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import { COLOR_OPTIONS } from "../CategoryFormDialog.constants";
 
+/** Values accepted by native `<input type="color">` (exactly # + 6 hex digits). */
+const FULL_HEX_COLOR_RE = /^#[0-9A-Fa-f]{6}$/;
+
 type ColorPickerProps = {
   value: string;
   onChange: (color: string) => void;
@@ -12,8 +15,7 @@ type ColorPickerProps = {
 
 export const ColorPicker: FC<ColorPickerProps> = ({ value, onChange, error }) => {
   const colorInputRef = useRef<HTMLInputElement>(null);
-  const pickerValue =
-    value.startsWith("#") && value.length >= 4 ? value : COLOR_OPTIONS[0];
+  const pickerValue = FULL_HEX_COLOR_RE.test(value) ? value : COLOR_OPTIONS[0];
 
   return (
     <div className="flex flex-col gap-2.5">
