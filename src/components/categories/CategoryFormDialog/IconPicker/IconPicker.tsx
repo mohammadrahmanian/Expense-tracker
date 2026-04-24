@@ -26,6 +26,7 @@ export const IconPicker: FC<IconPickerProps> = ({ value, onChange, error }) => (
     <div className="grid grid-cols-7 gap-2">
       {ICON_OPTIONS.map(({ name, Icon }) => {
         const selected = value === name;
+        const iconLabel = `Select ${name.replace(/-/g, " ")} icon`;
         return (
           <button
             key={name}
@@ -35,10 +36,13 @@ export const IconPicker: FC<IconPickerProps> = ({ value, onChange, error }) => (
               "flex h-12 items-center justify-center rounded-md border border-border bg-surface transition-shadow",
               selected && "border-primary ring-2 ring-primary-bg ring-offset-0 dark:ring-primary/40",
             )}
-            aria-label={name}
+            aria-label={iconLabel}
             aria-pressed={selected}
           >
-            <Icon className={cn("h-5 w-5", selected ? "text-primary" : "text-neutral-600 dark:text-neutral-400")} />
+            <Icon
+              className={cn("h-5 w-5", selected ? "text-primary" : "text-neutral-600 dark:text-neutral-400")}
+              aria-hidden
+            />
           </button>
         );
       })}
