@@ -26,7 +26,7 @@ export function useCategoriesPage() {
         searchLower ? c.name.toLowerCase().includes(searchLower) : true,
       );
       const budget = ofType.reduce(
-        (sum, c) => sum + (c.monthlyBudget ?? 0),
+        (sum, c) => sum + (c.budgetAmount ?? 0),
         0,
       );
       const amount = ofType.reduce(

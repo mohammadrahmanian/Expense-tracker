@@ -53,6 +53,7 @@ export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
           name: data.categoryName,
           type: deps.transactionType,
           color,
+          budgetPeriod: "MONTHLY",
         });
       } catch {
         toast.error("Category creation failed. Try again!");

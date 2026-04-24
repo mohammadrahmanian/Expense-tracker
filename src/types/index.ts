@@ -13,8 +13,10 @@ export interface Category {
   /** Lucide icon name, e.g. "utensils" */
   icon?: string;
   parentId?: string | null;
-  /** Monthly budget in USD */
-  monthlyBudget?: number | null;
+  /** Budget amount in account currency */
+  budgetAmount?: number | null;
+  /** How often the budget applies (API may add more values later) */
+  budgetPeriod?: "MONTHLY" | null;
 }
 
 export interface Transaction {

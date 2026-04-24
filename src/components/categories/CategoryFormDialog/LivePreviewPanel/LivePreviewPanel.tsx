@@ -10,7 +10,7 @@ type LivePreviewPanelProps = {
   iconName: string;
   color: string;
   parentId: string | null;
-  monthlyBudget: number | null;
+  budgetAmount: number | null;
   categories: Category[];
 };
 
@@ -19,7 +19,7 @@ export const LivePreviewPanel: FC<LivePreviewPanelProps> = ({
   iconName,
   color,
   parentId,
-  monthlyBudget,
+  budgetAmount,
   categories,
 }) => {
   const { formatAmount } = useCurrency();
@@ -27,7 +27,7 @@ export const LivePreviewPanel: FC<LivePreviewPanelProps> = ({
   const parentLabel = parentId
     ? categories.find((c) => c.id === parentId)?.name ?? "Category"
     : "Top-level category";
-  const budgetCap = monthlyBudget ?? 0;
+  const budgetCap = budgetAmount ?? 0;
 
   return (
     <aside className="hidden w-[320px] shrink-0 flex-col justify-between gap-6 bg-primary-bg p-7 sm:flex">

@@ -32,7 +32,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({
   const { formatAmount } = useCurrency();
   const iconName = category.icon ?? "utensils";
   const Icon = ICON_BY_NAME[iconName] ?? ICON_BY_NAME["utensils"];
-  const budget = category.monthlyBudget ?? null;
+  const budget = category.budgetAmount ?? null;
   const pct = budgetProgressPercent(monthlySpent, budget);
   const amountVerb = category.type === "EXPENSE" ? "spent" : "earned";
 

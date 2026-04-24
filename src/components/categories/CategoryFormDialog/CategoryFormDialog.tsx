@@ -46,7 +46,7 @@ export const CategoryFormDialog: FC<CategoryFormDialogProps> = ({
             iconName={watch("icon")}
             color={watch("color")}
             parentId={watch("parentId")}
-            monthlyBudget={watch("monthlyBudget")}
+            budgetAmount={watch("budgetAmount")}
             categories={categories}
           />
           <FormPanel

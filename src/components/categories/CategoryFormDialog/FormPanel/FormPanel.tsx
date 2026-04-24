@@ -72,9 +72,9 @@ export const FormPanel: FC<FormPanelProps> = ({
             error={errors.parentId?.message}
           />
           <MonthlyBudgetField
-            value={watch("monthlyBudget")}
-            onChange={(v) => setValue("monthlyBudget", v, { shouldValidate: true })}
-            error={errors.monthlyBudget?.message}
+            value={watch("budgetAmount")}
+            onChange={(v) => setValue("budgetAmount", v, { shouldValidate: true })}
+            error={errors.budgetAmount?.message}
           />
         </div>
       </div>

@@ -54,7 +54,7 @@ export const DEFAULT_CATEGORY_FORM = {
   color: COLOR_OPTIONS[0],
   icon: "utensils",
   parentId: null as string | null,
-  monthlyBudget: null as number | null,
+  budgetAmount: null as number | null,
 };
 
 export const ICON_BY_NAME = Object.fromEntries(

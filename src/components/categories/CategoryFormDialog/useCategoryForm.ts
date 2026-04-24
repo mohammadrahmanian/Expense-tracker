@@ -71,10 +71,10 @@ export const useCategoryForm = (
         color: editingCategory.color,
         icon: editingCategory.icon ?? DEFAULT_CATEGORY_FORM.icon,
         parentId: editingCategory.parentId ?? null,
-        monthlyBudget:
-          editingCategory.monthlyBudget === undefined
+        budgetAmount:
+          editingCategory.budgetAmount === undefined
             ? null
-            : editingCategory.monthlyBudget,
+            : editingCategory.budgetAmount,
       });
     } else {
       reset({ ...DEFAULT_CATEGORY_FORM });
@@ -82,11 +82,12 @@ export const useCategoryForm = (
   }, [isOpen, editingCategory, reset]);
 
   const onSubmit = async (data: CategoryFormData) => {
+    const payload = { ...data, budgetPeriod: "MONTHLY" as const };
     try {
       if (editingCategory) {
-        await updateCategory.mutateAsync({ id: editingCategory.id, updates: data });
+        await updateCategory.mutateAsync({ id: editingCategory.id, updates: payload });
       } else {
-        await createCategory.mutateAsync(data);
+        await createCategory.mutateAsync(payload);
       }
       reset({ ...DEFAULT_CATEGORY_FORM });
       onSuccess();
