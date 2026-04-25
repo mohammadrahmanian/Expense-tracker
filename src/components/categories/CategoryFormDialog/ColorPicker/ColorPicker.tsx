@@ -1,27 +1,11 @@
-import { type FC } from "react";
-import { Input } from "@/components/ui/input";
+import { type FC, useRef } from "react";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+import { Plus } from "lucide-react";
+import { COLOR_OPTIONS } from "../CategoryFormDialog.constants";
 
-const PREDEFINED_COLORS = [
-  "#FF6B6B",
-  "#4ECDC4",
-  "#45B7D1",
-  "#96CEB4",
-  "#FFEAA7",
-  "#DDA0DD",
-  "#00B894",
-  "#00CEC9",
-  "#6C5CE7",
-  "#A29BFE",
-  "#FD79A8",
-  "#FDCB6E",
-  "#E17055",
-  "#81ECEC",
-  "#74B9FF",
-  "#55A3FF",
-  "#FF7675",
-  "#E84393",
-];
+/** Values accepted by native `<input type="color">` (exactly # + 6 hex digits). */
+const FULL_HEX_COLOR_RE = /^#[0-9A-Fa-f]{6}$/;
 
 type ColorPickerProps = {
   value: string;
@@ -29,39 +13,49 @@ type ColorPickerProps = {
   error?: string;
 };
 
-export const ColorPicker: FC<ColorPickerProps> = ({
-  value,
-  onChange,
-  error,
-}) => (
-  <div className="space-y-2">
-    <Label>Color</Label>
-    <div className="space-y-3">
-      <div className="flex items-center space-x-2">
-        <div
-          className="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-600"
-          style={{ backgroundColor: value }}
-        />
-        <Input
+export const ColorPicker: FC<ColorPickerProps> = ({ value, onChange, error }) => {
+  const colorInputRef = useRef<HTMLInputElement>(null);
+  const pickerValue = FULL_HEX_COLOR_RE.test(value) ? value : COLOR_OPTIONS[0];
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      <Label className="text-xs font-semibold text-foreground">Color</Label>
+      <div className="flex flex-wrap items-center gap-2.5">
+        {COLOR_OPTIONS.map((color) => {
+          const selected = value.toLowerCase() === color.toLowerCase();
+          return (
+            <button
+              key={color}
+              type="button"
+              aria-label={`Color ${color}`}
+              className={cn(
+                "h-7 w-7 shrink-0 rounded-full border border-neutral-200 transition-shadow dark:border-neutral-700",
+                selected && "ring-2 ring-neutral-900/30 ring-offset-2 ring-offset-background dark:ring-neutral-100/40",
+              )}
+              style={{ backgroundColor: color }}
+              onClick={() => onChange(color)}
+            />
+          );
+        })}
+        <input
+          ref={colorInputRef}
           type="color"
-          value={value}
+          aria-label="Pick custom color"
+          value={pickerValue}
           onChange={(e) => onChange(e.target.value)}
-          className="w-16 h-8 p-0 border-0"
+          className="sr-only"
+          tabIndex={-1}
         />
-        <span className="text-sm text-gray-500 dark:text-gray-400">{value}</span>
+        <button
+          type="button"
+          aria-label="Custom color"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-neutral-100 dark:bg-neutral-800"
+          onClick={() => colorInputRef.current?.click()}
+        >
+          <Plus className="h-3.5 w-3.5 text-muted-foreground" />
+        </button>
       </div>
-      <div className="grid grid-cols-6 gap-2">
-        {PREDEFINED_COLORS.map((color) => (
-          <button
-            key={color}
-            type="button"
-            className="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-600 hover:scale-110 transition-transform"
-            style={{ backgroundColor: color }}
-            onClick={() => onChange(color)}
-          />
-        ))}
-      </div>
+      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
     </div>
-    {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
-  </div>
-);
+  );
+};

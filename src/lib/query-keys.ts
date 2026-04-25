@@ -54,6 +54,8 @@ export const queryKeys = {
     lists: () => [...queryKeys.categories.all, "list"] as const,
     list: (type?: "INCOME" | "EXPENSE") =>
       [...queryKeys.categories.lists(), { type }] as const,
+    monthlyTotals: (year: number, month: number) =>
+      [...queryKeys.categories.all, "monthly-totals", { year, month }] as const,
     details: () => [...queryKeys.categories.all, "detail"] as const,
     detail: (id: string) => [...queryKeys.categories.details(), id] as const,
   },

@@ -1,26 +1,20 @@
 import { type FC } from "react";
-import { Button } from "@/components/ui/button";
 import {
   ResponsiveDialog as Dialog,
   ResponsiveDialogContent as DialogContent,
-  ResponsiveDialogFooter as DialogFooter,
-  ResponsiveDialogHeader as DialogHeader,
   ResponsiveDialogTitle as DialogTitle,
-  ResponsiveDialogTrigger as DialogTrigger,
 } from "@/components/ui/responsive-dialog";
-import { FormInput } from "@/components/shared/FormInput";
-import { TypeSelect } from "@/components/shared/TypeSelect";
-import { ColorPicker } from "./ColorPicker";
-import { useCategoryForm } from "./useCategoryForm";
+import { useMonthlyCategoryTotals } from "@/hooks/queries/useMonthlyCategoryTotals";
 import { Category } from "@/types";
-import { Plus } from "lucide-react";
+import { FormPanel } from "./FormPanel";
+import { LivePreviewPanel } from "./LivePreviewPanel";
+import { useCategoryForm } from "./useCategoryForm";
 
 type CategoryFormDialogProps = {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   editingCategory?: Category;
   onSuccess: () => void;
-  onNewClick: () => void;
 };
 
 export const CategoryFormDialog: FC<CategoryFormDialogProps> = ({
@@ -28,54 +22,53 @@ export const CategoryFormDialog: FC<CategoryFormDialogProps> = ({
   onOpenChange,
   editingCategory,
   onSuccess,
-  onNewClick,
 }) => {
-  const { register, handleFormSubmit, errors, watch, setValue, handleOpenChange, isSubmitting } =
-    useCategoryForm(isOpen, editingCategory, onSuccess, onOpenChange);
+  const {
+    register,
+    handleFormSubmit,
+    errors,
+    watch,
+    setValue,
+    handleOpenChange,
+    isSubmitting,
+    parentOptions,
+    categories,
+  } = useCategoryForm(isOpen, editingCategory, onSuccess, onOpenChange);
+
+  const { data: monthlyTotals } = useMonthlyCategoryTotals();
+  const spent =
+    editingCategory != null
+      ? (monthlyTotals?.[editingCategory.id]?.spent ?? 0)
+      : 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button onClick={onNewClick}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Category
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>
-            {editingCategory ? "Edit Category" : "Create New Category"}
-          </DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleFormSubmit} className="flex flex-col h-full">
-          <div className="space-y-4">
-            <FormInput
-              id="name"
-              label="Category Name"
-              placeholder="e.g., Food & Dining"
-              error={errors.name?.message}
-              {...register("name")}
-            />
-            <TypeSelect
-              value={watch("type")}
-              onChange={(v) => setValue("type", v)}
-              error={errors.type?.message}
-            />
-            <ColorPicker
-              value={watch("color")}
-              onChange={(v) => setValue("color", v)}
-              error={errors.color?.message}
-            />
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} className="flex-1">
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting} className="flex-1">
-              {editingCategory ? "Update" : "Create"} Category
-            </Button>
-          </DialogFooter>
-        </form>
+      <DialogContent className="overflow-hidden p-0 sm:bottom-auto sm:max-h-[90vh] sm:max-w-[900px]">
+        <DialogTitle className="sr-only">
+          {editingCategory ? "Edit category" : "Create new category"}
+        </DialogTitle>
+        <div className="-mx-6 flex min-h-0 flex-1 flex-col sm:-mt-6 sm:max-h-[calc(90vh-3rem)] sm:flex-row">
+          <LivePreviewPanel
+            name={watch("name")}
+            iconName={watch("icon")}
+            color={watch("color")}
+            parentId={watch("parentId")}
+            budgetAmount={watch("budgetAmount")}
+            spent={spent}
+            categories={categories}
+          />
+          <FormPanel
+            editingCategory={editingCategory}
+            register={register}
+            watch={watch}
+            setValue={setValue}
+            errors={errors}
+            parentOptions={parentOptions}
+            onCancel={() => handleOpenChange(false)}
+            onSubmit={handleFormSubmit}
+            isSubmitting={isSubmitting}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

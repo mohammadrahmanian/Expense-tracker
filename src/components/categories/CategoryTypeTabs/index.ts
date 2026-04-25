@@ -1,0 +1,1 @@
+export { CategoryTypeTabs } from "./CategoryTypeTabs";

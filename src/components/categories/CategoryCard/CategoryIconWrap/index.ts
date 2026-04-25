@@ -1,0 +1,1 @@
+export { CategoryIconWrap } from "./CategoryIconWrap";

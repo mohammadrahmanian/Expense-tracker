@@ -7979,7 +7979,7 @@
                               "type": "icon_font",
                               "id": "yOvBw",
                               "name": "biIconL",
-                              "width": 861.1039999999998,
+                              "width": 909.1039999999997,
                               "height": 16,
                               "iconFontName": "lock",
                               "iconFontFamily": "lucide",
@@ -14155,7 +14155,7 @@
                       "type": "frame",
                       "id": "PoiXw",
                       "name": "Stock Ticker Card",
-                      "width": 468.00048061566866,
+                      "width": 468.0379716794557,
                       "fill": "$surface",
                       "cornerRadius": 8,
                       "layout": "vertical",
@@ -14370,7 +14370,7 @@
                       "type": "frame",
                       "id": "cxaaI",
                       "name": "Stock Ticker Card - Loss",
-                      "width": 468.00048061566866,
+                      "width": 468.0379716794557,
                       "fill": "$surface",
                       "cornerRadius": 8,
                       "layout": "vertical",
@@ -26147,6 +26147,180 @@
           "name": "segmentLabel",
           "fill": "$primary-700",
           "content": "Segment",
+          "fontFamily": "$font-primary",
+          "fontSize": 13,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cHp01",
+      "x": 4829,
+      "y": 4320,
+      "name": "chip-default",
+      "context": "Unselected toggleable chip. Use for filter pills or multi-select tags that can be toggled on.",
+      "reusable": true,
+      "height": 32,
+      "fill": "$surface",
+      "cornerRadius": "$radius-pill",
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "$border"
+      },
+      "gap": 6,
+      "padding": [
+        0,
+        14
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "cHp0L",
+          "name": "chipLabel",
+          "fill": "$foreground-secondary",
+          "content": "All",
+          "fontFamily": "$font-primary",
+          "fontSize": 13,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cHp02",
+      "x": 4909,
+      "y": 4320,
+      "name": "chip-selected",
+      "context": "Selected state of the toggleable chip. Includes a check icon and primary-tinted fill to indicate the active selection.",
+      "reusable": true,
+      "height": 32,
+      "fill": "$primary-bg",
+      "cornerRadius": "$radius-pill",
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "$primary-300"
+      },
+      "gap": 6,
+      "padding": [
+        0,
+        14
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "cHp2I",
+          "name": "chipCheck",
+          "width": 14,
+          "height": 14,
+          "iconFontName": "check",
+          "iconFontFamily": "lucide",
+          "fill": "$primary-700"
+        },
+        {
+          "type": "text",
+          "id": "cHp2L",
+          "name": "chipLabel",
+          "fill": "$primary-700",
+          "content": "Food",
+          "fontFamily": "$font-primary",
+          "fontSize": 13,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cHp03",
+      "x": 5019,
+      "y": 4320,
+      "name": "chip-default-icon",
+      "context": "Unselected toggleable chip with a leading category icon.",
+      "reusable": true,
+      "height": 32,
+      "fill": "$surface",
+      "cornerRadius": "$radius-pill",
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "$border"
+      },
+      "gap": 6,
+      "padding": [
+        0,
+        14
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "cHp3I",
+          "name": "chipIcon",
+          "width": 14,
+          "height": 14,
+          "iconFontName": "tag",
+          "iconFontFamily": "lucide",
+          "fill": "$foreground-muted"
+        },
+        {
+          "type": "text",
+          "id": "cHp3L",
+          "name": "chipLabel",
+          "fill": "$foreground-secondary",
+          "content": "Transport",
+          "fontFamily": "$font-primary",
+          "fontSize": 13,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cHp04",
+      "x": 5149,
+      "y": 4320,
+      "name": "chip-selected-icon",
+      "context": "Selected state of the toggleable chip with a leading category icon tinted with the primary color.",
+      "reusable": true,
+      "height": 32,
+      "fill": "$primary-bg",
+      "cornerRadius": "$radius-pill",
+      "stroke": {
+        "align": "inside",
+        "thickness": 1,
+        "fill": "$primary-300"
+      },
+      "gap": 6,
+      "padding": [
+        0,
+        14
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "cHp4I",
+          "name": "chipIcon",
+          "width": 14,
+          "height": 14,
+          "iconFontName": "tag",
+          "iconFontFamily": "lucide",
+          "fill": "$primary-700"
+        },
+        {
+          "type": "text",
+          "id": "cHp4L",
+          "name": "chipLabel",
+          "fill": "$primary-700",
+          "content": "Transport",
           "fontFamily": "$font-primary",
           "fontSize": 13,
           "fontWeight": "600"
