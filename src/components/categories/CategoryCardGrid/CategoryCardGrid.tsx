@@ -22,7 +22,10 @@ export const CategoryCardGrid: FC<CategoryCardGridProps> = ({
 }) => {
   if (categories.length === 0) {
     return (
-      <p className="py-12 text-center text-body text-muted-foreground">
+      <p
+        role="status"
+        className="py-12 text-center text-body text-muted-foreground"
+      >
         {emptyMessage}
       </p>
     );
