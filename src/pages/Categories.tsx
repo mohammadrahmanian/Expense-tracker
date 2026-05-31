@@ -1,34 +1,24 @@
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { CategoriesPageHeader } from "@/components/categories/CategoriesPageHeader";
-import { CategoryCardGrid } from "@/components/categories/CategoryCardGrid";
+import { CategoryDeleteConfirmDialog } from "@/components/categories/CategoryDeleteConfirmDialog";
+import { CategoryExpenseIncomeTabs } from "@/components/categories/CategoryExpenseIncomeTabs";
 import { CategoryFormDialog } from "@/components/categories/CategoryFormDialog";
-import { CategorySearchField } from "@/components/categories/CategorySearchField";
-import { CategoryStatsRow } from "@/components/categories/CategoryStatsRow";
-import { CategoryTypeTabs } from "@/components/categories/CategoryTypeTabs";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useCategoriesPage } from "@/hooks/useCategoriesPage";
 
 export const Categories = () => {
   const {
-    activeType,
-    setActiveType,
-    search,
-    setSearch,
+    expenseIncomeTabsModel,
     isFormOpen,
     setIsFormOpen,
     editingCategory,
-    totalsByCategoryId,
-    visibleCategories,
-    totalCount,
-    totalBudget,
-    totalAmount,
-    emptyMessage,
-    handleEdit,
-    handleDelete,
     handleFormSuccess,
     openAdd,
     isLoading,
-    totalsLoading,
     loadError,
+    isDeleteDialogOpen,
+    confirmDelete,
+    cancelDelete,
+    isDeletingCategory,
   } = useCategoriesPage();
 
   return (
@@ -48,27 +38,20 @@ export const Categories = () => {
       {!isLoading && !loadError && (
         <div className="flex flex-col gap-6">
           <CategoriesPageHeader onAdd={openAdd} />
-          <CategoryTypeTabs value={activeType} onChange={setActiveType} />
-          <CategorySearchField value={search} onChange={setSearch} />
-          <CategoryStatsRow
-            totalCount={totalCount}
-            totalBudget={totalBudget}
-            totalAmount={totalAmount}
-            type={activeType}
-          />
-          <CategoryCardGrid
-            categories={visibleCategories}
-            totalsByCategoryId={totalsByCategoryId}
-            totalsLoading={totalsLoading}
-            emptyMessage={emptyMessage}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+          <CategoryExpenseIncomeTabs model={expenseIncomeTabsModel} />
           <CategoryFormDialog
             isOpen={isFormOpen}
             onOpenChange={setIsFormOpen}
             editingCategory={editingCategory}
             onSuccess={handleFormSuccess}
+          />
+          <CategoryDeleteConfirmDialog
+            isOpen={isDeleteDialogOpen}
+            onOpenChange={(open) => {
+              if (!open) cancelDelete();
+            }}
+            onConfirm={confirmDelete}
+            isDeleting={isDeletingCategory}
           />
         </div>
       )}

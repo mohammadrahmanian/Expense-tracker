@@ -1,14 +1,18 @@
+import type { CategoryExpenseIncomeTabsModel } from "@/components/categories/CategoryExpenseIncomeTabs/CategoryExpenseIncomeTabs.utils";
 import { useDeleteCategory } from "@/hooks/mutations/useDeleteCategory";
 import { useCategories } from "@/hooks/queries/useCategories";
 import { useMonthlyCategoryTotals } from "@/hooks/queries/useMonthlyCategoryTotals";
 import type { Category } from "@/types";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 export function useCategoriesPage() {
   const [activeType, setActiveType] = useState<"EXPENSE" | "INCOME">("EXPENSE");
   const [search, setSearch] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | undefined>();
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const pendingDeleteIdRef = useRef<string | null>(null);
+  pendingDeleteIdRef.current = pendingDeleteId;
 
   const { data: categories = [], isLoading, error } = useCategories();
   const { data: totalsByCategoryId = {}, isLoading: totalsLoading } =
@@ -48,36 +52,75 @@ export function useCategoriesPage() {
     return "No categories match your search.";
   }, [categoriesOfType.length, activeType]);
 
-  const handleEdit = (category: Category) => {
+  const handleEdit = useCallback((category: Category) => {
     setEditingCategory(category);
     setIsFormOpen(true);
-  };
+  }, []);
 
-  const handleDelete = async (categoryId: string) => {
-    if (
-      confirm(
-        "Are you sure you want to delete this category? This action cannot be undone.",
-      )
-    ) {
-      try {
-        await deleteCategory.mutateAsync(categoryId);
-      } catch {
-        // Error toast handled by mutation hook
-      }
+  const handleDelete = useCallback((categoryId: string) => {
+    setPendingDeleteId(categoryId);
+  }, []);
+
+  const cancelDelete = useCallback(() => {
+    setPendingDeleteId(null);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    const id = pendingDeleteIdRef.current;
+    if (!id) return;
+    try {
+      await deleteCategory.mutateAsync(id);
+      setPendingDeleteId(null);
+    } catch {
+      // Error toast handled by mutation hook
     }
-  };
+  }, [deleteCategory]);
 
-  const handleFormSuccess = () => {
+  const handleFormSuccess = useCallback(() => {
     setIsFormOpen(false);
     setEditingCategory(undefined);
-  };
+  }, []);
 
-  const openAdd = () => {
+  const openAdd = useCallback(() => {
     setEditingCategory(undefined);
     setIsFormOpen(true);
-  };
+  }, []);
+
+  const expenseIncomeTabsModel: CategoryExpenseIncomeTabsModel = useMemo(
+    () => ({
+      activeType,
+      onActiveTypeChange: setActiveType,
+      search,
+      onSearchChange: setSearch,
+      totalCount,
+      totalBudget,
+      totalAmount,
+      visibleCategories,
+      totalsByCategoryId,
+      totalsLoading,
+      emptyMessage,
+      onEdit: handleEdit,
+      onDelete: handleDelete,
+    }),
+    [
+      activeType,
+      setActiveType,
+      setSearch,
+      totalCount,
+      totalBudget,
+      totalAmount,
+      visibleCategories,
+      totalsByCategoryId,
+      totalsLoading,
+      emptyMessage,
+      search,
+      handleEdit,
+      handleDelete,
+    ],
+  );
 
   return {
+    expenseIncomeTabsModel,
     activeType,
     setActiveType,
     search,
@@ -100,5 +143,9 @@ export function useCategoriesPage() {
     /** True while categories or monthly totals are loading (for callers that need combined pending state). */
     isBusy: isLoading || totalsLoading,
     loadError: error,
+    isDeleteDialogOpen: pendingDeleteId !== null,
+    confirmDelete,
+    cancelDelete,
+    isDeletingCategory: deleteCategory.isPending,
   };
 }
