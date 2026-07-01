@@ -17,6 +17,7 @@ import { Index } from "./pages/Index";
 import Login from "./pages/Login";
 import More from "./pages/More";
 import NotFound from "./pages/NotFound";
+import OAuthConsent from "./pages/OAuthConsent";
 import Profile from "./pages/Profile";
 import RecurringTransactions from "./pages/RecurringTransactions";
 import Register from "./pages/Register";
@@ -73,6 +74,7 @@ const routes: RouteConfig[] = [
   { path: "/", element: <Index /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
+  { path: "/oauth/consent", element: <OAuthConsent /> },
   { path: "/dashboard", element: <Dashboard />, protected: true, boundaryName: "DashboardPage" },
   { path: "/transactions", element: <Transactions />, protected: true, boundaryName: "TransactionsPage" },
   { path: "/categories", element: <Categories />, protected: true, boundaryName: "CategoriesPage" },

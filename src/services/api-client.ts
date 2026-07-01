@@ -33,11 +33,14 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       // Handle unauthorized access — clear persisted user data
       localStorage.removeItem("user");
-      // Only redirect if not already on auth pages
+      // Only redirect if not already on auth pages. The OAuth consent page
+      // handles its own logged-out state (redirect to login while preserving
+      // request_id), so skip the blind redirect there.
       if (
         window.location.pathname !== "/" &&
         !window.location.pathname.includes("/login") &&
-        !window.location.pathname.includes("/register")
+        !window.location.pathname.includes("/register") &&
+        !window.location.pathname.includes("/oauth/consent")
       ) {
         if (navigationCallback) {
           navigationCallback("/login");

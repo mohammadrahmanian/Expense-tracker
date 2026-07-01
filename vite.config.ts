@@ -64,6 +64,15 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        // The self-hosted OAuth 2.1 server lives at the API host root (no /api
+        // prefix). In dev the OAuth client resolves to the FE origin, so forward
+        // /oauth/* to the backend. In production VITE_API_BASE_URL is absolute,
+        // so OAuth calls go straight to the API subdomain (no proxy needed).
+        "/oauth": {
+          target: proxyTarget,
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
     build: {
