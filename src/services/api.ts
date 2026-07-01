@@ -5,3 +5,4 @@ export { budgetsService } from "./budgets.service";
 export { dashboardService } from "./dashboard.service";
 export { authService } from "./auth.service";
 export { recurringTransactionsService } from "./recurring-transactions.service";
+export { oauthService } from "./oauth.service";

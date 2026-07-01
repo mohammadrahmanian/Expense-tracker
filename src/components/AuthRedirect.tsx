@@ -1,6 +1,7 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { isSafeReturnTo } from "@/lib/oauth.utils";
 
 interface AuthRedirectProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ export const AuthRedirect: React.FC<AuthRedirectProps> = ({
   requireAuth = false,
 }) => {
   const { user, isInitializingAuth } = useAuth();
+  const [searchParams] = useSearchParams();
 
   // Show loading spinner while checking authentication status
   if (isInitializingAuth) {
@@ -32,9 +34,13 @@ export const AuthRedirect: React.FC<AuthRedirectProps> = ({
     return <Navigate to="/login" replace />;
   }
 
-  // If requireAuth is false (auth pages) and user is authenticated, redirect to dashboard
+  // If requireAuth is false (auth pages) and user is authenticated, redirect away.
+  // Honor a safe returnTo so a logged-in user who lands on /login?returnTo=…
+  // (e.g. mid OAuth-consent flow) is sent back to where they came from.
   if (!requireAuth && user) {
-    return <Navigate to={redirectTo} replace />;
+    const returnTo = searchParams.get("returnTo");
+    const target = isSafeReturnTo(returnTo) ? (returnTo as string) : redirectTo;
+    return <Navigate to={target} replace />;
   }
 
   // Render children if conditions are met
