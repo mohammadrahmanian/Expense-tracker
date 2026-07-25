@@ -20,8 +20,7 @@ const badgeVariants = cva(
           "border-success-300 bg-success-50 text-success-700 dark:border-success-500 dark:bg-success-700/25 dark:text-success-300",
         warning:
           "border-warning-300 bg-warning-50 text-warning-700 dark:border-warning-500 dark:bg-warning-700/25 dark:text-warning-300",
-        info:
-          "border-info-300 bg-info-100 text-info-700 dark:border-info-500 dark:bg-info-700/25 dark:text-info-300",
+        info: "border-info-300 bg-info-100 text-info-700 dark:border-info-500 dark:bg-info-700/25 dark:text-info-300",
         outline: "border-border bg-transparent text-foreground",
         "ghost-success":
           "border-success-300 bg-transparent text-success-500 dark:border-success-500 dark:text-success-300",

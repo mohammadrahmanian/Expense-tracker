@@ -13,7 +13,11 @@ type ColorPickerProps = {
   error?: string;
 };
 
-export const ColorPicker: FC<ColorPickerProps> = ({ value, onChange, error }) => {
+export const ColorPicker: FC<ColorPickerProps> = ({
+  value,
+  onChange,
+  error,
+}) => {
   const colorInputRef = useRef<HTMLInputElement>(null);
   const pickerValue = FULL_HEX_COLOR_RE.test(value) ? value : COLOR_OPTIONS[0];
 
@@ -30,7 +34,8 @@ export const ColorPicker: FC<ColorPickerProps> = ({ value, onChange, error }) =>
               aria-label={`Color ${color}`}
               className={cn(
                 "h-7 w-7 shrink-0 rounded-full border border-neutral-200 transition-shadow dark:border-neutral-700",
-                selected && "ring-2 ring-neutral-900/30 ring-offset-2 ring-offset-background dark:ring-neutral-100/40",
+                selected &&
+                  "ring-2 ring-neutral-900/30 ring-offset-2 ring-offset-background dark:ring-neutral-100/40",
               )}
               style={{ backgroundColor: color }}
               onClick={() => onChange(color)}
@@ -55,7 +60,9 @@ export const ColorPicker: FC<ColorPickerProps> = ({ value, onChange, error }) =>
           <Plus className="h-3.5 w-3.5 text-muted-foreground" />
         </button>
       </div>
-      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
+      {error && (
+        <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
+      )}
     </div>
   );
 };

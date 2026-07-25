@@ -40,7 +40,11 @@ export const TransactionsListContent: FC<TransactionsListContentProps> = ({
           <TransactionTableRow
             key={transaction.id}
             transaction={transaction}
-            category={getCategoryById(categories, transaction.categoryId, transaction.type)}
+            category={getCategoryById(
+              categories,
+              transaction.categoryId,
+              transaction.type,
+            )}
             formatAmount={formatAmount}
             onEdit={onEdit}
             onDelete={onDelete}

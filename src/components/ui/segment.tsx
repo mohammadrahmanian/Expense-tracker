@@ -8,7 +8,11 @@ const Segment = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>
 >(({ className, ...props }, ref) => (
-  <TabsPrimitive.Root ref={ref} className={cn("w-full", className)} {...props} />
+  <TabsPrimitive.Root
+    ref={ref}
+    className={cn("w-full", className)}
+    {...props}
+  />
 ));
 Segment.displayName = "Segment";
 
@@ -48,7 +52,9 @@ const SegmentList = React.forwardRef<
 ));
 SegmentList.displayName = "SegmentList";
 
-export type SegmentItemProps = React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> &
+export type SegmentItemProps = React.ComponentPropsWithoutRef<
+  typeof TabsPrimitive.Trigger
+> &
   VariantProps<typeof segmentItemVariants>;
 
 const SegmentItem = React.forwardRef<

@@ -3,7 +3,10 @@ import HighchartsReact from "highcharts-react-official";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
-import { readRootRadiusPx, useHighchartsOptions } from "./highcharts-chart.utils";
+import {
+  readRootRadiusPx,
+  useHighchartsOptions,
+} from "./highcharts-chart.utils";
 
 export type HighchartsConfig = {
   [k in string]: {

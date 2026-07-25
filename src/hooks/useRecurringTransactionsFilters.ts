@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
   RecurringFilterState,
-  RecurringSortOrder,
   RecurringStatusFilter,
   RecurringTypeFilter,
   SearchProps,

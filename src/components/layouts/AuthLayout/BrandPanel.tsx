@@ -31,9 +31,7 @@ export const BrandPanel: FC = () => {
         <div className="flex gap-6">
           {STATS.map((stat) => (
             <div key={stat.label} className="flex flex-col">
-              <span className="text-lg font-bold text-white">
-                {stat.value}
-              </span>
+              <span className="text-lg font-bold text-white">{stat.value}</span>
               <span className="text-[11px] font-medium text-white/60">
                 {stat.label}
               </span>

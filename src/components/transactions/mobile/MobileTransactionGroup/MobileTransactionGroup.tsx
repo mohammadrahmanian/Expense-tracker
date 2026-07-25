@@ -1,6 +1,9 @@
 import { type FC } from "react";
 import { MobileTransactionRow } from "@/components/transactions/mobile/MobileTransactionRow";
-import { getCategoryById, type TransactionDateGroup } from "@/lib/transactions.utils";
+import {
+  getCategoryById,
+  type TransactionDateGroup,
+} from "@/lib/transactions.utils";
 import { cn } from "@/lib/utils";
 import { Category, Transaction } from "@/types";
 
@@ -30,7 +33,8 @@ export const MobileTransactionGroup: FC<MobileTransactionGroupProps> = ({
             : "text-danger-500 dark:text-danger-300",
         )}
       >
-        {group.dailyNet >= 0 ? "+" : "-"}{formatAmount(Math.abs(group.dailyNet))}
+        {group.dailyNet >= 0 ? "+" : "-"}
+        {formatAmount(Math.abs(group.dailyNet))}
       </span>
     </div>
     {group.transactions.map((tx) => (

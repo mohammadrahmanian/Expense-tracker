@@ -1,12 +1,15 @@
-import { useEffect, useMemo } from "react";
 import { useCreateCategory } from "@/hooks/mutations/useCreateCategory";
 import { useUpdateCategory } from "@/hooks/mutations/useUpdateCategory";
 import { useCategories } from "@/hooks/queries/useCategories";
 import { Category } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { DEFAULT_CATEGORY_FORM } from "./CategoryFormDialog.constants";
-import { categorySchema, type CategoryFormData } from "./CategoryFormDialog.types";
+import {
+  categorySchema,
+  type CategoryFormData,
+} from "./CategoryFormDialog.types";
 
 export const useCategoryForm = (
   isOpen: boolean,
@@ -18,11 +21,17 @@ export const useCategoryForm = (
   const updateCategory = useUpdateCategory();
   const { data: categories = [] } = useCategories();
 
-  const { register, handleSubmit, formState: { errors }, watch, setValue, reset } =
-    useForm<CategoryFormData>({
-      resolver: zodResolver(categorySchema),
-      defaultValues: { ...DEFAULT_CATEGORY_FORM },
-    });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    reset,
+  } = useForm<CategoryFormData>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: { ...DEFAULT_CATEGORY_FORM },
+  });
 
   const watchedType = watch("type");
   const watchedParentId = watch("parentId");
@@ -88,7 +97,10 @@ export const useCategoryForm = (
     };
     try {
       if (editingCategory) {
-        await updateCategory.mutateAsync({ id: editingCategory.id, updates: payload });
+        await updateCategory.mutateAsync({
+          id: editingCategory.id,
+          updates: payload,
+        });
       } else {
         await createCategory.mutateAsync(payload);
       }

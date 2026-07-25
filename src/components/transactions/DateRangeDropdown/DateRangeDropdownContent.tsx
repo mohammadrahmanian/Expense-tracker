@@ -60,7 +60,12 @@ export const DateRangeDropdownContent: FC<DateRangeDropdownContentProps> = ({
                     : "text-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800",
                 )}
               >
-                <Icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-muted-foreground")} />
+                <Icon
+                  className={cn(
+                    "h-4 w-4",
+                    isActive ? "text-primary" : "text-muted-foreground",
+                  )}
+                />
                 {option.label}
                 {isActive && <Check className="ml-auto h-4 w-4 text-primary" />}
               </button>

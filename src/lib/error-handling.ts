@@ -172,7 +172,10 @@ function getDefaultMessage(
  * @param statusCode - HTTP status code if applicable
  * @returns Whether error should be reported
  */
-function shouldReportError(_errorType: ErrorType, statusCode?: number): boolean {
+function shouldReportError(
+  _errorType: ErrorType,
+  statusCode?: number,
+): boolean {
   // Don't report 400 errors (user input errors that the user can fix)
   if (statusCode === 400) {
     return false;

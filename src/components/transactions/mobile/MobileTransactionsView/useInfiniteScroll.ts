@@ -25,7 +25,9 @@ export const useInfiniteScroll = ({
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(handleIntersect, { rootMargin: "200px" });
+    const observer = new IntersectionObserver(handleIntersect, {
+      rootMargin: "200px",
+    });
     observer.observe(el);
     return () => observer.disconnect();
   }, [handleIntersect]);

@@ -34,9 +34,11 @@ export const TransactionsPagination: FC<TransactionsPaginationProps> = ({
     (currentPage - 1) * pageSize + transactionsOnPage >= totalTransactions;
 
   const visiblePages = useMemo(() => {
-    if (totalPages <= 3) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (totalPages <= 3)
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
     if (currentPage <= 2) return [1, 2, 3];
-    if (currentPage >= totalPages - 1) return [totalPages - 2, totalPages - 1, totalPages];
+    if (currentPage >= totalPages - 1)
+      return [totalPages - 2, totalPages - 1, totalPages];
     return [currentPage - 1, currentPage, currentPage + 1];
   }, [currentPage, totalPages]);
 
@@ -53,13 +55,16 @@ export const TransactionsPagination: FC<TransactionsPaginationProps> = ({
           </SelectTrigger>
           <SelectContent>
             {PAGE_SIZE_OPTIONS.map((v) => (
-              <SelectItem key={v} value={v}>{v}</SelectItem>
+              <SelectItem key={v} value={v}>
+                {v}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <div className="mx-1 h-4 w-px bg-border" />
         <span>
-          Page {currentPage} of {totalPages} &middot; {totalTransactions} transactions
+          Page {currentPage} of {totalPages} &middot; {totalTransactions}{" "}
+          transactions
         </span>
       </div>
       <div className="flex items-center gap-1.5">

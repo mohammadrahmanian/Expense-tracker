@@ -73,7 +73,11 @@ export const DateRangeDropdown: FC<DateRangeDropdownProps> = ({
                 : "border-border bg-surface text-muted-foreground"),
           )}
         >
-          <Calendar className={cn(variant === "pill" ? "h-[13px] w-[13px]" : "h-3.5 w-3.5")} />
+          <Calendar
+            className={cn(
+              variant === "pill" ? "h-[13px] w-[13px]" : "h-3.5 w-3.5",
+            )}
+          />
           {label}
           {variant === "default" && <ChevronIcon className="h-3.5 w-3.5" />}
         </button>

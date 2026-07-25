@@ -1,6 +1,6 @@
 ## Agent Workflow
 
-Use the **git-operator** subagent for creating branches and pull requests. 
+Use the **git-operator** subagent for creating branches and pull requests.
 
 Use the **frontend-developer** subagent for frontend development tasks.
 

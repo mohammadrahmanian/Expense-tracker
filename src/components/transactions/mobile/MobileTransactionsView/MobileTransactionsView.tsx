@@ -40,7 +40,9 @@ type MobileTransactionsViewProps = {
   formatAmount: (amount: number) => string;
 };
 
-export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (props) => {
+export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (
+  props,
+) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const transactions = useMemo(
@@ -48,8 +50,14 @@ export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (props) =
     [props.infiniteData],
   );
 
-  const totals = useMemo(() => calculatePageTotals(transactions), [transactions]);
-  const groups = useMemo(() => groupTransactionsByDate(transactions), [transactions]);
+  const totals = useMemo(
+    () => calculatePageTotals(transactions),
+    [transactions],
+  );
+  const groups = useMemo(
+    () => groupTransactionsByDate(transactions),
+    [transactions],
+  );
 
   const { sentinelRef } = useInfiniteScroll({
     hasNextPage: props.hasNextPage,
@@ -64,7 +72,10 @@ export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (props) =
         onFilterTap={() => setIsFilterOpen(true)}
         hasActiveFilters={props.hasActiveFilters}
       />
-      <MobileSearchBar value={props.search.searchTerm} onChange={props.search.onSearchTermChange} />
+      <MobileSearchBar
+        value={props.search.searchTerm}
+        onChange={props.search.onSearchTermChange}
+      />
       <MobilePillTabs
         typeFilter={props.typeFilter}
         dateFilter={props.dateFilter}

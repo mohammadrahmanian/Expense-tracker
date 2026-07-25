@@ -188,6 +188,7 @@ const dateFilterProps: DateFilterProps = useMemo(() => ({ ... }), [deps]);
 ```
 
 **Rules:**
+
 - Bag types live in the shared utils file (e.g., `transactions.utils.ts`), not in component files
 - Hooks encapsulate `dispatch` — never expose `dispatch` to page components
 - Use `useMemo` for bag objects to maintain referential stability
@@ -207,9 +208,9 @@ Before reading a component's source, check this table. Each entry points to a sh
 4. When adding a new non-trivial component, create a new entry here and a matching `docs/agents/components/<name>.md` following the same shape (Purpose, Entry point, Folder layout, State & data flow, Schema if any, Submit/flow, UI notes, Common edit recipes).
 5. Never cite or rely on this table for information it doesn't contain — fall back to reading source.
 
-| Component              | Path                                                        | Context file                                                                  |
-| ---------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `QuickExpenseModal`    | `src/components/transactions/QuickExpenseModal/`            | [quick-expense-modal.md](docs/agents/components/quick-expense-modal.md)       |
+| Component           | Path                                             | Context file                                                            |
+| ------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
+| `QuickExpenseModal` | `src/components/transactions/QuickExpenseModal/` | [quick-expense-modal.md](docs/agents/components/quick-expense-modal.md) |
 
 ---
 

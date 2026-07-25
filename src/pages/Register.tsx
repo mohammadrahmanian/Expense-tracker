@@ -92,7 +92,9 @@ const Register: React.FC = () => {
               aria-invalid={errors.password ? "true" : undefined}
             />
             {errors.password && (
-              <p className="text-xs text-danger-500">{errors.password.message}</p>
+              <p className="text-xs text-danger-500">
+                {errors.password.message}
+              </p>
             )}
           </div>
 

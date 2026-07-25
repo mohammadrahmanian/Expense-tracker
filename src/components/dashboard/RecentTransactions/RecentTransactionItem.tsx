@@ -31,9 +31,7 @@ export const RecentTransactionItem: FC<RecentTransactionItemProps> = ({
     <span
       className={cn(
         "text-base font-bold flex-shrink-0",
-        transaction.type === "INCOME"
-          ? "text-success-500"
-          : "text-danger-500",
+        transaction.type === "INCOME" ? "text-success-500" : "text-danger-500",
       )}
     >
       {transaction.type === "INCOME" ? "+" : "-"}

@@ -17,11 +17,17 @@ const parseBudget = (raw: string): number | null => {
   return Math.max(0, n);
 };
 
-export const MonthlyBudgetField: FC<MonthlyBudgetFieldProps> = ({ value, onChange, error }) => {
+export const MonthlyBudgetField: FC<MonthlyBudgetFieldProps> = ({
+  value,
+  onChange,
+  error,
+}) => {
   const { currency } = useCurrency();
   const symbol = currencySymbols[currency];
 
-  const [inputValue, setInputValue] = useState(() => (value === null ? "" : String(value)));
+  const [inputValue, setInputValue] = useState(() =>
+    value === null ? "" : String(value),
+  );
 
   useEffect(() => {
     setInputValue(value === null ? "" : String(value));
@@ -34,7 +40,10 @@ export const MonthlyBudgetField: FC<MonthlyBudgetFieldProps> = ({ value, onChang
   return (
     <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-1">
       <div className="flex items-center justify-between">
-        <Label htmlFor="monthly-budget" className="text-xs font-semibold text-foreground">
+        <Label
+          htmlFor="monthly-budget"
+          className="text-xs font-semibold text-foreground"
+        >
           Monthly budget
         </Label>
         <span className="text-[11px] text-muted-foreground">{currency}</span>
@@ -45,7 +54,9 @@ export const MonthlyBudgetField: FC<MonthlyBudgetFieldProps> = ({ value, onChang
           error && "border-red-500",
         )}
       >
-        <span className="shrink-0 text-sm font-semibold text-muted-foreground">{symbol}</span>
+        <span className="shrink-0 text-sm font-semibold text-muted-foreground">
+          {symbol}
+        </span>
         <Input
           id="monthly-budget"
           type="text"
@@ -61,9 +72,13 @@ export const MonthlyBudgetField: FC<MonthlyBudgetFieldProps> = ({ value, onChang
             }
           }}
         />
-        <span className="shrink-0 text-[11px] text-muted-foreground">/ month</span>
+        <span className="shrink-0 text-[11px] text-muted-foreground">
+          / month
+        </span>
       </div>
-      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
+      {error && (
+        <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
+      )}
     </div>
   );
 };

@@ -42,7 +42,9 @@ const SORT_OPTIONS = [
 export const toSortOption = (field: "date" | "amount", order: "asc" | "desc") =>
   `${field}_${order}`;
 
-export const fromSortOption = (opt: string): { field: "date" | "amount"; order: "asc" | "desc" } => {
+export const fromSortOption = (
+  opt: string,
+): { field: "date" | "amount"; order: "asc" | "desc" } => {
   const [field, order] = opt.split("_") as ["date" | "amount", "asc" | "desc"];
   return { field, order };
 };
@@ -74,7 +76,11 @@ export const FilterBottomsheetContent: FC<FilterBottomsheetContentProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between pb-5">
         <h2 className="text-h2 font-semibold text-foreground">Filters</h2>
-        <button type="button" onClick={onReset} className="text-[13px] font-medium text-primary">
+        <button
+          type="button"
+          onClick={onReset}
+          className="text-[13px] font-medium text-primary"
+        >
           Reset All
         </button>
       </div>
@@ -84,7 +90,9 @@ export const FilterBottomsheetContent: FC<FilterBottomsheetContentProps> = ({
           label="Transaction Type"
           options={TYPE_OPTIONS}
           selected={draft.typeFilter}
-          onChange={(v) => onDraftChange({ typeFilter: v as DraftFilterState["typeFilter"] })}
+          onChange={(v) =>
+            onDraftChange({ typeFilter: v as DraftFilterState["typeFilter"] })
+          }
         />
 
         <div className="pt-5">
@@ -92,10 +100,15 @@ export const FilterBottomsheetContent: FC<FilterBottomsheetContentProps> = ({
             label="Date Range"
             options={DATE_OPTIONS}
             selected={draft.datePreset ?? ""}
-            onChange={(v) => onDraftChange({
-              datePreset: v as DatePreset,
-              ...(v !== "custom_range" && { startDate: undefined, endDate: undefined }),
-            })}
+            onChange={(v) =>
+              onDraftChange({
+                datePreset: v as DatePreset,
+                ...(v !== "custom_range" && {
+                  startDate: undefined,
+                  endDate: undefined,
+                }),
+              })
+            }
           />
           {draft.datePreset === "custom_range" && (
             <div className="mt-3 flex flex-col items-center gap-2">
@@ -114,7 +127,8 @@ export const FilterBottomsheetContent: FC<FilterBottomsheetContentProps> = ({
               {draft.startDate && (
                 <p className="text-caption text-muted-foreground">
                   {format(draft.startDate, "MMM dd, yyyy")}
-                  {draft.endDate && ` — ${format(draft.endDate, "MMM dd, yyyy")}`}
+                  {draft.endDate &&
+                    ` — ${format(draft.endDate, "MMM dd, yyyy")}`}
                 </p>
               )}
             </div>
