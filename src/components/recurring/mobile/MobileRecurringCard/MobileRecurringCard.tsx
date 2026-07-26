@@ -1,13 +1,13 @@
-import { type FC } from "react";
-import { format } from "date-fns";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import { RecurringActionsMenu } from "@/components/recurring/RecurringActionsMenu";
 import { RecurringFrequencyPill } from "@/components/recurring/RecurringFrequencyPill";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { formatNextRunRelative } from "@/lib/recurring-transactions.utils";
+import { cn } from "@/lib/utils";
 import type { Category, RecurringStatus, RecurringTransaction } from "@/types";
+import { format } from "date-fns";
+import { type FC } from "react";
 
 const STATUS_BADGE: Record<
   RecurringStatus,
@@ -87,9 +87,11 @@ export const MobileRecurringCard: FC<MobileRecurringCardProps> = ({
           )}
         </div>
       </div>
-      <div className="flex items-center gap-2 justify-between">
-        <RecurringFrequencyPill rt={transaction} />
-        <Badge variant={badge.variant}>{badge.label}</Badge>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <RecurringFrequencyPill rt={transaction} />
+          <Badge variant={badge.variant}>{badge.label}</Badge>
+        </div>
         <RecurringActionsMenu
           status={status}
           onEdit={() => onEdit(transaction)}

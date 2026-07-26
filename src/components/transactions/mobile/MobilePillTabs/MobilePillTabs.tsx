@@ -1,7 +1,10 @@
 import { type FC } from "react";
 import { DateRangeDropdown } from "@/components/transactions/DateRangeDropdown";
-import { type DateFilterProps, type TypeFilterProps } from "@/lib/transactions.utils";
-import { cn } from "@/lib/utils";
+import { PillTabsItem, PillTabsList } from "@/components/ui/pill-tabs";
+import {
+  type DateFilterProps,
+  type TypeFilterProps,
+} from "@/lib/transactions.utils";
 
 const TYPE_PILLS: { value: TypeFilterProps["typeFilter"]; label: string }[] = [
   { value: "all", label: "All" },
@@ -18,22 +21,15 @@ export const MobilePillTabs: FC<MobilePillTabsProps> = ({
   typeFilter,
   dateFilter,
 }) => (
-  <div className="flex items-center gap-2 overflow-x-auto px-0 pb-4 scrollbar-none">
+  <PillTabsList className="px-0 pb-4">
     {TYPE_PILLS.map((pill) => (
-      <button
+      <PillTabsItem
         key={pill.value}
-        type="button"
         onClick={() => typeFilter.onTypeFilterChange(pill.value)}
-        aria-pressed={typeFilter.typeFilter === pill.value}
-        className={cn(
-          "shrink-0 rounded-full px-4 py-[7px] text-[13px] font-medium transition-colors",
-          typeFilter.typeFilter === pill.value
-            ? "bg-primary font-semibold text-white"
-            : "border border-border text-muted-foreground",
-        )}
+        selected={typeFilter.typeFilter === pill.value}
       >
         {pill.label}
-      </button>
+      </PillTabsItem>
     ))}
     <DateRangeDropdown
       preset={dateFilter.datePreset}
@@ -44,5 +40,5 @@ export const MobilePillTabs: FC<MobilePillTabsProps> = ({
       onCustomRangeSelect={dateFilter.onCustomRangeSelect}
       variant="pill"
     />
-  </div>
+  </PillTabsList>
 );

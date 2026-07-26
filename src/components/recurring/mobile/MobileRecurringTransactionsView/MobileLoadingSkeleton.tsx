@@ -1,8 +1,8 @@
-import { type FC } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { type FC } from "react";
 
 export const MobileLoadingSkeleton: FC = () => (
-  <div className="flex flex-col gap-3 px-5 pb-4">
+  <div className="flex flex-col gap-3">
     {Array.from({ length: 5 }).map((_, i) => (
       <div
         key={i}
