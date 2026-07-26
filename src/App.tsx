@@ -73,13 +73,48 @@ const routes: RouteConfig[] = [
   { path: "/", element: <Index /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
-  { path: "/dashboard", element: <Dashboard />, protected: true, boundaryName: "DashboardPage" },
-  { path: "/transactions", element: <Transactions />, protected: true, boundaryName: "TransactionsPage" },
-  { path: "/categories", element: <Categories />, protected: true, boundaryName: "CategoriesPage" },
-  { path: "/recurring-transactions", element: <RecurringTransactions />, protected: true, boundaryName: "RecurringTransactionsPage" },
-  { path: "/reports", element: <Reports />, protected: true, boundaryName: "ReportsPage" },
-  { path: "/profile", element: <Profile />, protected: true, boundaryName: "ProfilePage" },
-  { path: "/more", element: <More />, protected: true, boundaryName: "MorePage" },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+    protected: true,
+    boundaryName: "DashboardPage",
+  },
+  {
+    path: "/transactions",
+    element: <Transactions />,
+    protected: true,
+    boundaryName: "TransactionsPage",
+  },
+  {
+    path: "/categories",
+    element: <Categories />,
+    protected: true,
+    boundaryName: "CategoriesPage",
+  },
+  {
+    path: "/recurring-transactions",
+    element: <RecurringTransactions />,
+    protected: true,
+    boundaryName: "RecurringTransactionsPage",
+  },
+  {
+    path: "/reports",
+    element: <Reports />,
+    protected: true,
+    boundaryName: "ReportsPage",
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+    protected: true,
+    boundaryName: "ProfilePage",
+  },
+  {
+    path: "/more",
+    element: <More />,
+    protected: true,
+    boundaryName: "MorePage",
+  },
   { path: "*", element: <NotFound /> },
 ];
 
@@ -95,23 +130,30 @@ const App = () => (
               <NavigationSetup />
               <ErrorBoundary name="AppShell" variant="app">
                 <Routes>
-                  {routes.map(({ path, element, protected: isProtected, boundaryName }) => (
-                    <Route
-                      key={path}
-                      path={path}
-                      element={
-                        isProtected ? (
-                          <ProtectedRoute>
-                            <PageBoundary name={boundaryName!}>
-                              {element}
-                            </PageBoundary>
-                          </ProtectedRoute>
-                        ) : (
-                          element
-                        )
-                      }
-                    />
-                  ))}
+                  {routes.map(
+                    ({
+                      path,
+                      element,
+                      protected: isProtected,
+                      boundaryName,
+                    }) => (
+                      <Route
+                        key={path}
+                        path={path}
+                        element={
+                          isProtected ? (
+                            <ProtectedRoute>
+                              <PageBoundary name={boundaryName!}>
+                                {element}
+                              </PageBoundary>
+                            </ProtectedRoute>
+                          ) : (
+                            element
+                          )
+                        }
+                      />
+                    ),
+                  )}
                 </Routes>
               </ErrorBoundary>
             </BrowserRouter>
