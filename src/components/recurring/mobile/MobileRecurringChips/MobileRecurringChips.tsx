@@ -36,16 +36,6 @@ const CHIPS: ChipDef[] = [
     isSelected: (sf) => sf.statusFilter === "paused",
     onClick: (sf) => sf.onStatusFilterChange("paused"),
   },
-  {
-    label: "Income",
-    isSelected: (_, tf) => tf.typeFilter === "INCOME",
-    onClick: (_, tf) => tf.onTypeFilterChange("INCOME"),
-  },
-  {
-    label: "Expenses",
-    isSelected: (_, tf) => tf.typeFilter === "EXPENSE",
-    onClick: (_, tf) => tf.onTypeFilterChange("EXPENSE"),
-  },
 ];
 
 export const MobileRecurringChips: FC<MobileRecurringChipsProps> = ({
