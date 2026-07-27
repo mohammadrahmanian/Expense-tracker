@@ -1,6 +1,7 @@
 import { type FC } from "react";
 import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
+import { PillTabsItem } from "@/components/ui/pill-tabs";
 import {
   Select,
   SelectContent,
@@ -8,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import type {
   CategoryFilterProps,
   RecurringStatusFilter,
@@ -66,19 +66,13 @@ export const MobileRecurringFilterBottomsheet: FC<Props> = ({
             </p>
             <div className="flex flex-wrap gap-2">
               {STATUS_CHIPS.map((c) => (
-                <button
+                <PillTabsItem
                   key={c.value}
-                  type="button"
                   onClick={() => statusFilter.onStatusFilterChange(c.value)}
-                  className={cn(
-                    "rounded-full px-3 py-1 text-xs font-semibold border transition-colors",
-                    statusFilter.statusFilter === c.value
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-surface text-foreground border-border",
-                  )}
+                  selected={statusFilter.statusFilter === c.value}
                 >
                   {c.label}
-                </button>
+                </PillTabsItem>
               ))}
             </div>
           </div>
@@ -88,19 +82,13 @@ export const MobileRecurringFilterBottomsheet: FC<Props> = ({
             </p>
             <div className="flex flex-wrap gap-2">
               {TYPE_CHIPS.map((c) => (
-                <button
+                <PillTabsItem
                   key={c.value}
-                  type="button"
                   onClick={() => typeFilter.onTypeFilterChange(c.value)}
-                  className={cn(
-                    "rounded-full px-3 py-1 text-xs font-semibold border transition-colors",
-                    typeFilter.typeFilter === c.value
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-surface text-foreground border-border",
-                  )}
+                  selected={typeFilter.typeFilter === c.value}
                 >
                   {c.label}
-                </button>
+                </PillTabsItem>
               ))}
             </div>
           </div>
