@@ -42,7 +42,7 @@ const FILLED_WRAPPER_CLASSES = [
 ];
 
 // iOS Safari zooms into inputs with font-size < 16px; text-base (16px) prevents that
-const SIZE_TEXT = { sm: "text-base", md: "text-lg", lg: "text-xl" };
+const SIZE_TEXT = { sm: "text-base", md: "text-md", lg: "text-lg" };
 const SIZE_FULL = {
   sm: "h-8 px-2.5 py-1.5",
   md: "h-10 px-3 py-2.5",

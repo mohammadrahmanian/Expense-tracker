@@ -1,4 +1,5 @@
 import { type FC, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import {
   ResponsiveDialog,
@@ -17,6 +18,7 @@ import { useDeleteRecurringTransaction } from "@/hooks/mutations/useDeleteRecurr
 import { useToggleRecurringTransaction } from "@/hooks/mutations/useToggleRecurringTransaction";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useRecurringTransactionsFilters } from "@/hooks/useRecurringTransactionsFilters";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   applyFilters,
   paginate,
@@ -26,6 +28,8 @@ import type { RecurringTransaction } from "@/types";
 
 export const RecurringTransactions: FC = () => {
   const { formatAmount } = useCurrency();
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const {
     state,
     searchProps,
@@ -75,10 +79,14 @@ export const RecurringTransactions: FC = () => {
     state.statusFilter !== "all" ||
     state.categoryFilter !== "all";
 
-  const onEdit = (rt: RecurringTransaction) => setEditing(rt);
+  const onEdit = (rt: RecurringTransaction) =>
+    isMobile
+      ? navigate(`/recurring-transactions/${rt.id}/edit`)
+      : setEditing(rt);
   const onDelete = (rt: RecurringTransaction) => setDeleting(rt);
   const onTogglePause = (rt: RecurringTransaction) => setToggling(rt);
-  const onCreate = () => setCreateOpen(true);
+  const onCreate = () =>
+    isMobile ? navigate("/recurring-transactions/new") : setCreateOpen(true);
 
   return (
     <DashboardLayout>
@@ -133,6 +141,7 @@ export const RecurringTransactions: FC = () => {
       <ResponsiveDialog open={createOpen} onOpenChange={setCreateOpen}>
         <ResponsiveDialogContent>
           <RecurringTransactionForm
+            chrome="dialog"
             mode="create"
             onSuccess={() => setCreateOpen(false)}
             onCancel={() => setCreateOpen(false)}
@@ -147,6 +156,7 @@ export const RecurringTransactions: FC = () => {
         <ResponsiveDialogContent>
           {editing && (
             <RecurringTransactionForm
+              chrome="dialog"
               mode="edit"
               transaction={editing}
               onSuccess={() => setEditing(null)}

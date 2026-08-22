@@ -27,6 +27,7 @@ const segmentItemVariants = cva(
           "data-[state=active]:border-success-300 data-[state=active]:bg-success-50 data-[state=active]:text-success-700 data-[state=active]:hover:bg-success-100 dark:data-[state=active]:border-success-500 dark:data-[state=active]:bg-success-700/25 dark:data-[state=active]:text-success-300 dark:data-[state=active]:hover:bg-success-700/35",
         error:
           "data-[state=active]:border-danger-300 data-[state=active]:bg-danger-50 data-[state=active]:text-danger-700 data-[state=active]:hover:bg-danger-100 dark:data-[state=active]:border-danger-500 dark:data-[state=active]:bg-danger-700/25 dark:data-[state=active]:text-danger-300 dark:data-[state=active]:hover:bg-danger-700/35",
+        gold: "data-[state=active]:border-gold-300 data-[state=active]:bg-gold-50 data-[state=active]:text-gold-700 data-[state=active]:hover:bg-gold-100 dark:data-[state=active]:border-gold-500 dark:data-[state=active]:bg-gold-700/25 dark:data-[state=active]:text-gold-300 dark:data-[state=active]:hover:bg-gold-700/35",
       },
     },
     defaultVariants: {

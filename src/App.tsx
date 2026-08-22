@@ -19,6 +19,7 @@ import More from "./pages/More";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import RecurringTransactions from "./pages/RecurringTransactions";
+import RecurringTransactionFormPage from "./pages/RecurringTransactionFormPage";
 import Register from "./pages/Register";
 import { Reports } from "./pages/Reports";
 import { Transactions } from "./pages/Transactions";
@@ -96,6 +97,18 @@ const routes: RouteConfig[] = [
     element: <RecurringTransactions />,
     protected: true,
     boundaryName: "RecurringTransactionsPage",
+  },
+  {
+    path: "/recurring-transactions/new",
+    element: <RecurringTransactionFormPage />,
+    protected: true,
+    boundaryName: "RecurringTransactionNewPage",
+  },
+  {
+    path: "/recurring-transactions/:id/edit",
+    element: <RecurringTransactionFormPage />,
+    protected: true,
+    boundaryName: "RecurringTransactionEditPage",
   },
   {
     path: "/reports",

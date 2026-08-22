@@ -1,4 +1,5 @@
 import { type FC } from "react";
+import type { LucideIcon } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
@@ -7,6 +8,7 @@ type ReadOnlyFieldProps = {
   value: string;
   hint: string;
   capitalize?: boolean;
+  icon?: LucideIcon;
 };
 
 export const ReadOnlyField: FC<ReadOnlyFieldProps> = ({
@@ -14,19 +16,23 @@ export const ReadOnlyField: FC<ReadOnlyFieldProps> = ({
   value,
   hint,
   capitalize,
+  icon: Icon,
 }) => (
   <div className="space-y-2">
     <Label>{label}</Label>
-    <div className="px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+    <div className="flex h-12 items-center gap-2 rounded-sm border border-border bg-neutral-100 px-3 dark:border-neutral-700 dark:bg-neutral-800">
+      {Icon && (
+        <Icon className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" />
+      )}
       <p
         className={cn(
-          "text-sm text-gray-700 dark:text-gray-300",
+          "text-sm text-foreground",
           capitalize && "capitalize",
         )}
       >
         {value}
       </p>
     </div>
-    <p className="text-xs text-gray-500 dark:text-gray-400">{hint}</p>
+    <p className="text-xs text-muted-foreground">{hint}</p>
   </div>
 );

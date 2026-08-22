@@ -26,7 +26,7 @@ type RecurringTabFilterControlsProps = {
 
 export const RecurringTabFilterControls: FC<
   RecurringTabFilterControlsProps
-> = ({ search, typeFilter, categoryFilter, categories, sort }) => (
+> = ({ search, typeFilter, categoryFilter, categories }) => (
   <div className="flex items-center gap-2.5 pb-3 md:pb-0">
     <div className="relative w-[200px]">
       <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />

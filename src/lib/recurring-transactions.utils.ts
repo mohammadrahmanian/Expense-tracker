@@ -19,7 +19,7 @@ export const getRecurringStatus = (
 };
 
 // ---------- Frequency pill ----------
-const ORDINAL_SUFFIX = (n: number) => {
+export const ORDINAL_SUFFIX = (n: number) => {
   const s = ["th", "st", "nd", "rd"];
   const v = n % 100;
   return n + (s[(v - 20) % 10] ?? s[v] ?? s[0]);
@@ -38,6 +38,35 @@ export const formatFrequencyLabel = (rt: RecurringTransaction): string => {
       return `Yearly · ${format(start, "MMM d")}`;
   }
 };
+
+// ---------- Schedule phrase (live-form-values, for the recurring form's preview card) ----------
+export const formatSchedulePhrase = ({
+  recurrenceFrequency,
+  startDate,
+}: {
+  recurrenceFrequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+  startDate: Date;
+}): string => {
+  switch (recurrenceFrequency) {
+    case "DAILY":
+      return "Every day";
+    case "WEEKLY":
+      return `Every week on ${format(startDate, "EEEE")}`;
+    case "MONTHLY":
+      return `Every month on the ${ORDINAL_SUFFIX(startDate.getDate())}`;
+    case "YEARLY":
+      return `Every year on ${format(startDate, "MMM d")}`;
+  }
+};
+
+/**
+ * Create-mode-only, client-side approximation of the first occurrence for the
+ * pre-save preview card. Valid because `CreateStartDateField` disables past dates
+ * (`disabledDates={(d) => d < startOfToday()}`), so `startDate` is always today or
+ * later, making it a safe stand-in for "first occurrence". The server computes the
+ * authoritative `nextOccurrence` after the recurring transaction is actually created.
+ */
+export const getFirstOccurrence = (startDate: Date): Date => startDate;
 
 // ---------- Name subtitle ----------
 export const formatRowSubtitle = (
