@@ -55,28 +55,30 @@ export const RecurrenceSettingsFields: FC<RecurrenceSettingsFieldsProps> = (
           capitalize
         />
       )}
-      {mode === "create" ? (
-        <CreateStartDateField form={form} />
-      ) : (
-        <ReadOnlyField
-          label="Start date"
-          value={format(new Date(props.transaction.startDate), "PPP")}
-          hint="Start date cannot be changed after creation"
-          icon={Calendar}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {mode === "create" ? (
+          <CreateStartDateField form={form} />
+        ) : (
+          <ReadOnlyField
+            label="Start date"
+            value={format(new Date(props.transaction.startDate), "PPP")}
+            hint="Start date cannot be changed after creation"
+            icon={Calendar}
+          />
+        )}
+        <EndDateToggleField
+          hasEndDate={hasEndDate}
+          endDate={endDate}
+          minDate={minEndDate}
+          error={errors.endDate?.message}
+          onToggle={(checked) =>
+            form.setValue("hasEndDate", checked, { shouldValidate: true })
+          }
+          onSelectDate={(date) =>
+            form.setValue("endDate", date, { shouldValidate: true })
+          }
         />
-      )}
-      <EndDateToggleField
-        hasEndDate={hasEndDate}
-        endDate={endDate}
-        minDate={minEndDate}
-        error={errors.endDate?.message}
-        onToggle={(checked) =>
-          form.setValue("hasEndDate", checked, { shouldValidate: true })
-        }
-        onSelectDate={(date) =>
-          form.setValue("endDate", date, { shouldValidate: true })
-        }
-      />
+      </div>
     </div>
   );
 };

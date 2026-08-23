@@ -1,5 +1,7 @@
+import { type ReactNode } from "react";
+import { type UseFormReturn } from "react-hook-form";
 import { parseAmount } from "@/lib/amount-utils";
-import { RecurringTransaction } from "@/types";
+import { Category, RecurringTransaction } from "@/types";
 import { z } from "zod";
 
 const isValidAmount = (value: string): boolean => {
@@ -114,3 +116,22 @@ export type RecurringTransactionFormProps =
       onSuccess: () => void;
       onCancel: () => void;
     };
+
+/**
+ * Shared across `RecurringTransactionFormMobileBody` and
+ * `RecurringTransactionFormDesktopBody` — both render the same field set from
+ * the same `useRecurringTransactionForm` instance, just laid out differently.
+ */
+export type RecurringFormBodyProps = {
+  form: UseFormReturn<RecurringTransactionFormValues>;
+  currencySymbol: string;
+  filteredCategories: Category[];
+  categories: Category[];
+  isPending: boolean;
+  isCategoriesLoading: boolean;
+  firstOccurrenceNote: ReactNode;
+  onCancel: () => void;
+} & (
+  | { mode: "create"; transaction?: never }
+  | { mode: "edit"; transaction: RecurringTransaction }
+);

@@ -8,6 +8,7 @@ import { buildPreviewData } from "./RecurringPreviewCard.utils";
 import { PreviewStatusPill } from "./PreviewStatusPill";
 import { PreviewSummaryRow } from "./PreviewSummaryRow";
 import { PreviewScheduleRows } from "./PreviewScheduleRows";
+import { PreviewOccurrencesList } from "./PreviewOccurrencesList";
 
 type RecurringPreviewCardProps = {
   form: UseFormReturn<RecurringTransactionFormValues>;
@@ -51,6 +52,15 @@ export const RecurringPreviewCard: FC<RecurringPreviewCardProps> = ({
       <PreviewScheduleRows
         schedulePhrase={preview.schedulePhrase}
         endDatePhrase={preview.endDatePhrase}
+      />
+      <div className="border-t border-border dark:border-neutral-800" />
+      <span className="text-[11px] font-semibold tracking-wider text-neutral-500 dark:text-neutral-400">
+        NEXT 3 OCCURRENCES
+      </span>
+      <PreviewOccurrencesList
+        occurrences={preview.occurrences}
+        type={preview.type}
+        amount={preview.amount}
       />
     </Card>
   );

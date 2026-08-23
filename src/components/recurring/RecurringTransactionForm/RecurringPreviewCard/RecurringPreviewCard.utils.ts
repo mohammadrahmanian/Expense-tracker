@@ -1,6 +1,10 @@
 import { format } from "date-fns";
 import { parseAmount } from "@/lib/amount-utils";
-import { formatSchedulePhrase } from "@/lib/recurring-transactions.utils";
+import {
+  formatSchedulePhrase,
+  getNextOccurrences,
+  type OccurrencePreview,
+} from "@/lib/recurring-transactions.utils";
 import { Category } from "@/types";
 import { RecurringTransactionFormValues } from "../RecurringTransactionForm.types";
 
@@ -12,6 +16,7 @@ export type PreviewData = {
   schedulePhrase: string;
   endDatePhrase: string;
   isValid: boolean;
+  occurrences: OccurrencePreview[];
 };
 
 export function buildPreviewData({
@@ -39,6 +44,12 @@ export function buildPreviewData({
       ? `Ends ${format(values.endDate, "MMM d, yyyy")}`
       : "Runs indefinitely — no end date set";
 
+  const occurrences = getNextOccurrences({
+    startDate: values.startDate,
+    frequency: values.recurrenceFrequency,
+    endDate: values.hasEndDate ? values.endDate : undefined,
+  });
+
   return {
     title: values.title || "Untitled",
     type: values.type,
@@ -47,5 +58,6 @@ export function buildPreviewData({
     schedulePhrase,
     endDatePhrase,
     isValid,
+    occurrences,
   };
 }

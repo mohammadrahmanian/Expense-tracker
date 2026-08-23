@@ -1,10 +1,9 @@
 import { type FC, type ReactNode } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ResponsiveDialogFooter as DialogFooter } from "@/components/ui/responsive-dialog";
 
 type RecurringTransactionFormFooterProps = {
-  chrome: "dialog" | "page";
+  layout: "mobile" | "desktop";
   mode: "create" | "edit";
   isPending: boolean;
   isCategoriesLoading: boolean;
@@ -14,37 +13,38 @@ type RecurringTransactionFormFooterProps = {
 
 export const RecurringTransactionFormFooter: FC<
   RecurringTransactionFormFooterProps
-> = ({ chrome, mode, isPending, isCategoriesLoading, onCancel, firstOccurrenceNote }) => {
-  const submitLabel =
-    mode === "edit" ? "Save changes" : "Save recurring transaction";
+> = ({ layout, mode, isPending, isCategoriesLoading, onCancel, firstOccurrenceNote }) => {
   const pendingLabel = mode === "edit" ? "Saving..." : "Creating...";
   const isDisabled = isPending || isCategoriesLoading;
 
-  const submitContent = isPending ? (
-    <>
-      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-      {pendingLabel}
-    </>
-  ) : (
-    submitLabel
-  );
+  const submitContent = (label: string) =>
+    isPending ? (
+      <>
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        {pendingLabel}
+      </>
+    ) : (
+      label
+    );
 
-  if (chrome === "dialog") {
+  if (layout === "desktop") {
     return (
-      <DialogFooter>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onCancel}
-          className="flex-1"
-          disabled={isPending}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" className="flex-1" disabled={isDisabled}>
-          {submitContent}
-        </Button>
-      </DialogFooter>
+      <div className="-mx-6 -mb-6 flex items-center justify-between gap-4 rounded-b-[8px] border-t border-border bg-neutral-50 px-6 py-4 dark:border-neutral-800 dark:bg-neutral-900">
+        {firstOccurrenceNote}
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isPending}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isDisabled}>
+            {submitContent(mode === "edit" ? "Save changes" : "Save recurring")}
+          </Button>
+        </div>
+      </div>
     );
   }
 
@@ -52,7 +52,9 @@ export const RecurringTransactionFormFooter: FC<
     <div className="sticky bottom-0 flex flex-col gap-3 border-t border-border bg-background px-4 py-4 mobile-safe-bottom">
       {firstOccurrenceNote}
       <Button type="submit" className="w-full" disabled={isDisabled}>
-        {submitContent}
+        {submitContent(
+          mode === "edit" ? "Save changes" : "Save recurring transaction",
+        )}
       </Button>
       <button
         type="button"

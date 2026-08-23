@@ -1,11 +1,6 @@
 import { type FC, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import {
-  ResponsiveDialog,
-  ResponsiveDialogContent,
-} from "@/components/ui/responsive-dialog";
-import { RecurringTransactionForm } from "@/components/recurring/RecurringTransactionForm";
 import { RecurringPageHeader } from "@/components/recurring/RecurringPageHeader";
 import { RecurringSummaryCards } from "@/components/recurring/RecurringSummaryCards";
 import { RecurringList } from "@/components/recurring/RecurringList";
@@ -18,7 +13,6 @@ import { useDeleteRecurringTransaction } from "@/hooks/mutations/useDeleteRecurr
 import { useToggleRecurringTransaction } from "@/hooks/mutations/useToggleRecurringTransaction";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useRecurringTransactionsFilters } from "@/hooks/useRecurringTransactionsFilters";
-import { useIsMobile } from "@/hooks/use-mobile";
 import {
   applyFilters,
   paginate,
@@ -28,7 +22,6 @@ import type { RecurringTransaction } from "@/types";
 
 export const RecurringTransactions: FC = () => {
   const { formatAmount } = useCurrency();
-  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const {
     state,
@@ -46,8 +39,6 @@ export const RecurringTransactions: FC = () => {
   const deleteMut = useDeleteRecurringTransaction();
   const toggleMut = useToggleRecurringTransaction();
 
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editing, setEditing] = useState<RecurringTransaction | null>(null);
   const [deleting, setDeleting] = useState<RecurringTransaction | null>(null);
   const [toggling, setToggling] = useState<RecurringTransaction | null>(null);
 
@@ -80,13 +71,10 @@ export const RecurringTransactions: FC = () => {
     state.categoryFilter !== "all";
 
   const onEdit = (rt: RecurringTransaction) =>
-    isMobile
-      ? navigate(`/recurring-transactions/${rt.id}/edit`)
-      : setEditing(rt);
+    navigate(`/recurring-transactions/${rt.id}/edit`);
   const onDelete = (rt: RecurringTransaction) => setDeleting(rt);
   const onTogglePause = (rt: RecurringTransaction) => setToggling(rt);
-  const onCreate = () =>
-    isMobile ? navigate("/recurring-transactions/new") : setCreateOpen(true);
+  const onCreate = () => navigate("/recurring-transactions/new");
 
   return (
     <DashboardLayout>
@@ -137,34 +125,6 @@ export const RecurringTransactions: FC = () => {
           deletingId={deleteMut.isPending ? deleting?.id : undefined}
         />
       </div>
-
-      <ResponsiveDialog open={createOpen} onOpenChange={setCreateOpen}>
-        <ResponsiveDialogContent>
-          <RecurringTransactionForm
-            chrome="dialog"
-            mode="create"
-            onSuccess={() => setCreateOpen(false)}
-            onCancel={() => setCreateOpen(false)}
-          />
-        </ResponsiveDialogContent>
-      </ResponsiveDialog>
-
-      <ResponsiveDialog
-        open={!!editing}
-        onOpenChange={(o) => !o && setEditing(null)}
-      >
-        <ResponsiveDialogContent>
-          {editing && (
-            <RecurringTransactionForm
-              chrome="dialog"
-              mode="edit"
-              transaction={editing}
-              onSuccess={() => setEditing(null)}
-              onCancel={() => setEditing(null)}
-            />
-          )}
-        </ResponsiveDialogContent>
-      </ResponsiveDialog>
 
       <DeleteRecurringDialog
         target={deleting}

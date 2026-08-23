@@ -1,9 +1,14 @@
 import {
+  addDays,
+  addMonths,
+  addWeeks,
+  addYears,
   format,
   formatDistanceToNow,
   isSameDay,
   isTomorrow,
   isYesterday,
+  startOfDay,
 } from "date-fns";
 import { Category, RecurringStatus, RecurringTransaction } from "@/types";
 
@@ -89,6 +94,76 @@ export const formatNextRunRelative = (
   if (isYesterday(d)) return "Yesterday";
   return formatDistanceToNow(d, { addSuffix: true });
 };
+
+// ---------- Occurrence preview (next N occurrences for the form preview card) ----------
+export type OccurrencePreview = {
+  date: Date;
+  weekday: string;
+  monthShort: string;
+  dayOfMonth: string;
+  relativeLabel: string;
+};
+
+type RecurrenceFrequency = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+
+/**
+ * Computed from `startDate` directly (not by repeatedly adding one interval to the
+ * previous occurrence) so MONTHLY/YEARLY don't drift off the original day-of-month
+ * (e.g. Jan 31 -> Feb 28 -> Mar 28 instead of Mar 31).
+ */
+function addIntervals(
+  startDate: Date,
+  frequency: RecurrenceFrequency,
+  count: number,
+): Date {
+  switch (frequency) {
+    case "DAILY":
+      return addDays(startDate, count);
+    case "WEEKLY":
+      return addWeeks(startDate, count);
+    case "MONTHLY":
+      return addMonths(startDate, count);
+    case "YEARLY":
+      return addYears(startDate, count);
+  }
+}
+
+export function getNextOccurrences({
+  startDate,
+  frequency,
+  endDate,
+  count = 3,
+  fromDate = startOfDay(new Date()),
+}: {
+  startDate: Date;
+  frequency: RecurrenceFrequency;
+  endDate?: Date | null;
+  count?: number;
+  fromDate?: Date;
+}): OccurrencePreview[] {
+  const cutoff = fromDate > startDate ? fromDate : startDate;
+
+  let index = 0;
+  while (addIntervals(startDate, frequency, index) < cutoff) {
+    index++;
+  }
+
+  const occurrences: OccurrencePreview[] = [];
+  while (occurrences.length < count) {
+    const date = addIntervals(startDate, frequency, index);
+    if (endDate && date > endDate) break;
+    occurrences.push({
+      date,
+      weekday: format(date, "EEEE"),
+      monthShort: format(date, "MMM").toUpperCase(),
+      dayOfMonth: format(date, "dd"),
+      relativeLabel: formatNextRunRelative(date.toISOString(), fromDate),
+    });
+    index++;
+  }
+
+  return occurrences;
+}
 
 // ---------- Category lookup ----------
 export const getCategoryById = (

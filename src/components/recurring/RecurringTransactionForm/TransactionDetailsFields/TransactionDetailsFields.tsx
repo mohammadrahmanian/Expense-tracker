@@ -35,20 +35,22 @@ export const TransactionDetailsFields: FC<TransactionDetailsFieldsProps> = ({
           setValue("categoryId", "", { shouldValidate: true });
         }}
       />
-      <ControlledAmountField
-        control={control}
-        currencySymbol={currencySymbol}
-        error={errors.amount?.message}
-      />
-      <FormInput
-        label="Description"
-        id="title"
-        placeholder="e.g., Monthly Rent, Weekly Groceries"
-        {...register("title")}
-        error={errors.title?.message}
-        maxLength={40}
-        required
-      />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <ControlledAmountField
+          control={control}
+          currencySymbol={currencySymbol}
+          error={errors.amount?.message}
+        />
+        <FormInput
+          label="Description"
+          id="title"
+          placeholder="e.g., Monthly Rent, Weekly Groceries"
+          {...register("title")}
+          error={errors.title?.message}
+          maxLength={40}
+          required
+        />
+      </div>
       <CategorySelect
         value={watch("categoryId")}
         onChange={(value) => setValue("categoryId", value, { shouldValidate: true })}
