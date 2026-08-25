@@ -1,18 +1,21 @@
-import { type FC } from "react";
+import { type FC, useEffect } from "react";
 import { currencySymbols, useCurrency } from "@/contexts/CurrencyContext";
-import { RecurringTransactionFormMobileBody } from "./RecurringTransactionFormMobileBody";
-import { RecurringTransactionFormDesktopBody } from "./RecurringTransactionFormDesktopBody";
+import { RecurringTransactionFormBody } from "./RecurringTransactionFormBody";
 import { FirstOccurrenceNote } from "./RecurringTransactionFormFooter/FirstOccurrenceNote";
 import { useRecurringTransactionForm } from "./useRecurringTransactionForm";
 import type {
   RecurringFormBodyProps,
+  RecurringFormState,
   RecurringTransactionFormProps,
 } from "./RecurringTransactionForm.types";
 
-type Props = RecurringTransactionFormProps & { formId?: string };
+type Props = RecurringTransactionFormProps & {
+  formId?: string;
+  onFormStateChange?: (state: RecurringFormState) => void;
+};
 
 export const RecurringTransactionForm: FC<Props> = (props) => {
-  const { mode, formId = "recurring-transaction-form" } = props;
+  const { mode, formId = "recurring-transaction-form", onFormStateChange } = props;
   const isEditing = mode === "edit";
   const { currency } = useCurrency();
   const {
@@ -24,19 +27,22 @@ export const RecurringTransactionForm: FC<Props> = (props) => {
     isPending,
   } = useRecurringTransactionForm(props);
 
+  useEffect(() => {
+    onFormStateChange?.({ isPending, isCategoriesLoading });
+  }, [onFormStateChange, isPending, isCategoriesLoading]);
+
   const firstOccurrenceNote = isEditing ? (
     <FirstOccurrenceNote
       mode="edit"
+      control={form.control}
       nextOccurrenceISO={props.transaction.nextOccurrence}
     />
   ) : (
-    <FirstOccurrenceNote mode="create" startDate={form.watch("startDate")} />
+    <FirstOccurrenceNote mode="create" control={form.control} />
   );
 
-  const bodyProps = {
+  const sharedBodyProps = {
     form,
-    mode,
-    transaction: isEditing ? props.transaction : undefined,
     currencySymbol: currencySymbols[currency],
     filteredCategories,
     categories,
@@ -44,12 +50,15 @@ export const RecurringTransactionForm: FC<Props> = (props) => {
     isCategoriesLoading,
     firstOccurrenceNote,
     onCancel: props.onCancel,
-  } as RecurringFormBodyProps;
+  };
+
+  const bodyProps: RecurringFormBodyProps = isEditing
+    ? { ...sharedBodyProps, mode: "edit", transaction: props.transaction }
+    : { ...sharedBodyProps, mode: "create" };
 
   return (
     <form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
-      <RecurringTransactionFormMobileBody {...bodyProps} />
-      <RecurringTransactionFormDesktopBody {...bodyProps} />
+      <RecurringTransactionFormBody {...bodyProps} />
     </form>
   );
 };

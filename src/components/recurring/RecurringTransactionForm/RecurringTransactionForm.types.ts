@@ -117,11 +117,7 @@ export type RecurringTransactionFormProps =
       onCancel: () => void;
     };
 
-/**
- * Shared across `RecurringTransactionFormMobileBody` and
- * `RecurringTransactionFormDesktopBody` — both render the same field set from
- * the same `useRecurringTransactionForm` instance, just laid out differently.
- */
+/** Props for `RecurringTransactionFormBody`, built from one shared `useRecurringTransactionForm` instance. */
 export type RecurringFormBodyProps = {
   form: UseFormReturn<RecurringTransactionFormValues>;
   currencySymbol: string;
@@ -135,3 +131,9 @@ export type RecurringFormBodyProps = {
   | { mode: "create"; transaction?: never }
   | { mode: "edit"; transaction: RecurringTransaction }
 );
+
+/** Reported by `RecurringTransactionForm` so page-level chrome (e.g. the desktop header's Save button) can mirror the footer's pending/disabled rules. */
+export type RecurringFormState = {
+  isPending: boolean;
+  isCategoriesLoading: boolean;
+};

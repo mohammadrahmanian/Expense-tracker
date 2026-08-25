@@ -29,7 +29,7 @@ export const RecurringTransactionFormFooter: FC<
 
   if (layout === "desktop") {
     return (
-      <div className="-mx-6 -mb-6 flex items-center justify-between gap-4 rounded-b-[8px] border-t border-border bg-neutral-50 px-6 py-4 dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="flex items-center justify-between gap-4 border-t border-border bg-neutral-50 px-6 py-4 dark:border-neutral-800 dark:bg-neutral-900">
         {firstOccurrenceNote}
         <div className="flex items-center gap-3">
           <Button

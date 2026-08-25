@@ -1,5 +1,6 @@
 import { type FC } from "react";
 import { Link } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
@@ -13,12 +14,16 @@ import {
 type RecurringFormDesktopHeaderProps = {
   mode: "create" | "edit";
   formId: string;
+  isPending: boolean;
+  isDisabled: boolean;
   onCancel: () => void;
 };
 
 export const RecurringFormDesktopHeader: FC<RecurringFormDesktopHeaderProps> = ({
   mode,
   formId,
+  isPending,
+  isDisabled,
   onCancel,
 }) => (
   <div className="mb-6 flex items-center justify-between gap-4">
@@ -43,11 +48,25 @@ export const RecurringFormDesktopHeader: FC<RecurringFormDesktopHeaderProps> = (
       </h1>
     </div>
     <div className="flex items-center gap-3">
-      <Button type="button" variant="outline" onClick={onCancel}>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onCancel}
+        disabled={isPending}
+      >
         Cancel
       </Button>
-      <Button type="submit" form={formId}>
-        {mode === "edit" ? "Save changes" : "Save recurring"}
+      <Button type="submit" form={formId} disabled={isDisabled}>
+        {isPending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {mode === "edit" ? "Saving..." : "Creating..."}
+          </>
+        ) : mode === "edit" ? (
+          "Save changes"
+        ) : (
+          "Save recurring"
+        )}
       </Button>
     </div>
   </div>

@@ -7,6 +7,7 @@ import {
   formatDistanceToNow,
   isSameDay,
   isTomorrow,
+  isValid,
   isYesterday,
   startOfDay,
 } from "date-fns";
@@ -141,6 +142,8 @@ export function getNextOccurrences({
   count?: number;
   fromDate?: Date;
 }): OccurrencePreview[] {
+  if (!isValid(startDate)) return [];
+
   const cutoff = fromDate > startDate ? fromDate : startDate;
 
   let index = 0;

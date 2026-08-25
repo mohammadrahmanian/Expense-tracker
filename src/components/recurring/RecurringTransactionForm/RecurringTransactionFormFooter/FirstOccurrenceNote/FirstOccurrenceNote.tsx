@@ -1,16 +1,20 @@
 import { type FC } from "react";
 import { format } from "date-fns";
 import { CircleCheck } from "lucide-react";
+import { useWatch, type Control } from "react-hook-form";
 import { getFirstOccurrence, formatNextRunRelative } from "@/lib/recurring-transactions.utils";
+import type { RecurringTransactionFormValues } from "../../RecurringTransactionForm.types";
 
-type FirstOccurrenceNoteProps =
-  | { mode: "create"; startDate: Date }
-  | { mode: "edit"; nextOccurrenceISO: string };
+type FirstOccurrenceNoteProps = {
+  control: Control<RecurringTransactionFormValues>;
+} & ({ mode: "create" } | { mode: "edit"; nextOccurrenceISO: string });
 
 export const FirstOccurrenceNote: FC<FirstOccurrenceNoteProps> = (props) => {
+  const startDate = useWatch({ control: props.control, name: "startDate" });
+
   const iso =
     props.mode === "create"
-      ? getFirstOccurrence(props.startDate).toISOString()
+      ? getFirstOccurrence(startDate).toISOString()
       : props.nextOccurrenceISO;
   const relative = formatNextRunRelative(iso).toLowerCase();
   const prefix = props.mode === "create" ? "First occurrence" : "Next occurrence";

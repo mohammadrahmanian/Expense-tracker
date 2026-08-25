@@ -4,6 +4,7 @@ export type DashboardLayoutProps = {
   children: React.ReactNode;
   hideHeader?: boolean;
   hideFab?: boolean;
+  hideBottomTab?: boolean;
 };
 
 export interface NavigationItem {

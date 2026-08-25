@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, isValid as isValidDate } from "date-fns";
 import { parseAmount } from "@/lib/amount-utils";
 import {
   formatSchedulePhrase,
@@ -34,21 +34,33 @@ export function buildPreviewData({
   const numericAmount = parseAmount(values.amount) ?? 0;
   const sign = values.type === "INCOME" ? "+" : "-";
 
-  const schedulePhrase = formatSchedulePhrase({
-    recurrenceFrequency: values.recurrenceFrequency,
-    startDate: values.startDate,
-  });
+  // `startDate`/`recurrenceFrequency` are typed as always-present, but that's a
+  // convention enforced by defaultValues, not the compiler: `useWatch` without a
+  // `name` is really `DeepPartial`, and `startDate` ultimately traces back to
+  // `transaction.startDate`, an unvalidated string from the API. Guard so a
+  // missing or unparseable date degrades the preview instead of crashing it.
+  const hasValidSchedule =
+    isValidDate(values.startDate) && !!values.recurrenceFrequency;
+
+  const schedulePhrase = hasValidSchedule
+    ? formatSchedulePhrase({
+        recurrenceFrequency: values.recurrenceFrequency,
+        startDate: values.startDate,
+      })
+    : "";
 
   const endDatePhrase =
     values.hasEndDate && values.endDate
       ? `Ends ${format(values.endDate, "MMM d, yyyy")}`
       : "Runs indefinitely — no end date set";
 
-  const occurrences = getNextOccurrences({
-    startDate: values.startDate,
-    frequency: values.recurrenceFrequency,
-    endDate: values.hasEndDate ? values.endDate : undefined,
-  });
+  const occurrences = hasValidSchedule
+    ? getNextOccurrences({
+        startDate: values.startDate,
+        frequency: values.recurrenceFrequency,
+        endDate: values.hasEndDate ? values.endDate : undefined,
+      })
+    : [];
 
   return {
     title: values.title || "Untitled",

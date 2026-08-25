@@ -1,8 +1,32 @@
 import { describe, expect, it } from "vitest";
-import { getNextOccurrences } from "./recurring-transactions.utils";
+import { formatNextRunRelative, getNextOccurrences } from "./recurring-transactions.utils";
 
 describe("getNextOccurrences", () => {
-  const from = new Date(2026, 0, 1); // 2026-01-01
+  const from = new Date(2026, 0, 1); // 2026-01-01, a Thursday
+
+  it("formats weekday, monthShort, dayOfMonth, and relativeLabel per the documented contract", () => {
+    const result = getNextOccurrences({
+      startDate: from,
+      frequency: "DAILY",
+      fromDate: from,
+    });
+
+    expect(result[0].weekday).toBe("Thursday");
+    expect(result[0].monthShort).toBe("JAN");
+    expect(result[0].dayOfMonth).toBe("01");
+    expect(result[0].relativeLabel).toBe(
+      formatNextRunRelative(result[0].date.toISOString(), from),
+    );
+    expect(result[0].relativeLabel).toBe("Today");
+
+    // Index 1 isn't asserted against a literal like "Tomorrow": date-fns's
+    // isTomorrow/isYesterday (used inside formatNextRunRelative) compare
+    // against the real system clock regardless of the `now` argument, so
+    // only the "same style as formatNextRunRelative" contract is stable here.
+    expect(result[1].relativeLabel).toBe(
+      formatNextRunRelative(result[1].date.toISOString(), from),
+    );
+  });
 
   it("returns daily occurrences", () => {
     const result = getNextOccurrences({
@@ -78,5 +102,15 @@ describe("getNextOccurrences", () => {
     });
 
     expect(result[0].date.getFullYear()).toBe(2026);
+  });
+
+  it("returns an empty list instead of throwing for an invalid start date", () => {
+    const result = getNextOccurrences({
+      startDate: new Date("not-a-date"),
+      frequency: "MONTHLY",
+      fromDate: from,
+    });
+
+    expect(result).toEqual([]);
   });
 });
