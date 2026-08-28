@@ -1,6 +1,6 @@
 import { type FC } from "react";
-import { format } from "date-fns";
 import { CalendarCheck } from "lucide-react";
+import { formatDateLabel } from "./DateRangeCalendarPanel.utils";
 
 type DateRangeFooterProps = {
   dateLabel: Date | undefined;
@@ -17,13 +17,7 @@ export const DateRangeFooter: FC<DateRangeFooterProps> = ({
   onApply,
   canApply,
 }) => {
-  const formattedLabel = dateLabel
-    ? endDateLabel
-      ? dateLabel.getFullYear() !== endDateLabel.getFullYear()
-        ? `${format(dateLabel, "MMM dd, yyyy")} – ${format(endDateLabel, "MMM dd, yyyy")}`
-        : `${format(dateLabel, "MMM dd")} – ${format(endDateLabel, "MMM dd, yyyy")}`
-      : format(dateLabel, "MMM dd, yyyy")
-    : "No date selected";
+  const formattedLabel = formatDateLabel(dateLabel, endDateLabel);
 
   return (
     <div className="flex items-center justify-between gap-2 px-3 py-2">

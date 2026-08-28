@@ -20,7 +20,9 @@ export const useDateRangeDropdown = ({
   onCustomRangeSelect,
 }: UseDateRangeDropdownParams) => {
   const [open, setOpen] = useState(false);
-  const [calendarMode, setCalendarMode] = useState<"single" | "range" | null>(null);
+  const [calendarMode, setCalendarMode] = useState<"single" | "range" | null>(
+    null,
+  );
   const [pendingDate, setPendingDate] = useState<Date | undefined>();
   const [pendingRange, setPendingRange] = useState<DateRange | undefined>();
 
@@ -38,7 +40,9 @@ export const useDateRangeDropdown = ({
         setPendingDate(startDate);
       } else if (preset === "custom_range") {
         setCalendarMode("range");
-        setPendingRange(startDate && endDate ? { from: startDate, to: endDate } : undefined);
+        setPendingRange(
+          startDate && endDate ? { from: startDate, to: endDate } : undefined,
+        );
       }
     } else {
       resetLocal();
@@ -53,7 +57,9 @@ export const useDateRangeDropdown = ({
     }
     if (value === "custom_range") {
       setCalendarMode("range");
-      setPendingRange(startDate && endDate ? { from: startDate, to: endDate } : undefined);
+      setPendingRange(
+        startDate && endDate ? { from: startDate, to: endDate } : undefined,
+      );
       return;
     }
     resetLocal();
@@ -64,7 +70,11 @@ export const useDateRangeDropdown = ({
   const handleApply = () => {
     if (calendarMode === "single" && pendingDate) {
       onCustomDateSelect(pendingDate);
-    } else if (calendarMode === "range" && pendingRange?.from && pendingRange?.to) {
+    } else if (
+      calendarMode === "range" &&
+      pendingRange?.from &&
+      pendingRange?.to
+    ) {
       onCustomRangeSelect(pendingRange.from, pendingRange.to);
     }
     resetLocal();
@@ -74,6 +84,10 @@ export const useDateRangeDropdown = ({
   const handleClear = () => {
     setPendingDate(undefined);
     setPendingRange(undefined);
+  };
+
+  const handleBack = () => {
+    resetLocal();
   };
 
   const canApply =
@@ -90,6 +104,7 @@ export const useDateRangeDropdown = ({
     handlePresetClick,
     handleApply,
     handleClear,
+    handleBack,
     setPendingDate,
     setPendingRange,
   };
