@@ -3,20 +3,14 @@ import { RecurringActionsMenu } from "@/components/recurring/RecurringActionsMen
 import { RecurringFrequencyPill } from "@/components/recurring/RecurringFrequencyPill";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { formatNextRunRelative } from "@/lib/recurring-transactions.utils";
+import {
+  formatNextRunRelative,
+  STATUS_BADGE,
+} from "@/lib/recurring-transactions.utils";
 import { cn } from "@/lib/utils";
 import type { Category, RecurringStatus, RecurringTransaction } from "@/types";
 import { format } from "date-fns";
 import { type FC } from "react";
-
-const STATUS_BADGE: Record<
-  RecurringStatus,
-  { variant: "success" | "warning" | "secondary"; label: string }
-> = {
-  active: { variant: "success", label: "Active" },
-  paused: { variant: "warning", label: "Paused" },
-  ended: { variant: "secondary", label: "Ended" },
-};
 
 type MobileRecurringCardProps = {
   transaction: RecurringTransaction;

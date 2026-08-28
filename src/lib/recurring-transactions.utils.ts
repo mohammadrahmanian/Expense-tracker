@@ -24,6 +24,15 @@ export const getRecurringStatus = (
   return "active";
 };
 
+export const STATUS_BADGE: Record<
+  RecurringStatus,
+  { variant: "success" | "warning" | "secondary"; label: string }
+> = {
+  active: { variant: "success", label: "Active" },
+  paused: { variant: "warning", label: "Paused" },
+  ended: { variant: "secondary", label: "Ended" },
+};
+
 // ---------- Frequency pill ----------
 export const ORDINAL_SUFFIX = (n: number) => {
   const s = ["th", "st", "nd", "rd"];
@@ -166,6 +175,34 @@ export function getNextOccurrences({
   }
 
   return occurrences;
+}
+
+export function countOccurrencesUntil({
+  startDate,
+  frequency,
+  endDate,
+  until,
+}: {
+  startDate: Date;
+  frequency: RecurrenceFrequency;
+  endDate?: Date | null;
+  until: Date;
+}): number {
+  if (!isValid(startDate)) return 0;
+
+  const start = startOfDay(startDate);
+  const untilDay = startOfDay(until);
+  if (start > untilDay) return 0;
+
+  const endCap = endDate && isValid(endDate) ? startOfDay(endDate) : null;
+  const cap = endCap && endCap.getTime() < untilDay.getTime() ? endCap : untilDay;
+
+  let count = 0;
+  while (addIntervals(start, frequency, count) <= cap) {
+    count++;
+  }
+
+  return count;
 }
 
 // ---------- Category lookup ----------

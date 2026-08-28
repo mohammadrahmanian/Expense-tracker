@@ -70,6 +70,8 @@ export const RecurringTransactions: FC = () => {
     state.statusFilter !== "all" ||
     state.categoryFilter !== "all";
 
+  const onOpen = (rt: RecurringTransaction) =>
+    navigate(`/recurring-transactions/${rt.id}`);
   const onEdit = (rt: RecurringTransaction) =>
     navigate(`/recurring-transactions/${rt.id}/edit`);
   const onDelete = (rt: RecurringTransaction) => setDeleting(rt);
@@ -118,6 +120,7 @@ export const RecurringTransactions: FC = () => {
           sort={sortProps}
           pagination={paginationProps}
           formatAmount={formatAmount}
+          onOpen={onOpen}
           onEdit={onEdit}
           onTogglePause={onTogglePause}
           onDelete={onDelete}

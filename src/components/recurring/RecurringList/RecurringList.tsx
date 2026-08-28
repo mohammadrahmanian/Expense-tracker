@@ -42,6 +42,7 @@ type RecurringListProps = {
   sort: SortProps;
   pagination: PaginationProps;
   formatAmount: (n: number) => string;
+  onOpen: (rt: RecurringTransaction) => void;
   onEdit: (rt: RecurringTransaction) => void;
   onTogglePause: (rt: RecurringTransaction) => void;
   onDelete: (rt: RecurringTransaction) => void;
@@ -64,6 +65,7 @@ export const RecurringList: FC<RecurringListProps> = ({
   sort,
   pagination,
   formatAmount,
+  onOpen,
   onEdit,
   onTogglePause,
   onDelete,
@@ -99,6 +101,7 @@ export const RecurringList: FC<RecurringListProps> = ({
                   category={getCategoryById(categories, rt.categoryId)}
                   status={getRecurringStatus(rt)}
                   formatAmount={formatAmount}
+                  onOpen={onOpen}
                   onEdit={onEdit}
                   onTogglePause={onTogglePause}
                   onDelete={onDelete}

@@ -2,22 +2,16 @@ import { type FC } from "react";
 import { format } from "date-fns";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CategoryIconWrap } from "@/components/categories/CategoryCard/CategoryIconWrap";
 import { RecurringActionsMenu } from "@/components/recurring/RecurringActionsMenu";
 import { RecurringFrequencyPill } from "@/components/recurring/RecurringFrequencyPill";
-import { formatNextRunRelative } from "@/lib/recurring-transactions.utils";
+import { RecurringTableNameCell } from "./RecurringTableNameCell";
+import {
+  formatNextRunRelative,
+  STATUS_BADGE,
+} from "@/lib/recurring-transactions.utils";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 import type { RecurringStatus, RecurringTransaction } from "@/types";
-
-const STATUS_BADGE: Record<
-  RecurringStatus,
-  { variant: "success" | "warning" | "secondary"; label: string }
-> = {
-  active: { variant: "success", label: "Active" },
-  paused: { variant: "warning", label: "Paused" },
-  ended: { variant: "secondary", label: "Ended" },
-};
 
 type RecurringTableRowUIProps = {
   transaction: RecurringTransaction;
@@ -28,6 +22,7 @@ type RecurringTableRowUIProps = {
   amountColor: string;
   sign: string;
   formatAmount: (n: number) => string;
+  onOpen: () => void;
   onEdit: () => void;
   onTogglePause: () => void;
   onDelete: () => void;
@@ -44,6 +39,7 @@ export const RecurringTableRowUI: FC<RecurringTableRowUIProps> = ({
   amountColor,
   sign,
   formatAmount,
+  onOpen,
   onEdit,
   onTogglePause,
   onDelete,
@@ -53,18 +49,14 @@ export const RecurringTableRowUI: FC<RecurringTableRowUIProps> = ({
   const badge = STATUS_BADGE[status];
   const isActive = status === "active";
   return (
-    <TableRow>
-      <TableCell>
-        <div className="flex items-center gap-3">
-          <CategoryIconWrap color={color} Icon={Icon} />
-          <div className="flex flex-col min-w-0">
-            <span className="text-sm font-semibold text-foreground truncate">
-              {transaction.title}
-            </span>
-            <span className="text-xs text-muted-foreground">{subtitle}</span>
-          </div>
-        </div>
-      </TableCell>
+    <TableRow className="cursor-pointer" onClick={onOpen}>
+      <RecurringTableNameCell
+        title={transaction.title}
+        subtitle={subtitle}
+        color={color}
+        Icon={Icon}
+        to={`/recurring-transactions/${transaction.id}`}
+      />
       <TableCell
         className={cn("text-right text-sm font-semibold", amountColor)}
       >
@@ -93,7 +85,7 @@ export const RecurringTableRowUI: FC<RecurringTableRowUIProps> = ({
       <TableCell>
         <Badge variant={badge.variant}>{badge.label}</Badge>
       </TableCell>
-      <TableCell>
+      <TableCell onClick={(e) => e.stopPropagation()}>
         <RecurringActionsMenu
           status={status}
           onEdit={onEdit}

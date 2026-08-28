@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { formatNextRunRelative, getNextOccurrences } from "./recurring-transactions.utils";
+import {
+  countOccurrencesUntil,
+  formatNextRunRelative,
+  getNextOccurrences,
+} from "./recurring-transactions.utils";
 
 describe("getNextOccurrences", () => {
   const from = new Date(2026, 0, 1); // 2026-01-01, a Thursday
@@ -112,5 +116,61 @@ describe("getNextOccurrences", () => {
     });
 
     expect(result).toEqual([]);
+  });
+});
+
+describe("countOccurrencesUntil", () => {
+  it("counts monthly occurrences from start through until, inclusive", () => {
+    const count = countOccurrencesUntil({
+      startDate: new Date(2026, 0, 1),
+      frequency: "MONTHLY",
+      until: new Date(2026, 2, 1), // 2026-03-01
+    });
+
+    expect(count).toBe(3); // Jan 1, Feb 1, Mar 1
+  });
+
+  it("does not drift for a Jan 31 start date", () => {
+    const count = countOccurrencesUntil({
+      startDate: new Date(2026, 0, 31), // Jan 31, 2026
+      frequency: "MONTHLY",
+      until: new Date(2026, 3, 1), // 2026-04-01
+    });
+
+    // Jan 31, Feb 28 (clamped), Mar 31 (back to the original day, not drifted) = 3
+    expect(count).toBe(3);
+  });
+
+  it("returns 0 when until is before startDate", () => {
+    const count = countOccurrencesUntil({
+      startDate: new Date(2026, 5, 1),
+      frequency: "MONTHLY",
+      until: new Date(2026, 0, 1),
+    });
+
+    expect(count).toBe(0);
+  });
+
+  it("stops counting at endDate even when until is later", () => {
+    const count = countOccurrencesUntil({
+      startDate: new Date(2026, 0, 1),
+      frequency: "MONTHLY",
+      endDate: new Date(2026, 1, 15), // Feb 15, 2026
+      until: new Date(2026, 3, 1), // 2026-04-01
+    });
+
+    // Jan 1, Feb 1 count; Mar 1 is after the Feb 15 endDate
+    expect(count).toBe(2);
+  });
+
+  it("counts today's occurrence even when startDate's time-of-day is later than until's", () => {
+    const until = new Date(2026, 0, 15, 10, 0); // Jan 15, 2026, 10:00
+    const count = countOccurrencesUntil({
+      startDate: new Date(2026, 0, 15, 15, 0), // same calendar day, 15:00
+      frequency: "DAILY",
+      until,
+    });
+
+    expect(count).toBe(1);
   });
 });
