@@ -35,7 +35,10 @@ const RecurringTransactionDetailPage = () => {
   }, [notFound, navigate]);
 
   const onEdit = () =>
-    transaction && navigate(`/recurring-transactions/${transaction.id}/edit`);
+    transaction &&
+    navigate(`/recurring-transactions/${transaction.id}/edit`, {
+      state: { from: `/recurring-transactions/${transaction.id}` },
+    });
 
   return (
     <DashboardLayout hideHeader hideFab hideBottomTab>

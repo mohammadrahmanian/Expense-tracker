@@ -73,7 +73,9 @@ export const RecurringTransactions: FC = () => {
   const onOpen = (rt: RecurringTransaction) =>
     navigate(`/recurring-transactions/${rt.id}`);
   const onEdit = (rt: RecurringTransaction) =>
-    navigate(`/recurring-transactions/${rt.id}/edit`);
+    navigate(`/recurring-transactions/${rt.id}/edit`, {
+      state: { from: "/recurring-transactions" },
+    });
   const onDelete = (rt: RecurringTransaction) => setDeleting(rt);
   const onTogglePause = (rt: RecurringTransaction) => setToggling(rt);
   const onCreate = () => navigate("/recurring-transactions/new");

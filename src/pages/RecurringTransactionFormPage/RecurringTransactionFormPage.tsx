@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { RecurringTransactionForm } from "@/components/recurring/RecurringTransactionForm";
 import type { RecurringFormState } from "@/components/recurring/RecurringTransactionForm/RecurringTransactionForm.types";
@@ -8,13 +8,17 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRecurringTransactions } from "@/hooks/queries/useRecurringTransactions";
 import { RecurringFormDesktopHeader } from "./RecurringFormDesktopHeader";
+import { getRecurringFormReturnTo } from "./RecurringTransactionFormPage.utils";
 
 const FORM_ID = "recurring-transaction-form";
 
 const RecurringTransactionFormPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const mode = id ? "edit" : "create";
+  const from = (location.state as { from?: unknown } | null)?.from;
+  const returnTo = getRecurringFormReturnTo(from, id);
 
   const { data: recurringTransactions, isLoading } =
     useRecurringTransactions();
@@ -36,15 +40,15 @@ const RecurringTransactionFormPage = () => {
     }
   }, [notFound, navigate]);
 
-  const onSuccess = () => navigate("/recurring-transactions");
-  const onCancel = () => navigate("/recurring-transactions");
+  const onSuccess = () => navigate(returnTo);
+  const onCancel = () => navigate(returnTo);
 
   return (
     <DashboardLayout hideHeader hideFab hideBottomTab>
       <div className="-mx-4 -mt-4 lg:hidden">
         <PageHeader
           title={mode === "edit" ? "Edit Recurring" : "New Recurring"}
-          backTo="/recurring-transactions"
+          backTo={returnTo}
         />
       </div>
       <div className="hidden lg:block">
