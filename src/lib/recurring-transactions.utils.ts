@@ -74,6 +74,22 @@ export const formatSchedulePhrase = ({
   }
 };
 
+export const formatPerOccurrenceSubline = (
+  rt: RecurringTransaction,
+): string => {
+  const start = new Date(rt.startDate);
+  switch (rt.recurrenceFrequency) {
+    case "DAILY":
+      return "per occurrence · every day";
+    case "WEEKLY":
+      return `per occurrence · on ${format(start, "EEEE")}`;
+    case "MONTHLY":
+      return `per occurrence · on the ${ORDINAL_SUFFIX(start.getDate())}`;
+    case "YEARLY":
+      return `per occurrence · on ${format(start, "MMM d")}`;
+  }
+};
+
 /**
  * Create-mode-only, client-side approximation of the first occurrence for the
  * pre-save preview card. Valid because `CreateStartDateField` disables past dates
@@ -195,7 +211,8 @@ export function countOccurrencesUntil({
   if (start > untilDay) return 0;
 
   const endCap = endDate && isValid(endDate) ? startOfDay(endDate) : null;
-  const cap = endCap && endCap.getTime() < untilDay.getTime() ? endCap : untilDay;
+  const cap =
+    endCap && endCap.getTime() < untilDay.getTime() ? endCap : untilDay;
 
   let count = 0;
   while (addIntervals(start, frequency, count) <= cap) {

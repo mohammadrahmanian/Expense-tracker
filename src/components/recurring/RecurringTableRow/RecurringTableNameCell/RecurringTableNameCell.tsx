@@ -19,15 +19,15 @@ export const RecurringTableNameCell: FC<RecurringTableNameCellProps> = ({
   Icon,
   to,
 }) => (
-  <TableCell onClick={(e) => e.stopPropagation()}>
+  <TableCell className="relative" onClick={(e) => e.stopPropagation()}>
     <div className="flex items-center gap-3">
       <CategoryIconWrap color={color} Icon={Icon} />
-      <div className="flex flex-col min-w-0">
+      <div className="flex min-w-0 flex-col">
         <Link
           to={to}
-          className="truncate text-sm font-semibold text-foreground hover:underline"
+          className="text-sm font-semibold text-foreground hover:underline before:absolute before:inset-0 before:z-10"
         >
-          {title}
+          <span className="relative z-10 block truncate">{title}</span>
         </Link>
         <span className="text-xs text-muted-foreground">{subtitle}</span>
       </div>

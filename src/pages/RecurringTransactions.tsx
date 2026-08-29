@@ -94,6 +94,7 @@ export const RecurringTransactions: FC = () => {
           categoryFilter={categoryFilterProps}
           formatAmount={formatAmount}
           onCreate={onCreate}
+          onOpen={onOpen}
           onEdit={onEdit}
           onTogglePause={onTogglePause}
           onDelete={onDelete}

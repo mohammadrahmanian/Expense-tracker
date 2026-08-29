@@ -1,4 +1,6 @@
 import { type FC } from "react";
+import { Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getRecurringStatus } from "@/lib/recurring-transactions.utils";
@@ -25,8 +27,20 @@ export const RecurringDetailPageHeader: FC<RecurringDetailPageHeaderProps> = ({
   <>
     <div className="-mx-4 -mt-4 lg:hidden">
       <PageHeader
-        title={transaction?.title ?? ""}
+        title={transaction?.title ?? <Skeleton className="h-6 w-40" />}
         backTo="/recurring-transactions"
+        trailing={
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label="Edit"
+            onClick={onEdit}
+            disabled={!transaction}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        }
       />
     </div>
     <div className="hidden lg:block">

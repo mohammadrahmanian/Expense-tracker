@@ -5,6 +5,13 @@ import { QuickActionsCard } from "@/components/recurring/detail/QuickActionsCard
 import { ScheduleDetailsCard } from "@/components/recurring/detail/ScheduleDetailsCard";
 import type { Category, RecurringStatus, RecurringTransaction } from "@/types";
 
+const OCCURRENCES_TITLE = (
+  <>
+    <span className="lg:hidden">Occurrences</span>
+    <span className="hidden lg:inline">Upcoming occurrences</span>
+  </>
+);
+
 type RecurringDetailBodyProps = {
   transaction: RecurringTransaction;
   category: Category | undefined;
@@ -35,15 +42,16 @@ export const RecurringDetailBody: FC<RecurringDetailBodyProps> = ({
       status={status}
       formatAmount={formatAmount}
     />
-    <div className="lg:flex lg:gap-5">
-      <div className="lg:flex-1">
+    <div className="flex flex-col gap-5 lg:flex-row">
+      <div className="order-2 lg:order-none lg:flex-1">
         <UpcomingOccurrencesCard
           transaction={transaction}
           status={status}
           formatAmount={formatAmount}
+          title={OCCURRENCES_TITLE}
         />
       </div>
-      <div className="mt-5 flex flex-col gap-4 lg:mt-0 lg:w-[340px] lg:shrink-0">
+      <div className="order-1 flex flex-col gap-5 lg:order-none lg:w-[340px] lg:shrink-0 lg:gap-4">
         <QuickActionsCard
           status={status}
           onPause={onPause}
@@ -52,7 +60,10 @@ export const RecurringDetailBody: FC<RecurringDetailBodyProps> = ({
           isToggling={isToggling}
           isDeleting={isDeleting}
         />
-        <ScheduleDetailsCard transaction={transaction} formatAmount={formatAmount} />
+        <ScheduleDetailsCard
+          transaction={transaction}
+          formatAmount={formatAmount}
+        />
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { type FC, useState } from "react";
+import { type FC, type ReactNode, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { getNextOccurrences } from "@/lib/recurring-transactions.utils";
 import { UpcomingOccurrenceRow } from "./UpcomingOccurrenceRow";
@@ -8,6 +8,7 @@ type UpcomingOccurrencesCardProps = {
   transaction: RecurringTransaction;
   status: RecurringStatus;
   formatAmount: (n: number) => string;
+  title?: ReactNode;
 };
 
 const DEFAULT_VISIBLE = 4;
@@ -16,6 +17,7 @@ export const UpcomingOccurrencesCard: FC<UpcomingOccurrencesCardProps> = ({
   transaction,
   status,
   formatAmount,
+  title = "Upcoming occurrences",
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -43,9 +45,7 @@ export const UpcomingOccurrencesCard: FC<UpcomingOccurrencesCardProps> = ({
   return (
     <Card className="flex flex-col overflow-hidden p-0">
       <div className="flex items-center justify-between border-b border-border p-5">
-        <h2 className="text-base font-semibold text-foreground">
-          Upcoming occurrences
-        </h2>
+        <h2 className="text-base font-semibold text-foreground">{title}</h2>
         <span className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
           Next {visible.length}
         </span>
