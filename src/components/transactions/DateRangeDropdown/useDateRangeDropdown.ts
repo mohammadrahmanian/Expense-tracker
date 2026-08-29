@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { DatePreset } from "@/lib/transactions.utils";
 import type { DateRange } from "react-day-picker";
+import type {
+  CalendarMode,
+  DateRangePanelProps,
+} from "./DateRangeDropdown.utils";
 
 type UseDateRangeDropdownParams = {
   preset: DatePreset;
@@ -20,54 +24,58 @@ export const useDateRangeDropdown = ({
   onCustomRangeSelect,
 }: UseDateRangeDropdownParams) => {
   const [open, setOpen] = useState(false);
-  const [calendarMode, setCalendarMode] = useState<"single" | "range" | null>(
-    null,
-  );
+  const [calendarMode, setCalendarMode] = useState<CalendarMode>(null);
   const [pendingDate, setPendingDate] = useState<Date | undefined>();
   const [pendingRange, setPendingRange] = useState<DateRange | undefined>();
 
-  const resetLocal = () => {
+  const resetLocal = useCallback(() => {
     setCalendarMode(null);
     setPendingDate(undefined);
     setPendingRange(undefined);
-  };
+  }, []);
 
-  const handleOpenChange = (v: boolean) => {
-    setOpen(v);
-    if (v) {
-      if (preset === "custom_date") {
+  const handleOpenChange = useCallback(
+    (v: boolean) => {
+      setOpen(v);
+      if (v) {
+        if (preset === "custom_date") {
+          setCalendarMode("single");
+          setPendingDate(startDate);
+        } else if (preset === "custom_range") {
+          setCalendarMode("range");
+          setPendingRange(
+            startDate && endDate ? { from: startDate, to: endDate } : undefined,
+          );
+        }
+      } else {
+        resetLocal();
+      }
+    },
+    [preset, startDate, endDate, resetLocal],
+  );
+
+  const handlePresetClick = useCallback(
+    (value: DatePreset) => {
+      if (value === "custom_date") {
         setCalendarMode("single");
         setPendingDate(startDate);
-      } else if (preset === "custom_range") {
+        return;
+      }
+      if (value === "custom_range") {
         setCalendarMode("range");
         setPendingRange(
           startDate && endDate ? { from: startDate, to: endDate } : undefined,
         );
+        return;
       }
-    } else {
       resetLocal();
-    }
-  };
+      onPresetChange(value);
+      setOpen(false);
+    },
+    [startDate, endDate, onPresetChange, resetLocal],
+  );
 
-  const handlePresetClick = (value: DatePreset) => {
-    if (value === "custom_date") {
-      setCalendarMode("single");
-      setPendingDate(startDate);
-      return;
-    }
-    if (value === "custom_range") {
-      setCalendarMode("range");
-      setPendingRange(
-        startDate && endDate ? { from: startDate, to: endDate } : undefined,
-      );
-      return;
-    }
-    resetLocal();
-    onPresetChange(value);
-    setOpen(false);
-  };
-
-  const handleApply = () => {
+  const handleApply = useCallback(() => {
     if (calendarMode === "single" && pendingDate) {
       onCustomDateSelect(pendingDate);
     } else if (
@@ -79,33 +87,62 @@ export const useDateRangeDropdown = ({
     }
     resetLocal();
     setOpen(false);
-  };
+  }, [
+    calendarMode,
+    pendingDate,
+    pendingRange,
+    onCustomDateSelect,
+    onCustomRangeSelect,
+    resetLocal,
+  ]);
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     setPendingDate(undefined);
     setPendingRange(undefined);
-  };
+  }, []);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     resetLocal();
-  };
+  }, [resetLocal]);
+
+  const handlePendingDateChange = useCallback((date: Date | undefined) => {
+    setPendingDate(date ?? undefined);
+  }, []);
 
   const canApply =
     (calendarMode === "single" && !!pendingDate) ||
     (calendarMode === "range" && !!pendingRange?.from && !!pendingRange?.to);
 
+  const panelProps: DateRangePanelProps = useMemo(
+    () => ({
+      preset,
+      calendarMode,
+      pendingDate,
+      pendingRange,
+      canApply,
+      onPresetClick: handlePresetClick,
+      onPendingDateChange: handlePendingDateChange,
+      onPendingRangeChange: setPendingRange,
+      onClear: handleClear,
+      onApply: handleApply,
+    }),
+    [
+      preset,
+      calendarMode,
+      pendingDate,
+      pendingRange,
+      canApply,
+      handlePresetClick,
+      handlePendingDateChange,
+      handleClear,
+      handleApply,
+    ],
+  );
+
   return {
     open,
-    calendarMode,
-    pendingDate,
-    pendingRange,
-    canApply,
+    panelProps,
     handleOpenChange,
-    handlePresetClick,
-    handleApply,
-    handleClear,
     handleBack,
-    setPendingDate,
-    setPendingRange,
   };
 };

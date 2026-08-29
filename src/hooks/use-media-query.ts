@@ -1,9 +1,11 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 
-export function useMediaQuery(query: string) {
-  const [matches, setMatches] = React.useState<boolean | undefined>(undefined);
+export function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(
+    () => window.matchMedia(query).matches,
+  );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const mql = window.matchMedia(query);
     const onChange = () => {
       setMatches(mql.matches);
@@ -13,5 +15,5 @@ export function useMediaQuery(query: string) {
     return () => mql.removeEventListener("change", onChange);
   }, [query]);
 
-  return !!matches;
+  return matches;
 }

@@ -1,23 +1,9 @@
 import { type FC } from "react";
-import type { DateRange } from "react-day-picker";
-import { DatePreset } from "@/lib/transactions.utils";
 import { DateRangeCalendarPanel } from "@/components/transactions/DateRangeCalendarPanel";
 import { DateRangePresetList } from "./DateRangePresetList";
+import type { DateRangePanelProps } from "./DateRangeDropdown.utils";
 
-type DateRangeDesktopPanelProps = {
-  preset: DatePreset;
-  calendarMode: "single" | "range" | null;
-  pendingDate: Date | undefined;
-  pendingRange: DateRange | undefined;
-  canApply: boolean;
-  onPresetClick: (value: DatePreset) => void;
-  onPendingDateChange: (date: Date | undefined) => void;
-  onPendingRangeChange: (range: DateRange | undefined) => void;
-  onClear: () => void;
-  onApply: () => void;
-};
-
-export const DateRangeDesktopPanel: FC<DateRangeDesktopPanelProps> = ({
+export const DateRangeDesktopPanel: FC<DateRangePanelProps> = ({
   preset,
   calendarMode,
   pendingDate,
@@ -28,31 +14,41 @@ export const DateRangeDesktopPanel: FC<DateRangeDesktopPanelProps> = ({
   onPendingRangeChange,
   onClear,
   onApply,
-}) => (
-  <div className="flex items-stretch">
-    <DateRangePresetList
-      preset={preset}
-      calendarMode={calendarMode}
-      onPresetClick={onPresetClick}
-      showChevron={false}
-      className="w-[300px] shrink-0"
-    />
-    {calendarMode && (
-      <>
-        <div className="border-l border-border" />
+}) => {
+  const footerProps = {
+    footer: "actions" as const,
+    canApply,
+    onClear,
+    onApply,
+  };
+
+  return (
+    <div className="flex items-stretch">
+      <DateRangePresetList
+        preset={preset}
+        calendarMode={calendarMode}
+        onPresetClick={onPresetClick}
+        showChevron={false}
+        className="w-[300px] shrink-0"
+      />
+      {calendarMode === "single" && (
         <DateRangeCalendarPanel
-          mode={calendarMode}
+          mode="single"
           selectedDate={pendingDate}
-          selectedRange={pendingRange}
           onDateChange={onPendingDateChange}
-          onRangeChange={onPendingRangeChange}
-          footer="actions"
-          canApply={canApply}
-          onClear={onClear}
-          onApply={onApply}
-          className="w-[320px] shrink-0"
+          className="w-[280px] shrink-0 border-l border-border"
+          {...footerProps}
         />
-      </>
-    )}
-  </div>
-);
+      )}
+      {calendarMode === "range" && (
+        <DateRangeCalendarPanel
+          mode="range"
+          selectedRange={pendingRange}
+          onRangeChange={onPendingRangeChange}
+          className="w-[280px] shrink-0 border-l border-border"
+          {...footerProps}
+        />
+      )}
+    </div>
+  );
+};

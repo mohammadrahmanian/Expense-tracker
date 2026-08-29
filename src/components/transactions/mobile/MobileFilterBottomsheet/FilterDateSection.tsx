@@ -40,11 +40,11 @@ export const FilterDateSection: FC<FilterDateSectionProps> = ({
             ? { from: draft.startDate, to: draft.endDate }
             : undefined
         }
-        onDateChange={() => {}}
         onRangeChange={(range: DateRange | undefined) =>
           onDraftChange({ startDate: range?.from, endDate: range?.to })
         }
         footer="summary"
+        size="comfortable"
         className="mt-3"
       />
     )}

@@ -3,21 +3,21 @@ import { CalendarCheck } from "lucide-react";
 import { formatDateLabel } from "./DateRangeCalendarPanel.utils";
 
 type DateRangeFooterProps = {
-  dateLabel: Date | undefined;
-  endDateLabel?: Date | undefined;
+  startDate: Date | undefined;
+  endDate?: Date;
   onClear: () => void;
   onApply: () => void;
   canApply: boolean;
 };
 
 export const DateRangeFooter: FC<DateRangeFooterProps> = ({
-  dateLabel,
-  endDateLabel,
+  startDate,
+  endDate,
   onClear,
   onApply,
   canApply,
 }) => {
-  const formattedLabel = formatDateLabel(dateLabel, endDateLabel);
+  const formattedLabel = formatDateLabel(startDate, endDate);
 
   return (
     <div className="flex items-center justify-between gap-2 px-3 py-2">

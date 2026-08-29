@@ -1,23 +1,18 @@
-import { type FC } from "react";
-import type { DateRange } from "react-day-picker";
+import { type FC, useEffect, useRef } from "react";
 import { ChevronLeft } from "lucide-react";
-import { DatePreset } from "@/lib/transactions.utils";
+import { DrawerTitle } from "@/components/ui/drawer";
 import { DateRangeCalendarPanel } from "@/components/transactions/DateRangeCalendarPanel";
 import { DateRangePresetList } from "./DateRangePresetList";
+import {
+  CALENDAR_MODE_TO_PRESET,
+  type CalendarMode,
+  type DateRangePanelProps,
+} from "./DateRangeDropdown.utils";
 
-type DateRangeMobileSheetProps = {
-  preset: DatePreset;
-  calendarMode: "single" | "range" | null;
-  pendingDate: Date | undefined;
-  pendingRange: DateRange | undefined;
-  canApply: boolean;
-  onPresetClick: (value: DatePreset) => void;
-  onPendingDateChange: (date: Date | undefined) => void;
-  onPendingRangeChange: (range: DateRange | undefined) => void;
-  onClear: () => void;
-  onApply: () => void;
-  onBack: () => void;
-};
+type DateRangeMobileSheetProps = DateRangePanelProps & { onBack: () => void };
+
+const HEADING_CLASS = "text-sm font-semibold text-foreground";
+const STEP_ONE_HEADING_CLASS = `px-4 pb-2 pt-1 ${HEADING_CLASS}`;
 
 export const DateRangeMobileSheet: FC<DateRangeMobileSheetProps> = ({
   preset,
@@ -32,26 +27,46 @@ export const DateRangeMobileSheet: FC<DateRangeMobileSheetProps> = ({
   onApply,
   onBack,
 }) => {
+  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const prevModeRef = useRef<CalendarMode>(null);
+
+  useEffect(() => {
+    if (calendarMode && !prevModeRef.current) backButtonRef.current?.focus();
+    prevModeRef.current = calendarMode;
+  }, [calendarMode]);
+
   if (!calendarMode) {
+    const autoFocusValue = prevModeRef.current
+      ? CALENDAR_MODE_TO_PRESET[prevModeRef.current]
+      : undefined;
     return (
       <div className="flex flex-col">
-        <h2 className="px-4 pb-2 pt-1 text-sm font-semibold text-foreground">
+        <DrawerTitle className={STEP_ONE_HEADING_CLASS}>
           Select Date
-        </h2>
+        </DrawerTitle>
         <DateRangePresetList
           preset={preset}
           calendarMode={calendarMode}
           onPresetClick={onPresetClick}
           showChevron
+          autoFocusValue={autoFocusValue}
         />
       </div>
     );
   }
 
+  const footerProps = {
+    footer: "actions" as const,
+    canApply,
+    onClear,
+    onApply,
+  };
+
   return (
     <div className="flex flex-col">
       <div className="flex items-center gap-2 px-4 pb-2 pt-1">
         <button
+          ref={backButtonRef}
           type="button"
           onClick={onBack}
           aria-label="Back to the date options"
@@ -59,21 +74,27 @@ export const DateRangeMobileSheet: FC<DateRangeMobileSheetProps> = ({
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
-        <h2 className="text-sm font-semibold text-foreground">
+        <DrawerTitle className={HEADING_CLASS}>
           {calendarMode === "single" ? "Custom Date" : "Custom Date Range"}
-        </h2>
+        </DrawerTitle>
       </div>
-      <DateRangeCalendarPanel
-        mode={calendarMode}
-        selectedDate={pendingDate}
-        selectedRange={pendingRange}
-        onDateChange={onPendingDateChange}
-        onRangeChange={onPendingRangeChange}
-        footer="actions"
-        canApply={canApply}
-        onClear={onClear}
-        onApply={onApply}
-      />
+      {calendarMode === "single" ? (
+        <DateRangeCalendarPanel
+          mode="single"
+          selectedDate={pendingDate}
+          onDateChange={onPendingDateChange}
+          size="comfortable"
+          {...footerProps}
+        />
+      ) : (
+        <DateRangeCalendarPanel
+          mode="range"
+          selectedRange={pendingRange}
+          onRangeChange={onPendingRangeChange}
+          size="comfortable"
+          {...footerProps}
+        />
+      )}
     </div>
   );
 };

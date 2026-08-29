@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { renderHook } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { useMediaQuery } from "./use-media-query";
 
 const createMatchMedia = (matches: boolean) => {
@@ -66,5 +66,39 @@ describe("useMediaQuery", () => {
       "change",
       expect.any(Function),
     );
+  });
+
+  it("re-renders with the new value when the media query changes", () => {
+    const { mql, listeners } = createMatchMedia(false);
+    vi.spyOn(window, "matchMedia").mockReturnValue(
+      mql as unknown as MediaQueryList,
+    );
+
+    const { result } = renderHook(() => useMediaQuery("(min-width: 1024px)"));
+    expect(result.current).toBe(false);
+
+    act(() => {
+      mql.matches = true;
+      listeners.forEach((listener) => listener({} as MediaQueryListEvent));
+    });
+
+    expect(result.current).toBe(true);
+  });
+
+  it("resubscribes when the query string changes", () => {
+    const { mql } = createMatchMedia(false);
+    vi.spyOn(window, "matchMedia").mockReturnValue(
+      mql as unknown as MediaQueryList,
+    );
+
+    const { rerender } = renderHook(({ query }) => useMediaQuery(query), {
+      initialProps: { query: "(min-width: 1024px)" },
+    });
+    expect(mql.addEventListener).toHaveBeenCalledTimes(1);
+
+    rerender({ query: "(min-width: 768px)" });
+
+    expect(mql.removeEventListener).toHaveBeenCalledTimes(1);
+    expect(mql.addEventListener).toHaveBeenCalledTimes(2);
   });
 });

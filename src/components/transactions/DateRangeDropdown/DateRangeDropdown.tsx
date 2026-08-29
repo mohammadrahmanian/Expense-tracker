@@ -2,7 +2,11 @@ import { type FC } from "react";
 import { DatePreset } from "@/lib/transactions.utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { DateRangeDropdownView } from "./DateRangeDropdownView";
-import { getPresetLabel, getPillLabel } from "./DateRangeDropdown.utils";
+import {
+  getPresetLabel,
+  getPillLabel,
+  LARGE_SCREEN_QUERY,
+} from "./DateRangeDropdown.utils";
 import { useDateRangeDropdown } from "./useDateRangeDropdown";
 
 type DateRangeDropdownProps = {
@@ -24,29 +28,17 @@ export const DateRangeDropdown: FC<DateRangeDropdownProps> = ({
   onCustomRangeSelect,
   variant = "default",
 }) => {
-  const {
-    open,
-    calendarMode,
-    pendingDate,
-    pendingRange,
-    canApply,
-    handleOpenChange,
-    handlePresetClick,
-    handleApply,
-    handleClear,
-    handleBack,
-    setPendingDate,
-    setPendingRange,
-  } = useDateRangeDropdown({
-    preset,
-    startDate,
-    endDate,
-    onPresetChange,
-    onCustomDateSelect,
-    onCustomRangeSelect,
-  });
+  const { open, panelProps, handleOpenChange, handleBack } =
+    useDateRangeDropdown({
+      preset,
+      startDate,
+      endDate,
+      onPresetChange,
+      onCustomDateSelect,
+      onCustomRangeSelect,
+    });
 
-  const isLargeScreen = useMediaQuery("(min-width: 1024px)");
+  const isLargeScreen = useMediaQuery(LARGE_SCREEN_QUERY);
   const label =
     variant === "pill"
       ? getPillLabel(preset, startDate, endDate)
@@ -60,18 +52,7 @@ export const DateRangeDropdown: FC<DateRangeDropdownProps> = ({
       variant={variant}
       label={label}
       preset={preset}
-      panelProps={{
-        preset,
-        calendarMode,
-        pendingDate,
-        pendingRange,
-        canApply,
-        onPresetClick: handlePresetClick,
-        onPendingDateChange: (d) => setPendingDate(d ?? undefined),
-        onPendingRangeChange: setPendingRange,
-        onClear: handleClear,
-        onApply: handleApply,
-      }}
+      panelProps={panelProps}
       onBack={handleBack}
     />
   );

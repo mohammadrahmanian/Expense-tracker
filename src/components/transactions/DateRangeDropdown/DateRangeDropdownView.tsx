@@ -1,19 +1,15 @@
-import { type ComponentProps, type FC } from "react";
+import { type FC } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { DatePreset } from "@/lib/transactions.utils";
 import { DateRangeTrigger } from "./DateRangeTrigger";
 import { DateRangeDesktopPanel } from "./DateRangeDesktopPanel";
 import { DateRangeMobileSheet } from "./DateRangeMobileSheet";
+import type { DateRangePanelProps } from "./DateRangeDropdown.utils";
 
 type DateRangeDropdownViewProps = {
   isLargeScreen: boolean;
@@ -22,7 +18,7 @@ type DateRangeDropdownViewProps = {
   variant: "default" | "pill";
   label: string;
   preset: DatePreset;
-  panelProps: ComponentProps<typeof DateRangeDesktopPanel>;
+  panelProps: DateRangePanelProps;
   onBack: () => void;
 };
 
@@ -64,7 +60,6 @@ export const DateRangeDropdownView: FC<DateRangeDropdownViewProps> = ({
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent className="max-h-[90dvh]">
-        <DrawerTitle className="sr-only">Date filter</DrawerTitle>
         <div className="overflow-y-auto pb-4">
           <DateRangeMobileSheet {...panelProps} onBack={onBack} />
         </div>

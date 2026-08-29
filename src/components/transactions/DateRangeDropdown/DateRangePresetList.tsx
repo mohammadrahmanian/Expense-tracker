@@ -2,17 +2,19 @@ import { type FC } from "react";
 import { DatePreset } from "@/lib/transactions.utils";
 import { cn } from "@/lib/utils";
 import { Check, ChevronRight } from "lucide-react";
-import { PRESET_OPTIONS } from "./DateRangeDropdown.utils";
+import {
+  GROUPED_PRESET_OPTIONS,
+  type CalendarMode,
+} from "./DateRangeDropdown.utils";
 
 type DateRangePresetListProps = {
   preset: DatePreset;
-  calendarMode: "single" | "range" | null;
+  calendarMode: CalendarMode;
   onPresetClick: (value: DatePreset) => void;
   showChevron?: boolean;
   className?: string;
+  autoFocusValue?: DatePreset;
 };
-
-const GROUPS = ["day", "month", "custom"] as const;
 
 export const DateRangePresetList: FC<DateRangePresetListProps> = ({
   preset,
@@ -20,15 +22,16 @@ export const DateRangePresetList: FC<DateRangePresetListProps> = ({
   onPresetClick,
   showChevron = false,
   className,
+  autoFocusValue,
 }) => (
   <div className={cn("flex flex-col py-2", className)}>
     <span className="px-4 py-1.5 text-[10px] font-semibold tracking-widest text-muted-foreground">
       QUICK SELECT
     </span>
-    {GROUPS.map((group, gi) => (
+    {GROUPED_PRESET_OPTIONS.map(({ group, options }, gi) => (
       <div key={group}>
         {gi > 0 && <div className="mx-4 my-1 h-px bg-border" />}
-        {PRESET_OPTIONS.filter((o) => o.group === group).map((option) => {
+        {options.map((option) => {
           const isActive =
             (calendarMode === "single" && option.value === "custom_date") ||
             (calendarMode === "range" && option.value === "custom_range") ||
@@ -40,6 +43,7 @@ export const DateRangePresetList: FC<DateRangePresetListProps> = ({
             <button
               key={option.value}
               type="button"
+              autoFocus={option.value === autoFocusValue}
               onClick={() => onPresetClick(option.value)}
               className={cn(
                 "flex w-full items-center gap-2.5 rounded-sm px-4 py-2.5 text-[13px] font-medium transition-colors",
