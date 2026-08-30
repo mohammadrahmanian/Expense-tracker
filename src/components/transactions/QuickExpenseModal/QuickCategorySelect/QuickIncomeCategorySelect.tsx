@@ -9,10 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Collapsible,
-  CollapsibleContent,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 
 const QUICK_INCOME_NAMES = new Set(
   incomeCategories
@@ -134,12 +131,14 @@ export const QuickIncomeCategorySelect: FC<QuickIncomeCategorySelectProps> = ({
         </CollapsibleContent>
       </Collapsible>
 
-      {selectedCategory && !findCategory(selectedCategory) && !otherExpanded && (
-        <p className="text-caption text-gold-700 bg-gold-50 border border-gold-200 rounded-md p-3 dark:bg-gold-900 dark:text-gold-200 dark:border-gold-700">
-          &ldquo;{selectedCategory}&rdquo; category will be created
-          automatically.
-        </p>
-      )}
+      {selectedCategory &&
+        !findCategory(selectedCategory) &&
+        !otherExpanded && (
+          <p className="text-caption text-gold-700 bg-gold-50 border border-gold-200 rounded-md p-3 dark:bg-gold-900 dark:text-gold-200 dark:border-gold-700">
+            &ldquo;{selectedCategory}&rdquo; category will be created
+            automatically.
+          </p>
+        )}
       {error && <p className="text-caption text-danger-500">{error}</p>}
     </div>
   );

@@ -49,10 +49,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(response.user));
     } catch (error: any) {
       // Sentry reporting is handled at the service layer to avoid duplicates
-      handleApiError(error, {
-        action: "login",
-        feature: "AUTH",
-      }, { reportToSentry: false, logError: false });
+      handleApiError(
+        error,
+        {
+          action: "login",
+          feature: "AUTH",
+        },
+        { reportToSentry: false, logError: false },
+      );
       throw error; // Re-throw for component to handle
     } finally {
       setIsLoading(false);
@@ -68,10 +72,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(response.user));
     } catch (error: any) {
       // Sentry reporting is handled at the service layer to avoid duplicates
-      handleApiError(error, {
-        action: "register",
-        feature: "AUTH",
-      }, { reportToSentry: false, logError: false });
+      handleApiError(
+        error,
+        {
+          action: "register",
+          feature: "AUTH",
+        },
+        { reportToSentry: false, logError: false },
+      );
       throw error; // Re-throw for component to handle
     } finally {
       setIsLoading(false);

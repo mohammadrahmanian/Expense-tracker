@@ -31,7 +31,10 @@ export const LoginForm: FC<LoginFormProps> = ({
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5">
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="email" className="text-xs font-medium text-neutral-900 dark:text-neutral-200">
+        <Label
+          htmlFor="email"
+          className="text-xs font-medium text-neutral-900 dark:text-neutral-200"
+        >
           Email
         </Label>
         <div className="relative">
@@ -52,10 +55,16 @@ export const LoginForm: FC<LoginFormProps> = ({
 
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <Label htmlFor="password" className="text-xs font-medium text-neutral-900 dark:text-neutral-200">
+          <Label
+            htmlFor="password"
+            className="text-xs font-medium text-neutral-900 dark:text-neutral-200"
+          >
             Password
           </Label>
-          <button type="button" className="text-xs font-medium text-gold-500 hover:text-gold-400">
+          <button
+            type="button"
+            className="text-xs font-medium text-gold-500 hover:text-gold-400"
+          >
             Forgot password?
           </button>
         </div>
@@ -75,7 +84,11 @@ export const LoginForm: FC<LoginFormProps> = ({
             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
-            {showPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+            {showPassword ? (
+              <Eye className="h-4 w-4" />
+            ) : (
+              <EyeOff className="h-4 w-4" />
+            )}
           </button>
         </div>
         {errors.password && (

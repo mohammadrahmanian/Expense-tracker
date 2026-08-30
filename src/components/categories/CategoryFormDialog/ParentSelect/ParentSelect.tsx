@@ -19,7 +19,12 @@ type ParentSelectProps = {
   error?: string;
 };
 
-export const ParentSelect: FC<ParentSelectProps> = ({ value, onChange, options, error }) => (
+export const ParentSelect: FC<ParentSelectProps> = ({
+  value,
+  onChange,
+  options,
+  error,
+}) => (
   <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-1">
     <div className="flex items-center justify-between">
       <Label className="text-xs font-semibold text-foreground">Parent</Label>
@@ -34,7 +39,10 @@ export const ParentSelect: FC<ParentSelectProps> = ({ value, onChange, options, 
       >
         {/* Use a div wrapper so SelectTrigger's [&>span]:line-clamp-1 does not apply to this flex row (breaks icon/text alignment). */}
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          <Folder className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+          <Folder
+            className="h-4 w-4 shrink-0 text-muted-foreground"
+            aria-hidden
+          />
           <span className="min-w-0 flex-1 truncate text-left">
             <SelectValue placeholder="Top level category" />
           </span>

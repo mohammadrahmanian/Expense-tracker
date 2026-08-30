@@ -83,9 +83,7 @@ export const CategoryBreakdownChart: FC<CategoryBreakdownChartProps> = ({
               chart: { type: "column" },
               title: { text: undefined },
               xAxis: {
-                categories: monthlyData.map(
-                  (d) => d.monthLabel || d.month,
-                ),
+                categories: monthlyData.map((d) => d.monthLabel || d.month),
                 labels: { style: { fontSize: "10px" } },
               },
               yAxis: {

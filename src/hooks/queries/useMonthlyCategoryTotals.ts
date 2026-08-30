@@ -57,7 +57,9 @@ async function fetchTransactionsInRange(
   return items;
 }
 
-function aggregateByCategory(transactions: Transaction[]): MonthlyCategoryTotals {
+function aggregateByCategory(
+  transactions: Transaction[],
+): MonthlyCategoryTotals {
   const map: MonthlyCategoryTotals = {};
 
   for (const t of transactions) {

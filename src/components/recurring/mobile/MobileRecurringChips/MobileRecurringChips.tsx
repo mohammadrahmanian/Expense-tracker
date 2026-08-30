@@ -1,9 +1,9 @@
-import { type FC } from "react";
-import { cn } from "@/lib/utils";
+import { PillTabsItem, PillTabsList } from "@/components/ui/pill-tabs";
 import type {
   StatusFilterProps,
   TypeFilterProps,
 } from "@/lib/recurring-transactions.utils";
+import { type FC } from "react";
 
 type MobileRecurringChipsProps = {
   statusFilter: StatusFilterProps;
@@ -36,40 +36,24 @@ const CHIPS: ChipDef[] = [
     isSelected: (sf) => sf.statusFilter === "paused",
     onClick: (sf) => sf.onStatusFilterChange("paused"),
   },
-  {
-    label: "Income",
-    isSelected: (_, tf) => tf.typeFilter === "INCOME",
-    onClick: (_, tf) => tf.onTypeFilterChange("INCOME"),
-  },
-  {
-    label: "Expenses",
-    isSelected: (_, tf) => tf.typeFilter === "EXPENSE",
-    onClick: (_, tf) => tf.onTypeFilterChange("EXPENSE"),
-  },
 ];
 
 export const MobileRecurringChips: FC<MobileRecurringChipsProps> = ({
   statusFilter,
   typeFilter,
 }) => (
-  <div className="flex items-center gap-2 overflow-x-auto px-5 py-1.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+  <PillTabsList>
     {CHIPS.map((chip) => {
       const selected = chip.isSelected(statusFilter, typeFilter);
       return (
-        <button
+        <PillTabsItem
           key={chip.label}
-          type="button"
           onClick={() => chip.onClick(statusFilter, typeFilter)}
-          className={cn(
-            "whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold transition-colors shrink-0",
-            selected
-              ? "bg-primary text-primary-foreground"
-              : "bg-surface text-foreground border border-border",
-          )}
+          selected={selected}
         >
           {chip.label}
-        </button>
+        </PillTabsItem>
       );
     })}
-  </div>
+  </PillTabsList>
 );

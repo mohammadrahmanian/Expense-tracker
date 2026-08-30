@@ -55,9 +55,7 @@ export const ExpenseByCategory: FC<ExpenseByCategoryProps> = ({
       ) : (
         <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
           <div className="text-4xl mb-2">{"\ud83d\udcca"}</div>
-          <p className="text-sm font-medium">
-            No expense data for this month
-          </p>
+          <p className="text-sm font-medium">No expense data for this month</p>
           <p className="text-xs text-muted-foreground mt-1">
             Start adding transactions to see your spending breakdown
           </p>

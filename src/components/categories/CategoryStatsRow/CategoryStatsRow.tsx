@@ -1,6 +1,6 @@
-import { type FC } from "react";
 import { Card } from "@/components/ui/card";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { type FC } from "react";
 import {
   getAmountStatTitle,
   getAmountStatValueClassName,
@@ -45,9 +45,7 @@ export const CategoryStatsRow: FC<CategoryStatsRowProps> = ({
         <span className="text-[13px] font-medium text-muted-foreground">
           {amountTitle}
         </span>
-        <span
-          className={`text-[26px] font-bold leading-tight ${amountClass}`}
-        >
+        <span className={`text-[26px] font-bold leading-tight ${amountClass}`}>
           {formatAmount(totalAmount)}
         </span>
       </Card>

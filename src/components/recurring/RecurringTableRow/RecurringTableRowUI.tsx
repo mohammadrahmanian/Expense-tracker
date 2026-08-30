@@ -2,22 +2,17 @@ import { type FC } from "react";
 import { format } from "date-fns";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CategoryIconWrap } from "@/components/categories/CategoryCard/CategoryIconWrap";
 import { RecurringActionsMenu } from "@/components/recurring/RecurringActionsMenu";
 import { RecurringFrequencyPill } from "@/components/recurring/RecurringFrequencyPill";
-import { formatNextRunRelative } from "@/lib/recurring-transactions.utils";
+import { RecurringTableNameCell } from "./RecurringTableNameCell";
+import {
+  formatNextRunRelative,
+  parseRecurringDate,
+  STATUS_BADGE,
+} from "@/lib/recurring-transactions.utils";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 import type { RecurringStatus, RecurringTransaction } from "@/types";
-
-const STATUS_BADGE: Record<
-  RecurringStatus,
-  { variant: "success" | "warning" | "secondary"; label: string }
-> = {
-  active: { variant: "success", label: "Active" },
-  paused: { variant: "warning", label: "Paused" },
-  ended: { variant: "secondary", label: "Ended" },
-};
 
 type RecurringTableRowUIProps = {
   transaction: RecurringTransaction;
@@ -52,19 +47,16 @@ export const RecurringTableRowUI: FC<RecurringTableRowUIProps> = ({
 }) => {
   const badge = STATUS_BADGE[status];
   const isActive = status === "active";
+  const nextOccurrence = parseRecurringDate(transaction.nextOccurrence);
   return (
     <TableRow>
-      <TableCell>
-        <div className="flex items-center gap-3">
-          <CategoryIconWrap color={color} Icon={Icon} />
-          <div className="flex flex-col min-w-0">
-            <span className="text-sm font-semibold text-foreground truncate">
-              {transaction.title}
-            </span>
-            <span className="text-xs text-muted-foreground">{subtitle}</span>
-          </div>
-        </div>
-      </TableCell>
+      <RecurringTableNameCell
+        title={transaction.title}
+        subtitle={subtitle}
+        color={color}
+        Icon={Icon}
+        to={`/recurring-transactions/${transaction.id}`}
+      />
       <TableCell
         className={cn("text-right text-sm font-semibold", amountColor)}
       >
@@ -78,10 +70,10 @@ export const RecurringTableRowUI: FC<RecurringTableRowUIProps> = ({
         {isActive ? (
           <div className="flex flex-col gap-0.5">
             <span className="text-sm font-medium text-foreground">
-              {format(new Date(transaction.nextOccurrence), "MMM d, yyyy")}
+              {format(nextOccurrence, "MMM d, yyyy")}
             </span>
             <span className="text-[11px] font-semibold text-primary">
-              {formatNextRunRelative(transaction.nextOccurrence)}
+              {formatNextRunRelative(nextOccurrence)}
             </span>
           </div>
         ) : (

@@ -34,28 +34,34 @@ export const IconPicker: FC<IconPickerProps> = ({ value, onChange, error }) => (
             onClick={() => onChange(name)}
             className={cn(
               "flex h-12 items-center justify-center rounded-md border border-border bg-surface transition-shadow",
-              selected && "border-primary ring-2 ring-primary-bg ring-offset-0 dark:ring-primary/40",
+              selected &&
+                "border-primary ring-2 ring-primary-bg ring-offset-0 dark:ring-primary/40",
             )}
             aria-label={iconLabel}
             aria-pressed={selected}
           >
             <Icon
-              className={cn("h-5 w-5", selected ? "text-primary" : "text-neutral-600 dark:text-neutral-400")}
+              className={cn(
+                "h-5 w-5",
+                selected
+                  ? "text-primary"
+                  : "text-neutral-600 dark:text-neutral-400",
+              )}
               aria-hidden
             />
           </button>
         );
       })}
-        <button
-          type="button"
-          disabled
-          aria-disabled
-          title="More options (coming soon)"
-          aria-label="More options, coming soon"
-          className="flex h-12 cursor-not-allowed items-center justify-center rounded-md border border-border bg-neutral-100 opacity-70 dark:bg-neutral-800"
-        >
-          <Ellipsis className="h-5 w-5 text-muted-foreground" aria-hidden />
-        </button>
+      <button
+        type="button"
+        disabled
+        aria-disabled
+        title="More options (coming soon)"
+        aria-label="More options, coming soon"
+        className="flex h-12 cursor-not-allowed items-center justify-center rounded-md border border-border bg-neutral-100 opacity-70 dark:bg-neutral-800"
+      >
+        <Ellipsis className="h-5 w-5 text-muted-foreground" aria-hidden />
+      </button>
     </div>
     {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
   </div>

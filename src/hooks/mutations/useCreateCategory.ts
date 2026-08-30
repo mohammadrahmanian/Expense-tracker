@@ -44,10 +44,14 @@ export function useCreateCategory(options?: UseCreateCategoryOptions) {
       toast.success("Category created successfully");
     },
     onError: (error) => {
-      handleApiError(error, { action: "create category", feature: "CATEGORIES" }, {
-        reportToSentry: false,
-        showToast: showErrorToast,
-      });
+      handleApiError(
+        error,
+        { action: "create category", feature: "CATEGORIES" },
+        {
+          reportToSentry: false,
+          showToast: showErrorToast,
+        },
+      );
     },
   });
 }

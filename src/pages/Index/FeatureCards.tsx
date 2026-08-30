@@ -1,12 +1,6 @@
 import { type FC } from "react";
 import { motion } from "framer-motion";
-import {
-  Wallet,
-  BarChart3,
-  PieChart,
-  TrendingUp,
-  Shield,
-} from "lucide-react";
+import { Wallet, BarChart3, PieChart, TrendingUp, Shield } from "lucide-react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30, filter: "blur(8px)" },

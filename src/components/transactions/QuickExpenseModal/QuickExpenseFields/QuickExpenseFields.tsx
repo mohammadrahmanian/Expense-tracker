@@ -1,10 +1,20 @@
 import { useState, type FC } from "react";
 import { Category } from "@/types";
 import { UseFormReturn } from "react-hook-form";
-import { ChevronDown, ChevronRight, Pencil, Repeat, Settings } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Pencil,
+  Repeat,
+  Settings,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ToggleChip } from "@/components/ui/toggle-chip";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Select,
   SelectContent,
@@ -167,7 +177,10 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
           </CollapsibleTrigger>
           <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
             <div className="px-px">
-              <MoreOptionsSection notes={notes} onNotesChange={(v) => setValue("notes", v)} />
+              <MoreOptionsSection
+                notes={notes}
+                onNotesChange={(v) => setValue("notes", v)}
+              />
             </div>
           </CollapsibleContent>
         </Collapsible>

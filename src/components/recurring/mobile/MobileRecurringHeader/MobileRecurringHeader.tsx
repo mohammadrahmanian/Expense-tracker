@@ -1,6 +1,6 @@
-import { type FC } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, SlidersHorizontal } from "lucide-react";
+import { type FC } from "react";
 
 type MobileRecurringHeaderProps = {
   totalAllCount: number;
@@ -15,7 +15,7 @@ export const MobileRecurringHeader: FC<MobileRecurringHeaderProps> = ({
   onCreate,
   hasActiveFilters,
 }) => (
-  <div className="px-5 py-2.5 flex items-center justify-between">
+  <div className="flex items-center justify-between">
     <div className="flex items-center gap-2">
       <h1 className="text-2xl font-bold text-foreground tracking-tight">
         Recurring

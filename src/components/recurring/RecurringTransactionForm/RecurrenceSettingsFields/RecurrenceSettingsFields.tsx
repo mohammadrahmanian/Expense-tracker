@@ -1,27 +1,24 @@
 import { type FC } from "react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CalendarClock, Calendar } from "lucide-react";
+import { format } from "date-fns";
+import { parseRecurringDate } from "@/lib/recurring-transactions.utils";
 import { RecurringTransaction } from "@/types";
 import { UseFormReturn } from "react-hook-form";
-import { format } from "date-fns";
-import { Info } from "lucide-react";
-import {
-  RecurringTransactionCreateFormData,
-  RecurringTransactionEditFormData,
-} from "../RecurringTransactionForm.types";
+import { RecurringTransactionFormValues } from "../RecurringTransactionForm.types";
 import { CreateFrequencyField } from "./CreateFrequencyField";
 import { CreateStartDateField } from "./CreateStartDateField";
-import { EndDateField } from "./EndDateField";
+import { EndDateToggleField } from "./EndDateToggleField";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 type RecurrenceSettingsFieldsProps =
   | {
       mode: "create";
-      form: UseFormReturn<RecurringTransactionCreateFormData>;
+      form: UseFormReturn<RecurringTransactionFormValues>;
       transaction?: never;
     }
   | {
       mode: "edit";
-      form: UseFormReturn<RecurringTransactionEditFormData>;
+      form: UseFormReturn<RecurringTransactionFormValues>;
       transaction: RecurringTransaction;
     };
 
@@ -29,24 +26,28 @@ export const RecurrenceSettingsFields: FC<RecurrenceSettingsFieldsProps> = (
   props,
 ) => {
   const { mode, form } = props;
-
-  // Cast to UseFormReturn<any> for shared endDate field access across both form types
-  const sharedForm = form as UseFormReturn<any>;
-  const watchEndDate = sharedForm.watch("endDate") as Date | null | undefined;
-  const errors = sharedForm.formState.errors;
+  const hasEndDate = form.watch("hasEndDate");
+  const endDate = form.watch("endDate");
+  const errors = form.formState.errors;
 
   const minEndDate =
     mode === "edit"
-      ? new Date(props.transaction.startDate)
-      : (sharedForm.watch("startDate") as Date);
+      ? parseRecurringDate(props.transaction.startDate)
+      : form.watch("startDate");
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-        Recurrence Settings
-      </h3>
+      <div className="flex items-center gap-2">
+        <CalendarClock className="h-4 w-4 text-gold-500 dark:text-gold-300" />
+        <h3 className="text-sm font-semibold text-foreground">Schedule</h3>
+      </div>
       {mode === "create" ? (
-        <CreateFrequencyField form={props.form} />
+        <div className="space-y-1">
+          <CreateFrequencyField form={form} />
+          <p className="text-xs text-muted-foreground">
+            Daily, Weekly, Monthly, or Yearly
+          </p>
+        </div>
       ) : (
         <ReadOnlyField
           label="Frequency"
@@ -55,37 +56,30 @@ export const RecurrenceSettingsFields: FC<RecurrenceSettingsFieldsProps> = (
           capitalize
         />
       )}
-      {mode === "create" ? (
-        <CreateStartDateField form={props.form} />
-      ) : (
-        <ReadOnlyField
-          label="Start Date"
-          value={format(new Date(props.transaction.startDate), "PPP")}
-          hint="Start date cannot be changed after creation"
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {mode === "create" ? (
+          <CreateStartDateField form={form} />
+        ) : (
+          <ReadOnlyField
+            label="Start date"
+            value={format(parseRecurringDate(props.transaction.startDate), "PPP")}
+            hint="Start date cannot be changed after creation"
+            icon={Calendar}
+          />
+        )}
+        <EndDateToggleField
+          hasEndDate={hasEndDate}
+          endDate={endDate}
+          minDate={minEndDate}
+          error={errors.endDate?.message}
+          onToggle={(checked) =>
+            form.setValue("hasEndDate", checked, { shouldValidate: true })
+          }
+          onSelectDate={(date) =>
+            form.setValue("endDate", date, { shouldValidate: true })
+          }
         />
-      )}
-      <EndDateField
-        watchEndDate={watchEndDate}
-        minDate={minEndDate}
-        error={errors.endDate?.message as string}
-        onSelect={(date) => sharedForm.setValue("endDate", date)}
-        onClear={() => sharedForm.setValue("endDate", null)}
-      />
-      <Alert>
-        <Info className="h-4 w-4" />
-        <AlertDescription className="text-xs">
-          {mode === "create" ? (
-            "This will create a recurring schedule that automatically generates transactions based on the frequency you selected."
-          ) : (
-            <>
-              Next occurrence:{" "}
-              {format(new Date(props.transaction.nextOccurrence), "PPP")}
-              <br />
-              Changes will affect future occurrences only.
-            </>
-          )}
-        </AlertDescription>
-      </Alert>
+      </div>
     </div>
   );
 };

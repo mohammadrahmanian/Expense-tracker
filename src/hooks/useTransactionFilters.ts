@@ -13,7 +13,14 @@ import {
   type SortProps,
   type PaginationProps,
 } from "@/lib/transactions.utils";
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 
 export type BulkFilterPayload = Partial<
   Pick<
@@ -100,9 +107,19 @@ const filterReducer = (
         currentPage: 1,
       };
     case "SET_START_DATE":
-      return { ...state, startDate: action.payload, datePreset: "custom_range", currentPage: 1 };
+      return {
+        ...state,
+        startDate: action.payload,
+        datePreset: "custom_range",
+        currentPage: 1,
+      };
     case "SET_END_DATE":
-      return { ...state, endDate: action.payload, datePreset: "custom_range", currentPage: 1 };
+      return {
+        ...state,
+        endDate: action.payload,
+        datePreset: "custom_range",
+        currentPage: 1,
+      };
     case "SET_MIN_AMOUNT":
       return { ...state, minAmount: action.payload, currentPage: 1 };
     case "SET_MAX_AMOUNT":
@@ -148,10 +165,16 @@ export const useTransactionFilters = () => {
 
   // Tick that updates at midnight so relative date presets (today/this_month/etc.)
   // roll forward automatically without requiring a page reload.
-  const [dateTick, setDateTick] = useState(() => startOfDay(new Date()).getTime());
+  const [dateTick, setDateTick] = useState(() =>
+    startOfDay(new Date()).getTime(),
+  );
   useEffect(() => {
-    const msUntilMidnight = startOfDay(new Date(Date.now() + 86_400_000)).getTime() - Date.now();
-    const timer = setTimeout(() => setDateTick(startOfDay(new Date()).getTime()), msUntilMidnight);
+    const msUntilMidnight =
+      startOfDay(new Date(Date.now() + 86_400_000)).getTime() - Date.now();
+    const timer = setTimeout(
+      () => setDateTick(startOfDay(new Date()).getTime()),
+      msUntilMidnight,
+    );
     return () => clearTimeout(timer);
   }, [dateTick]);
 
@@ -173,47 +196,76 @@ export const useTransactionFilters = () => {
   };
 
   const queryParams = useMemo(() => buildQueryParams(state), [state, dateTick]);
-  const infiniteQueryParams = useMemo(() => buildInfiniteQueryParams(state), [state, dateTick]);
+  const infiniteQueryParams = useMemo(
+    () => buildInfiniteQueryParams(state),
+    [state, dateTick],
+  );
   const activeFilters = hasActiveFilters(state);
 
-  const dateFilterProps: DateFilterProps = useMemo(() => ({
-    datePreset: state.datePreset,
-    startDate: state.startDate,
-    endDate: state.endDate,
-    onDatePresetChange: (v: DatePreset) => dispatch({ type: "SET_DATE_PRESET", payload: v }),
-    onCustomDateSelect: (d: Date) => dispatch({ type: "SET_CUSTOM_DATE", payload: d }),
-    onCustomRangeSelect: (from: Date, to: Date) => dispatch({ type: "SET_CUSTOM_RANGE", payload: { from, to } }),
-  }), [state.datePreset, state.startDate, state.endDate]);
+  const dateFilterProps: DateFilterProps = useMemo(
+    () => ({
+      datePreset: state.datePreset,
+      startDate: state.startDate,
+      endDate: state.endDate,
+      onDatePresetChange: (v: DatePreset) =>
+        dispatch({ type: "SET_DATE_PRESET", payload: v }),
+      onCustomDateSelect: (d: Date) =>
+        dispatch({ type: "SET_CUSTOM_DATE", payload: d }),
+      onCustomRangeSelect: (from: Date, to: Date) =>
+        dispatch({ type: "SET_CUSTOM_RANGE", payload: { from, to } }),
+    }),
+    [state.datePreset, state.startDate, state.endDate],
+  );
 
-  const searchProps: SearchProps = useMemo(() => ({
-    searchTerm: searchInput,
-    onSearchTermChange: setSearchInput,
-  }), [searchInput]);
+  const searchProps: SearchProps = useMemo(
+    () => ({
+      searchTerm: searchInput,
+      onSearchTermChange: setSearchInput,
+    }),
+    [searchInput],
+  );
 
-  const typeFilterProps: TypeFilterProps = useMemo(() => ({
-    typeFilter: state.typeFilter,
-    onTypeFilterChange: (v: "all" | "INCOME" | "EXPENSE") => dispatch({ type: "SET_TYPE_FILTER", payload: v }),
-  }), [state.typeFilter]);
+  const typeFilterProps: TypeFilterProps = useMemo(
+    () => ({
+      typeFilter: state.typeFilter,
+      onTypeFilterChange: (v: "all" | "INCOME" | "EXPENSE") =>
+        dispatch({ type: "SET_TYPE_FILTER", payload: v }),
+    }),
+    [state.typeFilter],
+  );
 
-  const sortProps: SortProps = useMemo(() => ({
-    sortField: state.sortField,
-    sortOrder: state.sortOrder,
-    onSort: (f: "date" | "amount") => dispatch({ type: "SORT", payload: f }),
-  }), [state.sortField, state.sortOrder]);
+  const sortProps: SortProps = useMemo(
+    () => ({
+      sortField: state.sortField,
+      sortOrder: state.sortOrder,
+      onSort: (f: "date" | "amount") => dispatch({ type: "SORT", payload: f }),
+    }),
+    [state.sortField, state.sortOrder],
+  );
 
-  const paginationProps: PaginationProps = useMemo(() => ({
-    currentPage: state.currentPage,
-    pageSize: state.pageSize,
-    onPageChange: (p: number) => dispatch({ type: "SET_CURRENT_PAGE", payload: p }),
-    onPageSizeChange: (p: number) => dispatch({ type: "SET_PAGE_SIZE", payload: p }),
-  }), [state.currentPage, state.pageSize]);
+  const paginationProps: PaginationProps = useMemo(
+    () => ({
+      currentPage: state.currentPage,
+      pageSize: state.pageSize,
+      onPageChange: (p: number) =>
+        dispatch({ type: "SET_CURRENT_PAGE", payload: p }),
+      onPageSizeChange: (p: number) =>
+        dispatch({ type: "SET_PAGE_SIZE", payload: p }),
+    }),
+    [state.currentPage, state.pageSize],
+  );
 
-  const amountRangeProps: AmountRangeProps = useMemo(() => ({
-    minAmount: state.minAmount,
-    maxAmount: state.maxAmount,
-    onMinAmountChange: (v: number | undefined) => dispatch({ type: "SET_MIN_AMOUNT", payload: v }),
-    onMaxAmountChange: (v: number | undefined) => dispatch({ type: "SET_MAX_AMOUNT", payload: v }),
-  }), [state.minAmount, state.maxAmount]);
+  const amountRangeProps: AmountRangeProps = useMemo(
+    () => ({
+      minAmount: state.minAmount,
+      maxAmount: state.maxAmount,
+      onMinAmountChange: (v: number | undefined) =>
+        dispatch({ type: "SET_MIN_AMOUNT", payload: v }),
+      onMaxAmountChange: (v: number | undefined) =>
+        dispatch({ type: "SET_MAX_AMOUNT", payload: v }),
+    }),
+    [state.minAmount, state.maxAmount],
+  );
 
   const onCategoryFilterChange = useCallback(
     (v: string) => dispatch({ type: "SET_CATEGORY_FILTER", payload: v }),
@@ -221,7 +273,8 @@ export const useTransactionFilters = () => {
   );
 
   const applyBulkFilters = useCallback(
-    (payload: BulkFilterPayload) => dispatch({ type: "APPLY_BULK_FILTERS", payload }),
+    (payload: BulkFilterPayload) =>
+      dispatch({ type: "APPLY_BULK_FILTERS", payload }),
     [],
   );
 

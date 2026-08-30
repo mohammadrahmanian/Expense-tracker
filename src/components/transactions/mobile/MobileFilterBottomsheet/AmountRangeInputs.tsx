@@ -21,7 +21,9 @@ export const AmountRangeInputs: FC<AmountRangeInputsProps> = ({
   onMaxChange,
 }) => (
   <div className="flex flex-col gap-2.5">
-    <span className="text-caption font-medium text-muted-foreground">Amount Range</span>
+    <span className="text-caption font-medium text-muted-foreground">
+      Amount Range
+    </span>
     <div className="flex items-center gap-3">
       <Input
         type="number"
@@ -30,7 +32,9 @@ export const AmountRangeInputs: FC<AmountRangeInputsProps> = ({
         placeholder="Min"
         value={minAmount ?? ""}
         onChange={(e) => onMinChange(parseAmount(e.target.value))}
-        startAdornment={<span className="text-caption text-muted-foreground">$</span>}
+        startAdornment={
+          <span className="text-caption text-muted-foreground">$</span>
+        }
       />
       <span className="text-muted-foreground">—</span>
       <Input
@@ -40,7 +44,9 @@ export const AmountRangeInputs: FC<AmountRangeInputsProps> = ({
         placeholder="Max"
         value={maxAmount ?? ""}
         onChange={(e) => onMaxChange(parseAmount(e.target.value))}
-        startAdornment={<span className="text-caption text-muted-foreground">$</span>}
+        startAdornment={
+          <span className="text-caption text-muted-foreground">$</span>
+        }
       />
     </div>
   </div>

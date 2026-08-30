@@ -8,7 +8,12 @@ import { NameField } from "../NameField";
 import { ParentSelect } from "../ParentSelect";
 import { TypeSegment } from "../TypeSegment";
 import type { Category } from "@/types";
-import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
+import type {
+  FieldErrors,
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 
 type FormPanelProps = {
   editingCategory?: Category;
@@ -67,19 +72,28 @@ export const FormPanel: FC<FormPanelProps> = ({
         <div className="flex flex-col gap-3.5 sm:flex-row sm:flex-nowrap sm:items-stretch">
           <ParentSelect
             value={watch("parentId")}
-            onChange={(id) => setValue("parentId", id, { shouldValidate: true })}
+            onChange={(id) =>
+              setValue("parentId", id, { shouldValidate: true })
+            }
             options={parentOptions}
             error={errors.parentId?.message}
           />
           <MonthlyBudgetField
             value={watch("budgetAmount")}
-            onChange={(v) => setValue("budgetAmount", v, { shouldValidate: true })}
+            onChange={(v) =>
+              setValue("budgetAmount", v, { shouldValidate: true })
+            }
             error={errors.budgetAmount?.message}
           />
         </div>
       </div>
       <footer className="flex items-center justify-between gap-3 border-t border-border px-7 py-4">
-        <Button type="button" variant="outline" className="min-w-[7rem]" onClick={onCancel}>
+        <Button
+          type="button"
+          variant="outline"
+          className="min-w-[7rem]"
+          onClick={onCancel}
+        >
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting} className="min-w-[10rem]">

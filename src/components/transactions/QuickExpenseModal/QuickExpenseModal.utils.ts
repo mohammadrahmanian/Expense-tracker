@@ -42,12 +42,10 @@ export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
         const color =
           deps.transactionType === "EXPENSE"
             ? expenseCategories.find(
-                (c) =>
-                  c.name.toLowerCase() === data.categoryName.toLowerCase(),
+                (c) => c.name.toLowerCase() === data.categoryName.toLowerCase(),
               )?.color || NEW_CATEGORY_FALLBACK_COLOR
             : incomeCategories.find(
-                (c) =>
-                  c.name.toLowerCase() === data.categoryName.toLowerCase(),
+                (c) => c.name.toLowerCase() === data.categoryName.toLowerCase(),
               )?.color || NEW_CATEGORY_FALLBACK_COLOR;
         category = await deps.createCategoryAsync({
           name: data.categoryName,
@@ -61,8 +59,7 @@ export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
       }
     }
 
-    const kindLabel =
-      deps.transactionType === "INCOME" ? "income" : "expense";
+    const kindLabel = deps.transactionType === "INCOME" ? "income" : "expense";
     const title =
       data.transactionName?.trim() || `${data.categoryName} ${kindLabel}`;
 

@@ -1,6 +1,6 @@
-import { type FC, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { type FC, useRef } from "react";
 
 type CategoryType = "EXPENSE" | "INCOME";
 
@@ -11,7 +11,10 @@ type CategoryTypeTabsProps = {
 
 const ORDER: CategoryType[] = ["EXPENSE", "INCOME"];
 
-export const CategoryTypeTabs: FC<CategoryTypeTabsProps> = ({ value, onChange }) => {
+export const CategoryTypeTabs: FC<CategoryTypeTabsProps> = ({
+  value,
+  onChange,
+}) => {
   const expenseRef = useRef<HTMLButtonElement>(null);
   const incomeRef = useRef<HTMLButtonElement>(null);
 
@@ -37,7 +40,11 @@ export const CategoryTypeTabs: FC<CategoryTypeTabsProps> = ({ value, onChange })
     };
 
   return (
-    <div className="flex w-full gap-0 border-b border-border" role="radiogroup" aria-label="Category type">
+    <div
+      className="flex w-full gap-0 border-b border-border"
+      role="radiogroup"
+      aria-label="Category type"
+    >
       <button
         ref={expenseRef}
         type="button"

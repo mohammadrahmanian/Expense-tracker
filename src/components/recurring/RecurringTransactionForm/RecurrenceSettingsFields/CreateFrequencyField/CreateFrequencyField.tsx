@@ -7,11 +7,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { UseFormReturn } from "react-hook-form";
-import { RecurringTransactionCreateFormData } from "../../RecurringTransactionForm.types";
+import { RecurringTransactionFormValues } from "../../RecurringTransactionForm.types";
 
 type CreateFrequencyFieldProps = {
-  form: UseFormReturn<RecurringTransactionCreateFormData>;
+  form: UseFormReturn<RecurringTransactionFormValues>;
 };
 
 export const CreateFrequencyField: FC<CreateFrequencyFieldProps> = ({
@@ -26,7 +27,7 @@ export const CreateFrequencyField: FC<CreateFrequencyFieldProps> = ({
   return (
     <div className="space-y-2">
       <Label>
-        Frequency <span className="text-red-500">*</span>
+        Frequency <span className="text-danger-500">*</span>
       </Label>
       <Select
         value={watch("recurrenceFrequency")}
@@ -35,7 +36,7 @@ export const CreateFrequencyField: FC<CreateFrequencyFieldProps> = ({
         }
       >
         <SelectTrigger
-          className={errors.recurrenceFrequency ? "border-red-500" : ""}
+          className={cn("h-12", errors.recurrenceFrequency && "border-danger-500")}
         >
           <SelectValue placeholder="Select frequency" />
         </SelectTrigger>
@@ -47,7 +48,7 @@ export const CreateFrequencyField: FC<CreateFrequencyFieldProps> = ({
         </SelectContent>
       </Select>
       {errors.recurrenceFrequency && (
-        <p className="text-sm text-red-500">
+        <p className="text-sm text-danger-500">
           {errors.recurrenceFrequency.message}
         </p>
       )}

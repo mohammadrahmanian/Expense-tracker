@@ -2,7 +2,10 @@ import { FC } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Settings } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { DashboardSidebarProps, NavigationItem } from "../DashboardLayout.types";
+import {
+  DashboardSidebarProps,
+  NavigationItem,
+} from "../DashboardLayout.types";
 import { navigationSections } from "../DashboardLayout.utils";
 import { SidebarUserProfile } from "./SidebarUserProfile";
 

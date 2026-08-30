@@ -63,11 +63,7 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
             <Button
               type="submit"
               className="flex-1"
-              disabled={
-                isPending ||
-                categoriesLoading ||
-                incomeCategoriesEmpty
-              }
+              disabled={isPending || categoriesLoading || incomeCategoriesEmpty}
             >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isPending ? "Adding..." : submitLabel}

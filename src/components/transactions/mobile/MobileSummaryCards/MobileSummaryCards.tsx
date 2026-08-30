@@ -48,7 +48,8 @@ export const MobileSummaryCards: FC<MobileSummaryCardsProps> = ({
           <Skeleton className="h-5 w-24" />
         ) : (
           <span className="text-base font-bold text-primary dark:text-gold-200">
-            {net >= 0 ? "+" : "-"}{formatAmount(Math.abs(net))}
+            {net >= 0 ? "+" : "-"}
+            {formatAmount(Math.abs(net))}
           </span>
         )}
       </div>
@@ -75,7 +76,9 @@ const SplitCard: FC<SplitCardProps> = ({
 }) => (
   <div className="flex flex-1 flex-col gap-2.5 rounded-md border border-border bg-surface p-3.5 dark:bg-neutral-900">
     <div className="flex items-center gap-2">
-      <div className={`flex h-7 w-7 items-center justify-center rounded-sm ${iconBg}`}>
+      <div
+        className={`flex h-7 w-7 items-center justify-center rounded-sm ${iconBg}`}
+      >
         {icon}
       </div>
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
