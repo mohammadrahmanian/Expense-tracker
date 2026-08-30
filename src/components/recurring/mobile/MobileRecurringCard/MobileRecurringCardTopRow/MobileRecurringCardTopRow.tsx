@@ -1,5 +1,8 @@
 import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
-import { formatNextRunRelative } from "@/lib/recurring-transactions.utils";
+import {
+  formatNextRunRelative,
+  parseRecurringDate,
+} from "@/lib/recurring-transactions.utils";
 import { cn } from "@/lib/utils";
 import type { Category, RecurringStatus, RecurringTransaction } from "@/types";
 import { format } from "date-fns";
@@ -28,6 +31,7 @@ export const MobileRecurringCardTopRow: FC<MobileRecurringCardTopRowProps> = ({
       : "text-danger-500"
     : "text-muted-foreground";
   const sign = transaction.type === "INCOME" ? "+" : "-";
+  const nextOccurrence = parseRecurringDate(transaction.nextOccurrence);
 
   return (
     <div className="flex items-center gap-3">
@@ -52,8 +56,8 @@ export const MobileRecurringCardTopRow: FC<MobileRecurringCardTopRowProps> = ({
         </span>
         {isActive ? (
           <span className="text-[11px] font-medium text-muted-foreground">
-            {format(new Date(transaction.nextOccurrence), "MMM d")} ·{" "}
-            {formatNextRunRelative(transaction.nextOccurrence)}
+            {format(nextOccurrence, "MMM d")} ·{" "}
+            {formatNextRunRelative(nextOccurrence)}
           </span>
         ) : (
           <span className="text-[11px] font-medium text-muted-foreground">

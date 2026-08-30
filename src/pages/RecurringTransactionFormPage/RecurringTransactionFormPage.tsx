@@ -40,8 +40,8 @@ const RecurringTransactionFormPage = () => {
     }
   }, [notFound, navigate]);
 
-  const onSuccess = () => navigate(returnTo);
-  const onCancel = () => navigate(returnTo);
+  const onSuccess = () => navigate(returnTo, { replace: true });
+  const onCancel = () => navigate(returnTo, { replace: true });
 
   return (
     <DashboardLayout hideHeader hideFab hideBottomTab>

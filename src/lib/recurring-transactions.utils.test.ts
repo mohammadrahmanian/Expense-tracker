@@ -1,9 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { startOfDay } from "date-fns";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   countOccurrencesUntil,
   formatNextRunRelative,
   getNextOccurrences,
+  getRecurringStatus,
+  parseRecurringDate,
 } from "./recurring-transactions.utils";
+import type { RecurringTransaction } from "@/types";
 
 describe("getNextOccurrences", () => {
   const from = new Date(2026, 0, 1); // 2026-01-01, a Thursday
@@ -18,18 +22,8 @@ describe("getNextOccurrences", () => {
     expect(result[0].weekday).toBe("Thursday");
     expect(result[0].monthShort).toBe("JAN");
     expect(result[0].dayOfMonth).toBe("01");
-    expect(result[0].relativeLabel).toBe(
-      formatNextRunRelative(result[0].date.toISOString(), from),
-    );
     expect(result[0].relativeLabel).toBe("Today");
-
-    // Index 1 isn't asserted against a literal like "Tomorrow": date-fns's
-    // isTomorrow/isYesterday (used inside formatNextRunRelative) compare
-    // against the real system clock regardless of the `now` argument, so
-    // only the "same style as formatNextRunRelative" contract is stable here.
-    expect(result[1].relativeLabel).toBe(
-      formatNextRunRelative(result[1].date.toISOString(), from),
-    );
+    expect(result[1].relativeLabel).toBe("Tomorrow");
   });
 
   it("returns daily occurrences", () => {
@@ -117,6 +111,36 @@ describe("getNextOccurrences", () => {
 
     expect(result).toEqual([]);
   });
+
+  it("keeps the first occurrence on the correct calendar day when startDate carries a time-of-day and fromDate is midnight of the same day", () => {
+    const startDate = new Date(2026, 0, 15, 12, 0); // Jan 15, 2026, noon
+    const fromDate = startOfDay(startDate); // Jan 15, 2026, 00:00 — same calendar day
+
+    const result = getNextOccurrences({
+      startDate,
+      frequency: "DAILY",
+      fromDate,
+    });
+
+    expect(result[0].monthShort).toBe("JAN");
+    expect(result[0].dayOfMonth).toBe("15");
+    expect(result[0].date.toDateString()).toBe(startDate.toDateString());
+  });
+});
+
+describe("formatNextRunRelative", () => {
+  const now = new Date(2026, 0, 15); // 2026-01-15
+
+  it("labels today/tomorrow/yesterday relative to the given `now`, not the real clock", () => {
+    expect(formatNextRunRelative(new Date(2026, 0, 15), now)).toBe("Today");
+    expect(formatNextRunRelative(new Date(2026, 0, 16), now)).toBe("Tomorrow");
+    expect(formatNextRunRelative(new Date(2026, 0, 14), now)).toBe("Yesterday");
+  });
+
+  it("falls back to a distance string computed against `now` for farther dates", () => {
+    expect(formatNextRunRelative(new Date(2026, 0, 18), now)).toBe("in 3 days");
+    expect(formatNextRunRelative(new Date(2026, 0, 10), now)).toBe("5 days ago");
+  });
 });
 
 describe("countOccurrencesUntil", () => {
@@ -172,5 +196,77 @@ describe("countOccurrencesUntil", () => {
     });
 
     expect(count).toBe(1);
+  });
+});
+
+// The API stores startDate/endDate/nextOccurrence as UTC midnight of the
+// intended civil day (see F6.md). `parseRecurringDate` must reconstruct
+// that day as LOCAL components regardless of which side of UTC the viewer
+// is on — tested in both directions since a sign error in the offset math
+// would only show up on one side.
+describe("parseRecurringDate", () => {
+  const originalTZ = process.env.TZ;
+  afterEach(() => {
+    process.env.TZ = originalTZ;
+  });
+
+  it("reconstructs the UTC calendar day as local components west of UTC (America/Los_Angeles)", () => {
+    process.env.TZ = "America/Los_Angeles";
+    const d = parseRecurringDate("2026-01-15T00:00:00.000Z");
+    expect([d.getFullYear(), d.getMonth(), d.getDate()]).toEqual([2026, 0, 15]);
+  });
+
+  it("reconstructs the UTC calendar day as local components east of UTC (Asia/Tokyo)", () => {
+    process.env.TZ = "Asia/Tokyo";
+    const d = parseRecurringDate("2026-01-15T00:00:00.000Z");
+    expect([d.getFullYear(), d.getMonth(), d.getDate()]).toEqual([2026, 0, 15]);
+  });
+
+  it("does not skip the January monthly run for a west-of-UTC viewer (regression: F6-counter.md)", () => {
+    process.env.TZ = "America/Los_Angeles";
+    const startDate = parseRecurringDate("2026-01-15T00:00:00.000Z");
+    const fromDate = new Date(2026, 0, 15); // "today" for this viewer, local
+    const result = getNextOccurrences({
+      startDate,
+      frequency: "MONTHLY",
+      fromDate,
+    });
+    expect(result[0].monthShort).toBe("JAN");
+    expect(result[0].dayOfMonth).toBe("15");
+  });
+});
+
+describe("getRecurringStatus", () => {
+  const originalTZ = process.env.TZ;
+  afterEach(() => {
+    process.env.TZ = originalTZ;
+  });
+
+  const baseTransaction: RecurringTransaction = {
+    id: "1",
+    title: "Rent",
+    amount: 100,
+    type: "EXPENSE",
+    date: "2026-01-01T00:00:00.000Z",
+    startDate: "2026-01-01T00:00:00.000Z",
+    endDate: "2026-01-15T00:00:00.000Z",
+    isActive: true,
+    nextOccurrence: "2026-02-01T00:00:00.000Z",
+    categoryId: "c1",
+    recurrenceFrequency: "MONTHLY",
+  };
+
+  it("is not ended while still within the stored end date's civil day, west of UTC", () => {
+    process.env.TZ = "America/Los_Angeles";
+    // Real "now" during the 15th, local — the raw (unfixed) endDate would
+    // read back as the 14th and falsely report "ended" a day early.
+    const now = new Date(2026, 0, 15, 18, 0);
+    expect(getRecurringStatus(baseTransaction, now)).toBe("active");
+  });
+
+  it("is ended the day after the stored end date's civil day, west of UTC", () => {
+    process.env.TZ = "America/Los_Angeles";
+    const now = new Date(2026, 0, 16, 1, 0);
+    expect(getRecurringStatus(baseTransaction, now)).toBe("ended");
   });
 });

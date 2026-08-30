@@ -7,7 +7,6 @@ import {
   TypeFilterProps,
   StatusFilterProps,
   CategoryFilterProps,
-  SortProps,
   PaginationProps,
 } from "@/lib/recurring-transactions.utils";
 
@@ -16,7 +15,6 @@ type Action =
   | { type: "SET_TYPE"; payload: RecurringTypeFilter }
   | { type: "SET_STATUS"; payload: RecurringStatusFilter }
   | { type: "SET_CATEGORY"; payload: string }
-  | { type: "TOGGLE_SORT" }
   | { type: "SET_PAGE"; payload: number };
 
 const PAGE_SIZE = 10;
@@ -41,12 +39,6 @@ const reducer = (s: RecurringFilterState, a: Action): RecurringFilterState => {
       return { ...s, statusFilter: a.payload, currentPage: 1 };
     case "SET_CATEGORY":
       return { ...s, categoryFilter: a.payload, currentPage: 1 };
-    case "TOGGLE_SORT":
-      return {
-        ...s,
-        sortOrder: s.sortOrder === "asc" ? "desc" : "asc",
-        currentPage: 1,
-      };
     case "SET_PAGE":
       return { ...s, currentPage: a.payload };
   }
@@ -102,14 +94,6 @@ export const useRecurringTransactionsFilters = () => {
     [state.categoryFilter],
   );
 
-  const sortProps: SortProps = useMemo(
-    () => ({
-      sortOrder: state.sortOrder,
-      onSortToggle: () => dispatch({ type: "TOGGLE_SORT" }),
-    }),
-    [state.sortOrder],
-  );
-
   const paginationProps: PaginationProps = useMemo(
     () => ({
       currentPage: state.currentPage,
@@ -125,7 +109,6 @@ export const useRecurringTransactionsFilters = () => {
     typeFilterProps,
     statusFilterProps,
     categoryFilterProps,
-    sortProps,
     paginationProps,
   };
 };

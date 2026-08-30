@@ -1,6 +1,10 @@
 import { type FC, type ReactNode, useState } from "react";
+import { max, startOfDay } from "date-fns";
 import { Card } from "@/components/ui/card";
-import { getNextOccurrences } from "@/lib/recurring-transactions.utils";
+import {
+  getNextOccurrences,
+  parseRecurringDate,
+} from "@/lib/recurring-transactions.utils";
 import { UpcomingOccurrenceRow } from "./UpcomingOccurrenceRow";
 import type { RecurringStatus, RecurringTransaction } from "@/types";
 
@@ -25,12 +29,16 @@ export const UpcomingOccurrencesCard: FC<UpcomingOccurrencesCardProps> = ({
     status === "ended"
       ? []
       : getNextOccurrences({
-          startDate: new Date(transaction.startDate),
+          startDate: parseRecurringDate(transaction.startDate),
           frequency: transaction.recurrenceFrequency,
           endDate: transaction.endDate
-            ? new Date(transaction.endDate)
+            ? parseRecurringDate(transaction.endDate)
             : undefined,
           count: 6,
+          fromDate: max([
+            startOfDay(new Date()),
+            startOfDay(parseRecurringDate(transaction.nextOccurrence)),
+          ]),
         });
 
   const visible = expanded

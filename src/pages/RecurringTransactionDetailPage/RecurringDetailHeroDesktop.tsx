@@ -7,6 +7,7 @@ import { RecurringFrequencyPill } from "@/components/recurring/RecurringFrequenc
 import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import {
   formatPerOccurrenceSubline,
+  parseRecurringDate,
   STATUS_BADGE,
 } from "@/lib/recurring-transactions.utils";
 import { cn } from "@/lib/utils";
@@ -48,7 +49,7 @@ export const RecurringDetailHeroDesktop: FC<
             </span>
             <span className="flex items-center gap-1.5">
               <CalendarClock className="h-4 w-4" />
-              Since {format(new Date(transaction.startDate), "MMM d, yyyy")}
+              Since {format(parseRecurringDate(transaction.startDate), "MMM d, yyyy")}
             </span>
           </div>
         </div>

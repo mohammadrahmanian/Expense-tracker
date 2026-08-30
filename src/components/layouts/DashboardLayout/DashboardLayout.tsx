@@ -46,7 +46,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           sidebarCollapsed ? "lg:pl-20" : "lg:pl-72",
         )}
       >
-      { !hideHeader && <DashboardHeader /> }
+        {!hideHeader && <DashboardHeader />}
 
         <main className="flex-1">
           <div className={cn(hideBottomTab ? "pb-6" : "pb-32", "lg:pb-6")}>
@@ -54,8 +54,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
         </main>
 
-        { !hideFab && <FloatingActionButton /> }
-        { !hideBottomTab && <BottomTabBar /> }
+        {!hideFab && <FloatingActionButton />}
+        {!hideBottomTab && <BottomTabBar />}
       </div>
     </div>
   );

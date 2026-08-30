@@ -77,7 +77,12 @@ export const RecurringDetailDesktopHeader: FC<
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button type="button" variant="outline" size="icon">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label="More actions"
+          >
             <Ellipsis className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>

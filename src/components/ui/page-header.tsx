@@ -27,6 +27,7 @@ export const PageHeader: FC<PageHeaderProps> = ({
         {backTo && (
           <Link
             to={backTo}
+            aria-label="Back"
             className="-ml-1 mr-2 rounded-lg p-1 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800 lg:hidden"
           >
             <ChevronLeft className="h-6 w-6 text-gold-500" />

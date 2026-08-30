@@ -1,4 +1,5 @@
 import { parseAmount } from "@/lib/amount-utils";
+import { parseRecurringDate } from "@/lib/recurring-transactions.utils";
 import { RecurringTransaction } from "@/types";
 import { startOfDay } from "date-fns";
 import { toast } from "sonner";
@@ -13,10 +14,12 @@ export function getEditDefaultValues(
     categoryId: transaction.categoryId,
     amount: transaction.amount.toString(),
     hasEndDate: !!transaction.endDate,
-    endDate: transaction.endDate ? new Date(transaction.endDate) : null,
+    endDate: transaction.endDate
+      ? parseRecurringDate(transaction.endDate)
+      : null,
     description: transaction.description || "",
     recurrenceFrequency: transaction.recurrenceFrequency,
-    startDate: new Date(transaction.startDate),
+    startDate: parseRecurringDate(transaction.startDate),
   };
 }
 
@@ -83,7 +86,7 @@ export function buildUpdatePayload(
   }
 
   const currentEndDate = transaction.endDate
-    ? toUTC(new Date(transaction.endDate)).getTime()
+    ? new Date(transaction.endDate).getTime()
     : null;
   const newEndDate =
     data.hasEndDate && data.endDate ? toUTC(data.endDate).getTime() : null;

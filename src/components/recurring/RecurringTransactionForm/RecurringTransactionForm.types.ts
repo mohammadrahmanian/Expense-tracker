@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { parseAmount } from "@/lib/amount-utils";
+import { parseRecurringDate } from "@/lib/recurring-transactions.utils";
 import { Category, RecurringTransaction } from "@/types";
 import { z } from "zod";
 
@@ -56,7 +57,7 @@ export const recurringTransactionCreateSchema = z
  * of a manual check in the submit handler.
  */
 export function makeRecurringTransactionEditSchema(startDateISO: string) {
-  const startDate = new Date(startDateISO);
+  const startDate = parseRecurringDate(startDateISO);
   return z.object(baseFields).superRefine((data, ctx) => {
     if (!data.hasEndDate) return;
     if (!data.endDate) {

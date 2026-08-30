@@ -9,7 +9,6 @@ import {
 import type {
   CategoryFilterProps,
   SearchProps,
-  SortProps,
   TypeFilterProps,
 } from "@/lib/recurring-transactions.utils";
 import type { Category } from "@/types";
@@ -21,7 +20,6 @@ type RecurringTabFilterControlsProps = {
   typeFilter: TypeFilterProps;
   categoryFilter: CategoryFilterProps;
   categories: Category[] | undefined;
-  sort: SortProps;
 };
 
 export const RecurringTabFilterControls: FC<

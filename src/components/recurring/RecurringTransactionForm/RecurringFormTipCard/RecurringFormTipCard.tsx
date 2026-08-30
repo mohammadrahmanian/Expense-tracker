@@ -10,8 +10,7 @@ export const RecurringFormTipCard: FC = () => (
         Auto-run on schedule
       </span>
       <p className="text-xs leading-relaxed text-info-700 dark:text-info-300">
-        Each occurrence is added to your transactions list on its date. You
-        can edit or skip individual runs anytime.
+        Each occurrence is added to your transactions list on its date.
       </p>
     </div>
   </Card>

@@ -29,7 +29,6 @@ export const RecurringTransactions: FC = () => {
     typeFilterProps,
     statusFilterProps,
     categoryFilterProps,
-    sortProps,
     paginationProps,
   } = useRecurringTransactionsFilters();
 
@@ -70,8 +69,6 @@ export const RecurringTransactions: FC = () => {
     state.statusFilter !== "all" ||
     state.categoryFilter !== "all";
 
-  const onOpen = (rt: RecurringTransaction) =>
-    navigate(`/recurring-transactions/${rt.id}`);
   const onEdit = (rt: RecurringTransaction) =>
     navigate(`/recurring-transactions/${rt.id}/edit`, {
       state: { from: "/recurring-transactions" },
@@ -96,7 +93,6 @@ export const RecurringTransactions: FC = () => {
           categoryFilter={categoryFilterProps}
           formatAmount={formatAmount}
           onCreate={onCreate}
-          onOpen={onOpen}
           onEdit={onEdit}
           onTogglePause={onTogglePause}
           onDelete={onDelete}
@@ -120,10 +116,8 @@ export const RecurringTransactions: FC = () => {
           typeFilter={typeFilterProps}
           statusFilter={statusFilterProps}
           categoryFilter={categoryFilterProps}
-          sort={sortProps}
           pagination={paginationProps}
           formatAmount={formatAmount}
-          onOpen={onOpen}
           onEdit={onEdit}
           onTogglePause={onTogglePause}
           onDelete={onDelete}

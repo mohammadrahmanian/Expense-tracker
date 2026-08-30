@@ -3,22 +3,48 @@ import {
   addMonths,
   addWeeks,
   addYears,
+  differenceInCalendarDays,
+  endOfDay,
   format,
-  formatDistanceToNow,
-  isSameDay,
-  isTomorrow,
+  formatDistance,
   isValid,
-  isYesterday,
   startOfDay,
 } from "date-fns";
 import { Category, RecurringStatus, RecurringTransaction } from "@/types";
+
+/**
+ * The API stores recurring-transaction dates (`startDate`, `endDate`,
+ * `nextOccurrence`) as UTC midnight of the intended civil day — the backend's
+ * `calculateNextOccurrenceOnce` normalizes via
+ * `Date.UTC(getUTCFullYear/Month/Date)`, and a pinned backend test asserts
+ * the UTC Y-M-D is the series identity. `new Date(iso)` + local getters would
+ * then shift the displayed day by the viewer's UTC offset (e.g. a Pacific
+ * user reads "2026-01-15T00:00:00.000Z" back as "Jan 14, 16:00" local).
+ * This reconstructs a Date whose LOCAL components match those UTC digits —
+ * the exact inverse of the form's `toUTC()` write-side helper — so every
+ * local getter/formatter downstream shows the day the value actually
+ * represents. Only valid for these UTC-midnight-normalized fields, not for
+ * genuine instant fields like `createdAt`.
+ */
+export function parseRecurringDate(iso: string): Date {
+  const d = new Date(iso);
+  return new Date(
+    d.getUTCFullYear(),
+    d.getUTCMonth(),
+    d.getUTCDate(),
+    d.getUTCHours(),
+    d.getUTCMinutes(),
+    d.getUTCSeconds(),
+    d.getUTCMilliseconds(),
+  );
+}
 
 // ---------- Status ----------
 export const getRecurringStatus = (
   rt: RecurringTransaction,
   now: Date = new Date(),
 ): RecurringStatus => {
-  if (rt.endDate && new Date(rt.endDate).getTime() < now.getTime())
+  if (rt.endDate && endOfDay(parseRecurringDate(rt.endDate)) < now)
     return "ended";
   if (!rt.isActive) return "paused";
   return "active";
@@ -41,7 +67,7 @@ export const ORDINAL_SUFFIX = (n: number) => {
 };
 
 export const formatFrequencyLabel = (rt: RecurringTransaction): string => {
-  const start = new Date(rt.startDate);
+  const start = parseRecurringDate(rt.startDate);
   switch (rt.recurrenceFrequency) {
     case "DAILY":
       return "Daily";
@@ -77,7 +103,7 @@ export const formatSchedulePhrase = ({
 export const formatPerOccurrenceSubline = (
   rt: RecurringTransaction,
 ): string => {
-  const start = new Date(rt.startDate);
+  const start = parseRecurringDate(rt.startDate);
   switch (rt.recurrenceFrequency) {
     case "DAILY":
       return "per occurrence · every day";
@@ -105,20 +131,20 @@ export const formatRowSubtitle = (
   categoryName: string,
 ): string => {
   if (rt.endDate)
-    return `${categoryName} · Ends ${format(new Date(rt.endDate), "MMM d, yyyy")}`;
-  return `${categoryName} · Started ${format(new Date(rt.startDate), "MMM d, yyyy")}`;
+    return `${categoryName} · Ends ${format(parseRecurringDate(rt.endDate), "MMM d, yyyy")}`;
+  return `${categoryName} · Started ${format(parseRecurringDate(rt.startDate), "MMM d, yyyy")}`;
 };
 
 // ---------- Next-run text ----------
 export const formatNextRunRelative = (
-  iso: string,
+  date: Date,
   now: Date = new Date(),
 ): string => {
-  const d = new Date(iso);
-  if (isSameDay(d, now)) return "Today";
-  if (isTomorrow(d)) return "Tomorrow";
-  if (isYesterday(d)) return "Yesterday";
-  return formatDistanceToNow(d, { addSuffix: true });
+  const dayDiff = differenceInCalendarDays(date, now);
+  if (dayDiff === 0) return "Today";
+  if (dayDiff === 1) return "Tomorrow";
+  if (dayDiff === -1) return "Yesterday";
+  return formatDistance(date, now, { addSuffix: true });
 };
 
 // ---------- Occurrence preview (next N occurrences for the form preview card) ----------
@@ -171,8 +197,12 @@ export function getNextOccurrences({
 
   const cutoff = fromDate > startDate ? fromDate : startDate;
 
+  const MAX_SKIP_ITERATIONS = 10000;
   let index = 0;
-  while (addIntervals(startDate, frequency, index) < cutoff) {
+  while (
+    addIntervals(startDate, frequency, index) < cutoff &&
+    index < MAX_SKIP_ITERATIONS
+  ) {
     index++;
   }
 
@@ -185,7 +215,7 @@ export function getNextOccurrences({
       weekday: format(date, "EEEE"),
       monthShort: format(date, "MMM").toUpperCase(),
       dayOfMonth: format(date, "dd"),
-      relativeLabel: formatNextRunRelative(date.toISOString(), fromDate),
+      relativeLabel: formatNextRunRelative(date, fromDate),
     });
     index++;
   }
@@ -259,10 +289,6 @@ export type StatusFilterProps = {
 export type CategoryFilterProps = {
   categoryFilter: string;
   onCategoryFilterChange: (v: string) => void;
-};
-export type SortProps = {
-  sortOrder: RecurringSortOrder;
-  onSortToggle: () => void;
 };
 export type PaginationProps = {
   currentPage: number;

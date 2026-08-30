@@ -15,7 +15,6 @@ import type {
   CategoryFilterProps,
   PaginationProps,
   SearchProps,
-  SortProps,
   StatusFilterProps,
   TypeFilterProps,
 } from "@/lib/recurring-transactions.utils";
@@ -39,10 +38,8 @@ type RecurringListProps = {
   typeFilter: TypeFilterProps;
   statusFilter: StatusFilterProps;
   categoryFilter: CategoryFilterProps;
-  sort: SortProps;
   pagination: PaginationProps;
   formatAmount: (n: number) => string;
-  onOpen: (rt: RecurringTransaction) => void;
   onEdit: (rt: RecurringTransaction) => void;
   onTogglePause: (rt: RecurringTransaction) => void;
   onDelete: (rt: RecurringTransaction) => void;
@@ -62,10 +59,8 @@ export const RecurringList: FC<RecurringListProps> = ({
   typeFilter,
   statusFilter,
   categoryFilter,
-  sort,
   pagination,
   formatAmount,
-  onOpen,
   onEdit,
   onTogglePause,
   onDelete,
@@ -80,7 +75,6 @@ export const RecurringList: FC<RecurringListProps> = ({
       typeFilter={typeFilter}
       categoryFilter={categoryFilter}
       categories={categories}
-      sort={sort}
     />
     <div className="min-h-[300px]">
       {isLoading ? (
@@ -101,7 +95,6 @@ export const RecurringList: FC<RecurringListProps> = ({
                   category={getCategoryById(categories, rt.categoryId)}
                   status={getRecurringStatus(rt)}
                   formatAmount={formatAmount}
-                  onOpen={onOpen}
                   onEdit={onEdit}
                   onTogglePause={onTogglePause}
                   onDelete={onDelete}

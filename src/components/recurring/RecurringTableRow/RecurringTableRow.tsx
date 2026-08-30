@@ -9,7 +9,6 @@ type RecurringTableRowProps = {
   category: Category | undefined;
   status: RecurringStatus;
   formatAmount: (n: number) => string;
-  onOpen: (rt: RecurringTransaction) => void;
   onEdit: (rt: RecurringTransaction) => void;
   onTogglePause: (rt: RecurringTransaction) => void;
   onDelete: (rt: RecurringTransaction) => void;
@@ -22,7 +21,6 @@ export const RecurringTableRow: FC<RecurringTableRowProps> = ({
   category,
   status,
   formatAmount,
-  onOpen,
   onEdit,
   onTogglePause,
   onDelete,
@@ -54,7 +52,6 @@ export const RecurringTableRow: FC<RecurringTableRowProps> = ({
       amountColor={amountColor}
       sign={sign}
       formatAmount={formatAmount}
-      onOpen={() => onOpen(transaction)}
       onEdit={() => onEdit(transaction)}
       onTogglePause={() => onTogglePause(transaction)}
       onDelete={() => onDelete(transaction)}

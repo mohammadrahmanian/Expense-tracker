@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { STATUS_BADGE } from "@/lib/recurring-transactions.utils";
 import type { Category, RecurringStatus, RecurringTransaction } from "@/types";
 import { type FC } from "react";
+import { Link } from "react-router-dom";
 import { MobileRecurringCardTopRow } from "./MobileRecurringCardTopRow";
 
 type MobileRecurringCardProps = {
@@ -12,7 +13,6 @@ type MobileRecurringCardProps = {
   category: Category | undefined;
   status: RecurringStatus;
   formatAmount: (n: number) => string;
-  onOpen: (rt: RecurringTransaction) => void;
   onEdit: (rt: RecurringTransaction) => void;
   onTogglePause: (rt: RecurringTransaction) => void;
   onDelete: (rt: RecurringTransaction) => void;
@@ -25,7 +25,6 @@ export const MobileRecurringCard: FC<MobileRecurringCardProps> = ({
   category,
   status,
   formatAmount,
-  onOpen,
   onEdit,
   onTogglePause,
   onDelete,
@@ -35,21 +34,12 @@ export const MobileRecurringCard: FC<MobileRecurringCardProps> = ({
   const badge = STATUS_BADGE[status];
 
   return (
-    <Card
-      role="link"
-      tabIndex={0}
-      aria-label={transaction.title}
-      className="p-3.5 flex flex-col gap-2.5 cursor-pointer ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      onClick={() => onOpen(transaction)}
-      onKeyDown={(e) => {
-        // Ignore keys handled by nested controls (the overflow menu trigger).
-        if (e.target !== e.currentTarget) return;
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onOpen(transaction);
-        }
-      }}
-    >
+    <Card className="relative p-3.5 flex flex-col gap-2.5">
+      <Link
+        to={`/recurring-transactions/${transaction.id}`}
+        aria-label={transaction.title}
+        className="absolute inset-0 z-0 rounded-[inherit] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      />
       <MobileRecurringCardTopRow
         transaction={transaction}
         category={category}
@@ -61,7 +51,7 @@ export const MobileRecurringCard: FC<MobileRecurringCardProps> = ({
           <RecurringFrequencyPill rt={transaction} />
           <Badge variant={badge.variant}>{badge.label}</Badge>
         </div>
-        <div onClick={(e) => e.stopPropagation()}>
+        <div className="relative z-10">
           <RecurringActionsMenu
             status={status}
             onEdit={() => onEdit(transaction)}

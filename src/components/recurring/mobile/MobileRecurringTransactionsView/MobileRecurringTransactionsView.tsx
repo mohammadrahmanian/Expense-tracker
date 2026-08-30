@@ -32,7 +32,6 @@ type Props = {
   categoryFilter: CategoryFilterProps;
   formatAmount: (n: number) => string;
   onCreate: () => void;
-  onOpen: (rt: RecurringTransaction) => void;
   onEdit: (rt: RecurringTransaction) => void;
   onTogglePause: (rt: RecurringTransaction) => void;
   onDelete: (rt: RecurringTransaction) => void;
@@ -53,7 +52,6 @@ export const MobileRecurringTransactionsView: FC<Props> = ({
   categoryFilter,
   formatAmount,
   onCreate,
-  onOpen,
   onEdit,
   onTogglePause,
   onDelete,
@@ -101,7 +99,6 @@ export const MobileRecurringTransactionsView: FC<Props> = ({
               category={getCategoryById(categories, rt.categoryId)}
               status={getRecurringStatus(rt)}
               formatAmount={formatAmount}
-              onOpen={onOpen}
               onEdit={onEdit}
               onTogglePause={onTogglePause}
               onDelete={onDelete}

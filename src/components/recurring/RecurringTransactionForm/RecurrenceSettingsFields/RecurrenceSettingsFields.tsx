@@ -1,6 +1,7 @@
 import { type FC } from "react";
 import { CalendarClock, Calendar } from "lucide-react";
 import { format } from "date-fns";
+import { parseRecurringDate } from "@/lib/recurring-transactions.utils";
 import { RecurringTransaction } from "@/types";
 import { UseFormReturn } from "react-hook-form";
 import { RecurringTransactionFormValues } from "../RecurringTransactionForm.types";
@@ -31,7 +32,7 @@ export const RecurrenceSettingsFields: FC<RecurrenceSettingsFieldsProps> = (
 
   const minEndDate =
     mode === "edit"
-      ? new Date(props.transaction.startDate)
+      ? parseRecurringDate(props.transaction.startDate)
       : form.watch("startDate");
 
   return (
@@ -61,7 +62,7 @@ export const RecurrenceSettingsFields: FC<RecurrenceSettingsFieldsProps> = (
         ) : (
           <ReadOnlyField
             label="Start date"
-            value={format(new Date(props.transaction.startDate), "PPP")}
+            value={format(parseRecurringDate(props.transaction.startDate), "PPP")}
             hint="Start date cannot be changed after creation"
             icon={Calendar}
           />

@@ -7,6 +7,7 @@ import { RecurringFrequencyPill } from "@/components/recurring/RecurringFrequenc
 import { RecurringTableNameCell } from "./RecurringTableNameCell";
 import {
   formatNextRunRelative,
+  parseRecurringDate,
   STATUS_BADGE,
 } from "@/lib/recurring-transactions.utils";
 import { cn } from "@/lib/utils";
@@ -22,7 +23,6 @@ type RecurringTableRowUIProps = {
   amountColor: string;
   sign: string;
   formatAmount: (n: number) => string;
-  onOpen: () => void;
   onEdit: () => void;
   onTogglePause: () => void;
   onDelete: () => void;
@@ -39,7 +39,6 @@ export const RecurringTableRowUI: FC<RecurringTableRowUIProps> = ({
   amountColor,
   sign,
   formatAmount,
-  onOpen,
   onEdit,
   onTogglePause,
   onDelete,
@@ -48,8 +47,9 @@ export const RecurringTableRowUI: FC<RecurringTableRowUIProps> = ({
 }) => {
   const badge = STATUS_BADGE[status];
   const isActive = status === "active";
+  const nextOccurrence = parseRecurringDate(transaction.nextOccurrence);
   return (
-    <TableRow className="cursor-pointer" onClick={onOpen}>
+    <TableRow>
       <RecurringTableNameCell
         title={transaction.title}
         subtitle={subtitle}
@@ -70,10 +70,10 @@ export const RecurringTableRowUI: FC<RecurringTableRowUIProps> = ({
         {isActive ? (
           <div className="flex flex-col gap-0.5">
             <span className="text-sm font-medium text-foreground">
-              {format(new Date(transaction.nextOccurrence), "MMM d, yyyy")}
+              {format(nextOccurrence, "MMM d, yyyy")}
             </span>
             <span className="text-[11px] font-semibold text-primary">
-              {formatNextRunRelative(transaction.nextOccurrence)}
+              {formatNextRunRelative(nextOccurrence)}
             </span>
           </div>
         ) : (
@@ -85,7 +85,7 @@ export const RecurringTableRowUI: FC<RecurringTableRowUIProps> = ({
       <TableCell>
         <Badge variant={badge.variant}>{badge.label}</Badge>
       </TableCell>
-      <TableCell onClick={(e) => e.stopPropagation()}>
+      <TableCell>
         <RecurringActionsMenu
           status={status}
           onEdit={onEdit}

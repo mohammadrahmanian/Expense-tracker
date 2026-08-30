@@ -19,7 +19,7 @@ export const RecurringTableNameCell: FC<RecurringTableNameCellProps> = ({
   Icon,
   to,
 }) => (
-  <TableCell className="relative" onClick={(e) => e.stopPropagation()}>
+  <TableCell className="relative">
     <div className="flex items-center gap-3">
       <CategoryIconWrap color={color} Icon={Icon} />
       <div className="flex min-w-0 flex-col">

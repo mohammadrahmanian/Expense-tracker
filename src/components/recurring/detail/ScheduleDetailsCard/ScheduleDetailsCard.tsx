@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import {
   countOccurrencesUntil,
   formatSchedulePhrase,
+  parseRecurringDate,
 } from "@/lib/recurring-transactions.utils";
 import type { RecurringTransaction } from "@/types";
 
@@ -17,8 +18,10 @@ export const ScheduleDetailsCard: FC<ScheduleDetailsCardProps> = ({
   transaction,
   formatAmount,
 }) => {
-  const startDate = new Date(transaction.startDate);
-  const endDate = transaction.endDate ? new Date(transaction.endDate) : null;
+  const startDate = parseRecurringDate(transaction.startDate);
+  const endDate = transaction.endDate
+    ? parseRecurringDate(transaction.endDate)
+    : null;
   const totalRuns = countOccurrencesUntil({
     startDate,
     frequency: transaction.recurrenceFrequency,
