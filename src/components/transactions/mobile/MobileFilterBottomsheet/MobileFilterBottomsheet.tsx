@@ -3,12 +3,12 @@ import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
 import { Category } from "@/types";
 import type { TransactionFilterState } from "@/lib/transactions.utils";
 import type { BulkFilterPayload } from "@/hooks/useTransactionFilters";
+import { FilterBottomsheetContent } from "./FilterBottomsheetContent";
 import {
-  FilterBottomsheetContent,
   type DraftFilterState,
   toSortOption,
   fromSortOption,
-} from "./FilterBottomsheetContent";
+} from "./FilterBottomsheetContent.utils";
 
 type MobileFilterBottomsheetProps = {
   open: boolean;

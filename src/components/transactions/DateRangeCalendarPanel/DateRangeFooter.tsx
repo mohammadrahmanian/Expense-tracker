@@ -1,29 +1,23 @@
 import { type FC } from "react";
-import { format } from "date-fns";
 import { CalendarCheck } from "lucide-react";
+import { formatDateLabel } from "./DateRangeCalendarPanel.utils";
 
 type DateRangeFooterProps = {
-  dateLabel: Date | undefined;
-  endDateLabel?: Date | undefined;
+  startDate: Date | undefined;
+  endDate?: Date;
   onClear: () => void;
   onApply: () => void;
   canApply: boolean;
 };
 
 export const DateRangeFooter: FC<DateRangeFooterProps> = ({
-  dateLabel,
-  endDateLabel,
+  startDate,
+  endDate,
   onClear,
   onApply,
   canApply,
 }) => {
-  const formattedLabel = dateLabel
-    ? endDateLabel
-      ? dateLabel.getFullYear() !== endDateLabel.getFullYear()
-        ? `${format(dateLabel, "MMM dd, yyyy")} – ${format(endDateLabel, "MMM dd, yyyy")}`
-        : `${format(dateLabel, "MMM dd")} – ${format(endDateLabel, "MMM dd, yyyy")}`
-      : format(dateLabel, "MMM dd, yyyy")
-    : "No date selected";
+  const formattedLabel = formatDateLabel(startDate, endDate);
 
   return (
     <div className="flex items-center justify-between gap-2 px-3 py-2">

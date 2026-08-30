@@ -211,6 +211,7 @@ Before reading a component's source, check this table. Each entry points to a sh
 | Component           | Path                                             | Context file                                                            |
 | ------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
 | `QuickExpenseModal` | `src/components/transactions/QuickExpenseModal/` | [quick-expense-modal.md](docs/agents/components/quick-expense-modal.md) |
+| `DateRangeDropdown` | `src/components/transactions/DateRangeDropdown/` | [date-range-dropdown.md](docs/agents/components/date-range-dropdown.md) |
 
 ---
 
