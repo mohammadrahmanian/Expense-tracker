@@ -2,12 +2,13 @@ import { type FC } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 import { AuthLayout } from "@/components/layouts/AuthLayout";
 import { AuthRedirect } from "@/components/AuthRedirect";
 import { useAuth } from "@/contexts/AuthContext";
+import { isSafeReturnTo } from "@/lib/oauth.utils";
 
 import { LoginForm } from "./LoginForm";
 
@@ -21,6 +22,11 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export const Login: FC = () => {
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
+  const destination = isSafeReturnTo(returnTo)
+    ? (returnTo as string)
+    : "/dashboard";
 
   const {
     register,
@@ -34,7 +40,7 @@ export const Login: FC = () => {
     try {
       await login(data.email, data.password);
       toast.success("Welcome back!");
-      navigate("/dashboard");
+      navigate(destination);
     } catch {
       // Error toast already shown by AuthContext via handleApiError
     }

@@ -1,0 +1,1 @@
+export { OAuthConsentCard } from "./OAuthConsentCard";

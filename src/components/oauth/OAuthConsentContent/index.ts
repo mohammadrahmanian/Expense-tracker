@@ -1,0 +1,1 @@
+export { OAuthConsentContent } from "./OAuthConsentContent";

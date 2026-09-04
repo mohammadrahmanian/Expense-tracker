@@ -104,6 +104,15 @@ export interface ReportsResponse {
   };
 }
 
+export interface OAuthConsentInfo {
+  clientName: string | null;
+  scope: string | null;
+}
+
+export interface OAuthDecisionResponse {
+  redirect_to: string;
+}
+
 export interface RecurringTransaction {
   id: string;
   title: string;

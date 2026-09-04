@@ -84,6 +84,15 @@ export const queryKeys = {
   },
 
   /**
+   * OAuth consent query keys
+   */
+  oauth: {
+    all: ["oauth"] as const,
+    consentInfo: (requestId: string) =>
+      [...queryKeys.oauth.all, "consent-info", requestId] as const,
+  },
+
+  /**
    * Reports query keys
    */
   reports: {
