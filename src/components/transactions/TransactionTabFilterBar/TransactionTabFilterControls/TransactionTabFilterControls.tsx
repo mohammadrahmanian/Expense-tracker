@@ -8,7 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { type DateFilterProps, type SearchProps } from "@/lib/transactions.utils";
+import {
+  type DateFilterProps,
+  type SearchProps,
+} from "@/lib/transactions.utils";
 import { Category } from "@/types";
 import { Search, X } from "lucide-react";
 

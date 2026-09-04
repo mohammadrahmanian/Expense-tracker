@@ -10,7 +10,17 @@ type AmountFieldProps = {
 } & Omit<React.ComponentProps<typeof Input>, "type">;
 
 export const AmountField = React.forwardRef<HTMLInputElement, AmountFieldProps>(
-  ({ currencySymbol, error, required, id = "amount", className, ...inputProps }, ref) => (
+  (
+    {
+      currencySymbol,
+      error,
+      required,
+      id = "amount",
+      className,
+      ...inputProps
+    },
+    ref,
+  ) => (
     <div className="space-y-2">
       <Label htmlFor={id}>
         Amount ({currencySymbol})

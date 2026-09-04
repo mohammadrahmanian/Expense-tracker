@@ -12,7 +12,10 @@ type NameFieldProps = {
 
 export const NameField: FC<NameFieldProps> = ({ register, error }) => (
   <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-1">
-    <Label htmlFor="category-name" className="text-xs font-semibold text-foreground">
+    <Label
+      htmlFor="category-name"
+      className="text-xs font-semibold text-foreground"
+    >
       Name
     </Label>
     <div className="relative">
@@ -23,7 +26,10 @@ export const NameField: FC<NameFieldProps> = ({ register, error }) => (
       <Input
         id="category-name"
         placeholder="e.g. Groceries"
-        className={cn("h-11 rounded-md border-border bg-background pl-10", error && "border-red-500")}
+        className={cn(
+          "h-11 rounded-md border-border bg-background pl-10",
+          error && "border-red-500",
+        )}
         {...register}
       />
     </div>

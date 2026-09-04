@@ -20,7 +20,9 @@ export const FilterChipGroup: FC<FilterChipGroupProps> = ({
   onChange,
 }) => (
   <div className="flex flex-col gap-2.5">
-    <span className="text-caption font-medium text-muted-foreground">{label}</span>
+    <span className="text-caption font-medium text-muted-foreground">
+      {label}
+    </span>
     <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={label}>
       {options.map((opt) => (
         <Chip

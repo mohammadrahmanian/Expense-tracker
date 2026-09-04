@@ -3,7 +3,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -53,7 +53,9 @@ export const SidebarUserProfile: FC<SidebarUserProfileProps> = ({
                 <p className="text-body font-semibold text-neutral-600 dark:text-neutral-50 truncate">
                   {formatDisplayName(name)}
                 </p>
-                <p className="text-caption text-neutral-500 truncate">{email}</p>
+                <p className="text-caption text-neutral-500 truncate">
+                  {email}
+                </p>
               </div>
               <ChevronRight className="h-4 w-4 text-neutral-400 shrink-0" />
             </>

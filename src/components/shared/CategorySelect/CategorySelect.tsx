@@ -1,3 +1,5 @@
+import { type FC } from "react";
+import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -6,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { Category } from "@/types";
 
 type CategorySelectProps = {
@@ -16,35 +19,52 @@ type CategorySelectProps = {
   required?: boolean;
 };
 
-export const CategorySelect: React.FC<CategorySelectProps> = ({
+const CategoryIconChip: FC<{ category: Category }> = ({ category }) => {
+  const Icon = ICON_BY_NAME[category.icon ?? "utensils"] ?? ICON_BY_NAME.utensils;
+  return (
+    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-sm bg-gold-50 dark:bg-gold-700/25">
+      <Icon className="h-3.5 w-3.5" style={{ color: category.color }} />
+    </span>
+  );
+};
+
+export const CategorySelect: FC<CategorySelectProps> = ({
   value,
   onChange,
   categories,
   error,
   required,
-}) => (
-  <div className="space-y-2">
-    <Label>
-      Category{required && <span className="text-red-500"> *</span>}
-    </Label>
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className={error ? "border-red-500" : ""}>
-        <SelectValue placeholder="Select category" />
-      </SelectTrigger>
-      <SelectContent>
-        {categories.map((category) => (
-          <SelectItem key={category.id} value={category.id}>
-            <div className="flex items-center space-x-2">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: category.color }}
-              />
-              <span>{category.name}</span>
+}) => {
+  const selected = categories.find((category) => category.id === value);
+
+  return (
+    <div className="space-y-2">
+      <Label>
+        Category{required && <span className="text-danger-500"> *</span>}
+      </Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger className={cn("h-12", error && "border-danger-500")}>
+          {selected ? (
+            <div className="flex items-center gap-2 min-w-0">
+              <CategoryIconChip category={selected} />
+              <span className="truncate">{selected.name}</span>
             </div>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-    {error && <p className="text-sm text-red-500">{error}</p>}
-  </div>
-);
+          ) : (
+            <SelectValue placeholder="Select category" />
+          )}
+        </SelectTrigger>
+        <SelectContent>
+          {categories.map((category) => (
+            <SelectItem key={category.id} value={category.id}>
+              <div className="flex items-center gap-2">
+                <CategoryIconChip category={category} />
+                <span>{category.name}</span>
+              </div>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {error && <p className="text-sm text-danger-500">{error}</p>}
+    </div>
+  );
+};

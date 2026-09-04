@@ -5,7 +5,6 @@ import type {
   CategoryFilterProps,
   RecurringStatusFilter,
   SearchProps,
-  SortProps,
   StatusFilterProps,
   TypeFilterProps,
 } from "@/lib/recurring-transactions.utils";
@@ -25,7 +24,6 @@ type RecurringTabFilterBarProps = {
   typeFilter: TypeFilterProps;
   categoryFilter: CategoryFilterProps;
   categories: Category[] | undefined;
-  sort: SortProps;
 };
 
 export const RecurringTabFilterBar: FC<RecurringTabFilterBarProps> = ({
@@ -35,7 +33,6 @@ export const RecurringTabFilterBar: FC<RecurringTabFilterBarProps> = ({
   typeFilter,
   categoryFilter,
   categories,
-  sort,
 }) => (
   <div className="flex flex-col gap-3 border-b border-border px-5 pb-0 md:flex-row md:items-center md:justify-between md:gap-0">
     <div className="flex items-center">
@@ -60,7 +57,6 @@ export const RecurringTabFilterBar: FC<RecurringTabFilterBarProps> = ({
       typeFilter={typeFilter}
       categoryFilter={categoryFilter}
       categories={categories}
-      sort={sort}
     />
   </div>
 );

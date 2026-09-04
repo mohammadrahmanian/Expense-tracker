@@ -1,7 +1,7 @@
-import { type FC } from "react";
 import { Label } from "@/components/ui/label";
 import { Segment, SegmentItem, SegmentList } from "@/components/ui/segment";
 import { ArrowDown, ArrowUp } from "lucide-react";
+import { type FC } from "react";
 
 type TypeSegmentProps = {
   value: "INCOME" | "EXPENSE";
@@ -9,7 +9,11 @@ type TypeSegmentProps = {
   error?: string;
 };
 
-export const TypeSegment: FC<TypeSegmentProps> = ({ value, onChange, error }) => (
+export const TypeSegment: FC<TypeSegmentProps> = ({
+  value,
+  onChange,
+  error,
+}) => (
   <div className="flex w-full min-w-0 flex-col gap-2 sm:h-full sm:w-[13.5rem] sm:min-w-[13.5rem] sm:shrink-0">
     <Label className="text-xs font-semibold text-foreground">Type</Label>
     <Segment

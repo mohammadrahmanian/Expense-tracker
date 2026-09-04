@@ -1,6 +1,10 @@
 import { type FC } from "react";
 import { TransactionTabFilterControls } from "./TransactionTabFilterControls";
-import { type DateFilterProps, type SearchProps, type TypeFilterProps } from "@/lib/transactions.utils";
+import {
+  type DateFilterProps,
+  type SearchProps,
+  type TypeFilterProps,
+} from "@/lib/transactions.utils";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types";
 

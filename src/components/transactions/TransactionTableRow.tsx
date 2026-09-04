@@ -37,7 +37,9 @@ export const TransactionTableRow: FC<TransactionTableRowProps> = ({
       </div>
     </TableCell>
     <TableCell className="w-[140px]">
-      <Badge variant="default" size="sm">{category.name}</Badge>
+      <Badge variant="default" size="sm">
+        {category.name}
+      </Badge>
     </TableCell>
     <TableCell
       className={cn(

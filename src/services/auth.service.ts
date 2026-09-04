@@ -3,10 +3,7 @@ import { apiClient } from "./api-client";
 import { handleApiError } from "@/lib/error-handling";
 
 export const authService = {
-  login: async (
-    email: string,
-    password: string,
-  ): Promise<{ user: any }> => {
+  login: async (email: string, password: string): Promise<{ user: any }> => {
     try {
       const response = await apiClient.post("/users/login", {
         email,
@@ -75,8 +72,7 @@ export const authService = {
       return response.data;
     } catch (error) {
       // 401 on /users/me is expected (session expiry check on app start) — skip Sentry and toast
-      const is401 =
-        axios.isAxiosError(error) && error.response?.status === 401;
+      const is401 = axios.isAxiosError(error) && error.response?.status === 401;
       handleApiError(
         error,
         {

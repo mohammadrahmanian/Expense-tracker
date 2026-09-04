@@ -30,7 +30,8 @@ export const DeleteTransactionDialog: FC<DeleteTransactionDialogProps> = ({
         <DialogHeader>
           <DialogTitle>Delete Transaction</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this transaction? This action cannot be undone.
+            Are you sure you want to delete this transaction? This action cannot
+            be undone.
           </DialogDescription>
         </DialogHeader>
         {error && <p className="text-sm text-destructive px-1">{error}</p>}
@@ -38,7 +39,11 @@ export const DeleteTransactionDialog: FC<DeleteTransactionDialogProps> = ({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={onConfirm} disabled={isPending}>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            disabled={isPending}
+          >
             Delete
           </Button>
         </DialogFooter>

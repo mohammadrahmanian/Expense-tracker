@@ -26,10 +26,8 @@ export function useQuickExpenseModal({ onClose }: UseQuickExpenseModalArgs) {
     data: apiExpenseCategories = [],
     isLoading: expenseCategoriesLoading,
   } = useCategories("EXPENSE");
-  const {
-    data: apiIncomeCategories = [],
-    isLoading: incomeCategoriesLoading,
-  } = useCategories("INCOME");
+  const { data: apiIncomeCategories = [], isLoading: incomeCategoriesLoading } =
+    useCategories("INCOME");
 
   const createCategory = useCreateCategory({ showErrorToast: false });
   const createTransaction = useCreateTransaction();
@@ -49,9 +47,7 @@ export function useQuickExpenseModal({ onClose }: UseQuickExpenseModalArgs) {
   const isPending = createCategory.isPending || createTransaction.isPending;
 
   const activeCategories =
-    transactionKind === "income"
-      ? apiIncomeCategories
-      : apiExpenseCategories;
+    transactionKind === "income" ? apiIncomeCategories : apiExpenseCategories;
   const categoriesLoading =
     transactionKind === "income"
       ? incomeCategoriesLoading
@@ -81,8 +77,7 @@ export function useQuickExpenseModal({ onClose }: UseQuickExpenseModalArgs) {
     form.clearErrors("categoryName");
   };
 
-  const title =
-    transactionKind === "income" ? "Add Income" : "Add Expense";
+  const title = transactionKind === "income" ? "Add Income" : "Add Expense";
   const description =
     transactionKind === "income"
       ? "Pick an income category to get started"

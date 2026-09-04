@@ -8,6 +8,9 @@ import { DashboardSidebar } from "./DashboardSidebar";
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
+  hideHeader = false,
+  hideFab = false,
+  hideBottomTab = false,
 }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
@@ -43,16 +46,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           sidebarCollapsed ? "lg:pl-20" : "lg:pl-72",
         )}
       >
-        <DashboardHeader />
+        {!hideHeader && <DashboardHeader />}
 
         <main className="flex-1">
-          <div className="pb-32 lg:pb-6">
+          <div className={cn(hideBottomTab ? "pb-6" : "pb-32", "lg:pb-6")}>
             <div className="max-w-7xl mx-auto px-4 py-4">{children}</div>
           </div>
         </main>
 
-        <FloatingActionButton />
-        <BottomTabBar />
+        {!hideFab && <FloatingActionButton />}
+        {!hideBottomTab && <BottomTabBar />}
       </div>
     </div>
   );

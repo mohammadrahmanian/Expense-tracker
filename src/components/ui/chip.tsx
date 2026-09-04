@@ -44,7 +44,10 @@ type ChipProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   };
 
 const Chip = React.forwardRef<HTMLButtonElement, ChipProps>(
-  ({ className, variant = "filled", selected = false, children, ...props }, ref) => (
+  (
+    { className, variant = "filled", selected = false, children, ...props },
+    ref,
+  ) => (
     <button
       ref={ref}
       type="button"
@@ -52,7 +55,10 @@ const Chip = React.forwardRef<HTMLButtonElement, ChipProps>(
       aria-checked={selected}
       className={cn(
         chipVariants({ variant }),
-        selected && (variant === "outlined" ? selectedOutlinedClasses : selectedFilledClasses),
+        selected &&
+          (variant === "outlined"
+            ? selectedOutlinedClasses
+            : selectedFilledClasses),
         className,
       )}
       {...props}

@@ -1,4 +1,3 @@
-import { type FC } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -7,27 +6,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp, ArrowUpDown, Search, X } from "lucide-react";
 import type {
   CategoryFilterProps,
   SearchProps,
-  SortProps,
   TypeFilterProps,
 } from "@/lib/recurring-transactions.utils";
 import type { Category } from "@/types";
+import { Search, X } from "lucide-react";
+import { type FC } from "react";
 
 type RecurringTabFilterControlsProps = {
   search: SearchProps;
   typeFilter: TypeFilterProps;
   categoryFilter: CategoryFilterProps;
   categories: Category[] | undefined;
-  sort: SortProps;
 };
 
 export const RecurringTabFilterControls: FC<
   RecurringTabFilterControlsProps
-> = ({ search, typeFilter, categoryFilter, categories, sort }) => (
+> = ({ search, typeFilter, categoryFilter, categories }) => (
   <div className="flex items-center gap-2.5 pb-3 md:pb-0">
     <div className="relative w-[200px]">
       <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -80,19 +77,5 @@ export const RecurringTabFilterControls: FC<
         ))}
       </SelectContent>
     </Select>
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={sort.onSortToggle}
-      className="h-8 gap-2 text-xs"
-    >
-      <ArrowUpDown className="h-3.5 w-3.5" />
-      Next date
-      {sort.sortOrder === "asc" ? (
-        <ArrowDown className="h-3 w-3" />
-      ) : (
-        <ArrowUp className="h-3 w-3" />
-      )}
-    </Button>
   </div>
 );

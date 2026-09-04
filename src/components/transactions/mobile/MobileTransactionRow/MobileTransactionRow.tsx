@@ -89,7 +89,8 @@ export const MobileTransactionRow: FC<MobileTransactionRowProps> = ({
             : "text-danger-500 dark:text-danger-300",
         )}
       >
-        {isIncome ? "+" : "-"}{formatAmount(transaction.amount)}
+        {isIncome ? "+" : "-"}
+        {formatAmount(transaction.amount)}
       </span>
     </button>
   );

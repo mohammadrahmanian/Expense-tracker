@@ -41,20 +41,31 @@ export const validateDateRange = (
   if (timeRange !== "custom") return { isValid: true, error: null };
 
   // Check both string representation and Date objects
-  if (!dateRange.startDate || !dateRange.endDate || !customStartDate || !customEndDate) {
+  if (
+    !dateRange.startDate ||
+    !dateRange.endDate ||
+    !customStartDate ||
+    !customEndDate
+  ) {
     return { isValid: false, error: "Please select both start and end dates" };
   }
 
   const todaysEnd = endOfDay(new Date());
   // Now we can safely use customStartDate and customEndDate
-  if (isAfter(customStartDate, todaysEnd) || isAfter(customEndDate, todaysEnd)) {
+  if (
+    isAfter(customStartDate, todaysEnd) ||
+    isAfter(customEndDate, todaysEnd)
+  ) {
     return { isValid: false, error: "Dates cannot be in the future" };
   }
 
   // Apply endOfDay to end date for proper comparison
   const endWithTime = endOfDay(customEndDate);
   if (isAfter(customStartDate, endWithTime)) {
-    return { isValid: false, error: "End date must be the same as or after start date" };
+    return {
+      isValid: false,
+      error: "End date must be the same as or after start date",
+    };
   }
 
   return { isValid: true, error: null };
@@ -81,9 +92,7 @@ export const buildCategorySeriesData = (
     type: "column" as const,
     data: monthlyData.map((month) => {
       const categories =
-        type === "income"
-          ? month.income.categories
-          : month.expenses.categories;
+        type === "income" ? month.income.categories : month.expenses.categories;
       return categories[category.categoryId] || 0;
     }),
     color: category.color,

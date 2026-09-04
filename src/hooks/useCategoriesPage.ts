@@ -8,7 +8,9 @@ export function useCategoriesPage() {
   const [activeType, setActiveType] = useState<"EXPENSE" | "INCOME">("EXPENSE");
   const [search, setSearch] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | undefined>();
+  const [editingCategory, setEditingCategory] = useState<
+    Category | undefined
+  >();
 
   const { data: categories = [], isLoading, error } = useCategories();
   const { data: totalsByCategoryId = {}, isLoading: totalsLoading } =
@@ -16,28 +18,30 @@ export function useCategoriesPage() {
   const deleteCategory = useDeleteCategory();
 
   const searchLower = search.trim().toLowerCase();
-  const { categoriesOfType, visibleCategories, totalCount, totalBudget, totalAmount } =
-    useMemo(() => {
-      const ofType = categories.filter((c) => c.type === activeType);
-      const visible = ofType.filter((c) =>
-        searchLower ? c.name.toLowerCase().includes(searchLower) : true,
-      );
-      const budget = ofType.reduce(
-        (sum, c) => sum + (c.budgetAmount ?? 0),
-        0,
-      );
-      const amount = ofType.reduce(
-        (sum, c) => sum + (totalsByCategoryId[c.id]?.spent ?? 0),
-        0,
-      );
-      return {
-        categoriesOfType: ofType,
-        visibleCategories: visible,
-        totalCount: ofType.length,
-        totalBudget: budget,
-        totalAmount: amount,
-      };
-    }, [categories, activeType, searchLower, totalsByCategoryId]);
+  const {
+    categoriesOfType,
+    visibleCategories,
+    totalCount,
+    totalBudget,
+    totalAmount,
+  } = useMemo(() => {
+    const ofType = categories.filter((c) => c.type === activeType);
+    const visible = ofType.filter((c) =>
+      searchLower ? c.name.toLowerCase().includes(searchLower) : true,
+    );
+    const budget = ofType.reduce((sum, c) => sum + (c.budgetAmount ?? 0), 0);
+    const amount = ofType.reduce(
+      (sum, c) => sum + (totalsByCategoryId[c.id]?.spent ?? 0),
+      0,
+    );
+    return {
+      categoriesOfType: ofType,
+      visibleCategories: visible,
+      totalCount: ofType.length,
+      totalBudget: budget,
+      totalAmount: amount,
+    };
+  }, [categories, activeType, searchLower, totalsByCategoryId]);
 
   const emptyMessage = useMemo(() => {
     if (categoriesOfType.length === 0) {

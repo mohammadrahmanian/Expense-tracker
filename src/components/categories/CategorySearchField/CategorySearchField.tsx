@@ -1,6 +1,5 @@
-import { type ChangeEvent, type FC } from "react";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { type FC } from "react";
+import { SearchBar } from "@/components/ui/search-bar";
 
 type CategorySearchFieldProps = {
   value: string;
@@ -11,13 +10,10 @@ export const CategorySearchField: FC<CategorySearchFieldProps> = ({
   value,
   onChange,
 }) => (
-  <Input
+  <SearchBar
     value={value}
-    onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+    onChange={onChange}
     placeholder="Search categories..."
-    aria-label="Search categories"
-    startAdornment={
-      <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-    }
+    ariaLabel="Search categories"
   />
 );

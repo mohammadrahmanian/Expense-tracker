@@ -38,15 +38,15 @@ QuickExpenseModal/
 
 ## Zod schema (`quickExpenseSchema`)
 
-| Field                 | Type                                        | Rules                                             |
-| --------------------- | ------------------------------------------- | ------------------------------------------------- |
-| `transactionName`     | `string?`                                   | optional; empty ⇒ auto-title on submit            |
-| `amount`              | `string`                                    | required; matches `^\d+([,.]\d+)?$`; must be `> 0` |
-| `categoryName`        | `string`                                    | required                                           |
-| `date`                | `Date`                                      | required                                           |
-| `notes`               | `string?`                                   | optional                                           |
-| `isRecurring`         | `boolean`                                   | default `false`                                    |
-| `recurrenceFrequency` | `"DAILY" \| "WEEKLY" \| "MONTHLY" \| "YEARLY"?` | set to `MONTHLY` when toggling recurring on      |
+| Field                 | Type                                            | Rules                                              |
+| --------------------- | ----------------------------------------------- | -------------------------------------------------- |
+| `transactionName`     | `string?`                                       | optional; empty ⇒ auto-title on submit             |
+| `amount`              | `string`                                        | required; matches `^\d+([,.]\d+)?$`; must be `> 0` |
+| `categoryName`        | `string`                                        | required                                           |
+| `date`                | `Date`                                          | required                                           |
+| `notes`               | `string?`                                       | optional                                           |
+| `isRecurring`         | `boolean`                                       | default `false`                                    |
+| `recurrenceFrequency` | `"DAILY" \| "WEEKLY" \| "MONTHLY" \| "YEARLY"?` | set to `MONTHLY` when toggling recurring on        |
 
 Type alias: `QuickExpenseFormData = z.infer<typeof quickExpenseSchema>`.
 
@@ -55,6 +55,7 @@ Type alias: `QuickExpenseFormData = z.infer<typeof quickExpenseSchema>`.
 Pure factory in `QuickExpenseModal.utils.ts`. Deps: `{ categories, transactionType, createCategoryAsync, createTransaction, onSuccess }`.
 
 Flow:
+
 1. Parse `amount` via `normalizeAmount` (`,` → `.`) then `parseFloat`.
 2. Find category by **case-insensitive** name match in `categories`.
 3. If not found, create it via `createCategoryAsync` (`useCreateCategory`’s `mutateAsync`):
@@ -67,14 +68,14 @@ Flow:
 
 Applies when the chosen name has **no** matching API category and **`createCategoryAsync`** rejects (network, validation, server error, etc.).
 
-| What happens | Behavior |
-| ------------ | -------- |
-| **User-facing** | A single Sonner error toast: **“Category creation failed. Try again!”** (from `QuickExpenseModal.utils.ts`). |
-| **Duplicate toasts** | `QuickExpenseModal` uses `useCreateCategory({ showErrorToast: false })`, so the mutation’s `handleApiError` path does **not** show its usual error toast; only the submit handler’s message appears. |
-| **Logging** | The mutation’s `onError` still runs `handleApiError` with `showToast: false` — errors are **logged** (Sentry logger) with category context; `reportToSentry` remains `false` here (same as other category mutations). |
-| **Transaction** | **Not** created — handler returns after the `catch`; `createTransaction` is never called. |
-| **Modal & form** | Modal **stays open** (`onSuccess` / `handleClose` not run). Form values are **unchanged** so the user can fix input and retry. |
-| **Success toast** | “Category created successfully” does **not** run on failure (mutation `onSuccess` is skipped). |
+| What happens         | Behavior                                                                                                                                                                                                              |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **User-facing**      | A single Sonner error toast: **“Category creation failed. Try again!”** (from `QuickExpenseModal.utils.ts`).                                                                                                          |
+| **Duplicate toasts** | `QuickExpenseModal` uses `useCreateCategory({ showErrorToast: false })`, so the mutation’s `handleApiError` path does **not** show its usual error toast; only the submit handler’s message appears.                  |
+| **Logging**          | The mutation’s `onError` still runs `handleApiError` with `showToast: false` — errors are **logged** (Sentry logger) with category context; `reportToSentry` remains `false` here (same as other category mutations). |
+| **Transaction**      | **Not** created — handler returns after the `catch`; `createTransaction` is never called.                                                                                                                             |
+| **Modal & form**     | Modal **stays open** (`onSuccess` / `handleClose` not run). Form values are **unchanged** so the user can fix input and retry.                                                                                        |
+| **Success toast**    | “Category created successfully” does **not** run on failure (mutation `onSuccess` is skipped).                                                                                                                        |
 
 ## UI notes
 

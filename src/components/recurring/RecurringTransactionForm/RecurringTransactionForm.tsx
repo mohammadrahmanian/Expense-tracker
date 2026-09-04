@@ -1,103 +1,64 @@
-import { type FC, useState } from "react";
-import {
-  ResponsiveDialogHeader as DialogHeader,
-  ResponsiveDialogTitle as DialogTitle,
-} from "@/components/ui/responsive-dialog";
-import { createAmountChangeHandler } from "@/lib/amount-utils";
+import { type FC, useEffect } from "react";
 import { currencySymbols, useCurrency } from "@/contexts/CurrencyContext";
-import { useCategories } from "@/hooks/queries/useCategories";
-import { useCreateRecurringTransaction } from "@/hooks/mutations/useCreateRecurringTransaction";
-import { useUpdateRecurringTransaction } from "@/hooks/mutations/useUpdateRecurringTransaction";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { TransactionDetailsFields } from "./TransactionDetailsFields";
-import { RecurrenceSettingsFields } from "./RecurrenceSettingsFields";
-import { RecurringTransactionFormFooter } from "./RecurringTransactionFormFooter";
-import {
-  recurringTransactionCreateSchema,
-  recurringTransactionEditSchema,
-  type RecurringTransactionFormProps,
+import { RecurringTransactionFormBody } from "./RecurringTransactionFormBody";
+import { FirstOccurrenceNote } from "./RecurringTransactionFormFooter/FirstOccurrenceNote";
+import { useRecurringTransactionForm } from "./useRecurringTransactionForm";
+import type {
+  RecurringFormBodyProps,
+  RecurringFormState,
+  RecurringTransactionFormProps,
 } from "./RecurringTransactionForm.types";
-import {
-  getCreateDefaultValues,
-  getEditDefaultValues,
-  createCreateSubmitHandler,
-  createEditSubmitHandler,
-} from "./RecurringTransactionForm.utils";
 
-export const RecurringTransactionForm: FC<RecurringTransactionFormProps> = (
-  props,
-) => {
-  const isEditing = props.mode === "edit";
+type Props = RecurringTransactionFormProps & {
+  formId?: string;
+  onFormStateChange?: (state: RecurringFormState) => void;
+};
+
+export const RecurringTransactionForm: FC<Props> = (props) => {
+  const { mode, formId = "recurring-transaction-form", onFormStateChange } = props;
+  const isEditing = mode === "edit";
   const { currency } = useCurrency();
+  const {
+    form,
+    onSubmit,
+    categories,
+    filteredCategories,
+    isCategoriesLoading,
+    isPending,
+  } = useRecurringTransactionForm(props);
 
-  const [amount, setAmount] = useState<string>(
-    isEditing ? props.transaction.amount.toString() : "",
+  useEffect(() => {
+    onFormStateChange?.({ isPending, isCategoriesLoading });
+  }, [onFormStateChange, isPending, isCategoriesLoading]);
+
+  const firstOccurrenceNote = isEditing ? (
+    <FirstOccurrenceNote
+      mode="edit"
+      control={form.control}
+      nextOccurrenceISO={props.transaction.nextOccurrence}
+    />
+  ) : (
+    <FirstOccurrenceNote mode="create" control={form.control} />
   );
 
-  const { data: categories = [], isLoading } = useCategories();
-  const createMutation = useCreateRecurringTransaction();
-  const updateMutation = useUpdateRecurringTransaction();
+  const sharedBodyProps = {
+    form,
+    currencySymbol: currencySymbols[currency],
+    filteredCategories,
+    categories,
+    isPending,
+    isCategoriesLoading,
+    firstOccurrenceNote,
+    onCancel: props.onCancel,
+  };
 
-  const form = useForm<any>({
-    resolver: zodResolver(
-      isEditing
-        ? recurringTransactionEditSchema
-        : recurringTransactionCreateSchema,
-    ),
-    defaultValues: isEditing
-      ? getEditDefaultValues(props.transaction)
-      : getCreateDefaultValues(),
-  });
-
-  const onSubmit = isEditing
-    ? createEditSubmitHandler({
-        amount,
-        transaction: props.transaction,
-        updateMutate: updateMutation.mutate,
-        onSuccess: props.onSuccess,
-      })
-    : createCreateSubmitHandler({
-        amount,
-        createMutate: createMutation.mutate,
-        onSuccess: props.onSuccess,
-      });
+  const bodyProps: RecurringFormBodyProps = isEditing
+    ? { ...sharedBodyProps, mode: "edit", transaction: props.transaction }
+    : { ...sharedBodyProps, mode: "create" };
 
   return (
-    <>
-      <DialogHeader>
-        <DialogTitle>
-          {isEditing
-            ? "Edit Recurring Transaction"
-            : "Add Recurring Transaction"}
-        </DialogTitle>
-      </DialogHeader>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <TransactionDetailsFields
-          form={form}
-          amount={amount}
-          onAmountChange={createAmountChangeHandler(setAmount)}
-          currencySymbol={currencySymbols[currency]}
-          filteredCategories={categories.filter(
-            (c) => c.type === form.watch("type"),
-          )}
-        />
-        {isEditing ? (
-          <RecurrenceSettingsFields
-            mode="edit"
-            form={form}
-            transaction={props.transaction}
-          />
-        ) : (
-          <RecurrenceSettingsFields mode="create" form={form} />
-        )}
-        <RecurringTransactionFormFooter
-          mode={props.mode}
-          isPending={createMutation.isPending || updateMutation.isPending}
-          isCategoriesLoading={isLoading}
-          onCancel={props.onCancel}
-        />
-      </form>
-    </>
+    <form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
+      <RecurringTransactionFormBody {...bodyProps} />
+    </form>
   );
 };

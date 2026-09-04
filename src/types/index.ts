@@ -128,3 +128,5 @@ export interface RecurringTransaction {
   category?: Category;
   recurrenceFrequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 }
+
+export type RecurringStatus = "active" | "paused" | "ended";

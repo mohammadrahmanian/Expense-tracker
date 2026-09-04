@@ -24,33 +24,68 @@ export const Transactions: FC = () => {
   const isMobile = useIsMobile();
   const { formatAmount } = useCurrency();
   const {
-    state, queryParams, infiniteQueryParams, activeFilters,
-    dateFilterProps, searchProps, typeFilterProps, sortProps, paginationProps, onCategoryFilterChange,
+    state,
+    queryParams,
+    infiniteQueryParams,
+    activeFilters,
+    dateFilterProps,
+    searchProps,
+    typeFilterProps,
+    sortProps,
+    paginationProps,
+    onCategoryFilterChange,
     applyBulkFilters,
   } = useTransactionFilters();
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
+  const [editingTransaction, setEditingTransaction] = useState<
+    Transaction | undefined
+  >();
   const [deletingId, setDeletingId] = useState<string | undefined>();
 
-  const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError, error: transactionsErrorInfo } = useTransactions(queryParams, !isMobile);
+  const {
+    data: transactionsData,
+    isLoading: transactionsLoading,
+    isError: transactionsError,
+    error: transactionsErrorInfo,
+  } = useTransactions(queryParams, !isMobile);
   const infiniteQuery = useInfiniteTransactions(infiniteQueryParams, isMobile);
-  const { data: categories, isLoading: categoriesLoading, isError: categoriesError, error: categoriesErrorInfo } = useCategories();
+  const {
+    data: categories,
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+    error: categoriesErrorInfo,
+  } = useCategories();
   const deleteTransaction = useDeleteTransaction();
 
   const isLoading = transactionsLoading || categoriesLoading;
   const hasError = transactionsError || categoriesError;
-  const transactions = useMemo(() => transactionsData?.items ?? [], [transactionsData?.items]);
+  const transactions = useMemo(
+    () => transactionsData?.items ?? [],
+    [transactionsData?.items],
+  );
   const totalTransactions = isMobile
     ? (infiniteQuery.data?.pages[0]?.total ?? 0)
     : (transactionsData?.total ?? 0);
-  const pageTotals = useMemo(() => calculatePageTotals(transactions), [transactions]);
+  const pageTotals = useMemo(
+    () => calculatePageTotals(transactions),
+    [transactions],
+  );
 
-  const handleEdit = (transaction: Transaction) => { setEditingTransaction(transaction); setIsFormOpen(true); };
+  const handleEdit = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
+    setIsFormOpen(true);
+  };
   const handleDelete = (id: string) => setDeletingId(id);
   const handleDeleteConfirm = () => {
-    if (deletingId) deleteTransaction.mutate(deletingId, { onSuccess: () => setDeletingId(undefined) });
+    if (deletingId)
+      deleteTransaction.mutate(deletingId, {
+        onSuccess: () => setDeletingId(undefined),
+      });
   };
-  const handleFormClose = () => { setIsFormOpen(false); setEditingTransaction(undefined); };
+  const handleFormClose = () => {
+    setIsFormOpen(false);
+    setEditingTransaction(undefined);
+  };
 
   return (
     <DashboardLayout>
@@ -108,24 +143,45 @@ export const Transactions: FC = () => {
           sort={sortProps}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          isDeletingId={deleteTransaction.isPending ? deleteTransaction.variables : undefined}
+          isDeletingId={
+            deleteTransaction.isPending
+              ? deleteTransaction.variables
+              : undefined
+          }
           formatAmount={formatAmount}
           pagination={paginationProps}
         />
       </div>
 
-      <Dialog open={isFormOpen} onOpenChange={(open) => (open ? setIsFormOpen(true) : handleFormClose())}>
+      <Dialog
+        open={isFormOpen}
+        onOpenChange={(open) =>
+          open ? setIsFormOpen(true) : handleFormClose()
+        }
+      >
         <DialogContent className="sm:max-w-2xl">
-          <TransactionForm transaction={editingTransaction} onSuccess={handleFormClose} onCancel={handleFormClose} />
+          <TransactionForm
+            transaction={editingTransaction}
+            onSuccess={handleFormClose}
+            onCancel={handleFormClose}
+          />
         </DialogContent>
       </Dialog>
 
       <DeleteTransactionDialog
         open={deletingId !== undefined}
-        onClose={() => { setDeletingId(undefined); deleteTransaction.reset(); }}
+        onClose={() => {
+          setDeletingId(undefined);
+          deleteTransaction.reset();
+        }}
         onConfirm={handleDeleteConfirm}
         isPending={deleteTransaction.isPending}
-        error={deleteTransaction.isError ? ((deleteTransaction.error as Error)?.message ?? "Failed to delete transaction") : undefined}
+        error={
+          deleteTransaction.isError
+            ? ((deleteTransaction.error as Error)?.message ??
+              "Failed to delete transaction")
+            : undefined
+        }
       />
     </DashboardLayout>
   );
