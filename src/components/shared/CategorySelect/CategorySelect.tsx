@@ -43,7 +43,7 @@ export const CategorySelect: FC<CategorySelectProps> = ({
         Category{required && <span className="text-danger-500"> *</span>}
       </Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className={cn("h-12", error && "border-danger-500")}>
+        <SelectTrigger className={cn(error && "border-danger-500")}>
           {selected ? (
             <div className="flex items-center gap-2 min-w-0">
               <CategoryIconChip category={selected} />

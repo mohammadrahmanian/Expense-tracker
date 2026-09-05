@@ -26,7 +26,7 @@ const RecurringTransactionFormPage = () => {
     ? recurringTransactions?.find((rt) => rt.id === id)
     : undefined;
 
-  const [formState, setFormState] = useState<RecurringFormState>({
+  const [, setFormState] = useState<RecurringFormState>({
     isPending: false,
     isCategoriesLoading: false,
   });
@@ -52,13 +52,7 @@ const RecurringTransactionFormPage = () => {
         />
       </div>
       <div className="hidden lg:block">
-        <RecurringFormDesktopHeader
-          mode={mode}
-          formId={FORM_ID}
-          isPending={formState.isPending}
-          isDisabled={formState.isPending || formState.isCategoriesLoading}
-          onCancel={onCancel}
-        />
+        <RecurringFormDesktopHeader mode={mode} />
       </div>
 
       <div className="mt-5 lg:mt-0">
