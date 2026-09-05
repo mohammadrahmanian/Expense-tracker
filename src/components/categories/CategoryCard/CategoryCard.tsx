@@ -40,8 +40,8 @@ export const CategoryCard: FC<CategoryCardProps> = ({
   const amountVerb = category.type === "EXPENSE" ? "spent" : "earned";
 
   return (
-    <Card className="flex flex-col gap-4 border-border bg-surface p-5 shadow-none">
-      <div className="flex items-center justify-between gap-2">
+    <Card className="flex flex-col gap-4 border-border bg-surface shadow-none">
+      <div className="flex items-center justify-between gap-2 pl-5">
         <CategoryIconWrap color={category.color} Icon={Icon} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -70,8 +70,10 @@ export const CategoryCard: FC<CategoryCardProps> = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <p className="text-base font-semibold text-foreground">{category.name}</p>
-      <div className="flex flex-col gap-2">
+      <p className="px-5 text-base font-semibold text-foreground">
+        {category.name}
+      </p>
+      <div className="flex flex-col gap-2 px-5 pb-5">
         {totalsLoading ? (
           <>
             <Skeleton className="h-4 w-28" aria-hidden />
