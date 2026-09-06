@@ -132,9 +132,3 @@ export type RecurringFormBodyProps = {
   | { mode: "create"; transaction?: never }
   | { mode: "edit"; transaction: RecurringTransaction }
 );
-
-/** Reported by `RecurringTransactionForm` so page-level chrome (e.g. the desktop header's Save button) can mirror the footer's pending/disabled rules. */
-export type RecurringFormState = {
-  isPending: boolean;
-  isCategoriesLoading: boolean;
-};

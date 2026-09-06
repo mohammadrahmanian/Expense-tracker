@@ -21,18 +21,6 @@ describe("resolveQuickPickCategories", () => {
     expect(result.map((c) => c.id)).toEqual(["1", "2", "3"]);
   });
 
-  it("fills a missing name with the next unused category in order", () => {
-    const categories = [
-      makeCategory("1", "Health"),
-      makeCategory("2", "Groceries"),
-    ];
-    const result = resolveQuickPickCategories(categories, ["Food", "Health"]);
-    // "Food" has no match, so it falls back to the first unused category
-    // in array order. "Health" is reserved by its name match, so the
-    // fallback must skip it and land on "Groceries".
-    expect(result.map((c) => c.id)).toEqual(["2", "1"]);
-  });
-
   it("never reuses a category already assigned to another slot", () => {
     const categories = [makeCategory("1", "Food"), makeCategory("2", "Fun")];
     const result = resolveQuickPickCategories(categories, [
@@ -52,6 +40,18 @@ describe("resolveQuickPickCategories", () => {
     ];
     const result = resolveQuickPickCategories(categories, ["Food", "Health"]);
     expect(result.map((c) => c.name)).toEqual(["Groceries", "Health"]);
+  });
+
+  it("matches target names case-insensitively", () => {
+    const categories = [
+      makeCategory("1", "Groceries"),
+      makeCategory("2", "food"),
+    ];
+    const result = resolveQuickPickCategories(categories, ["Food"]);
+    // A case-insensitive name match reserves "food" for the "Food" slot.
+    // A case-sensitive implementation would miss that match and fall back
+    // to "Groceries" (the first unused category in array order) instead.
+    expect(result.map((c) => c.id)).toEqual(["2"]);
   });
 
   it("returns a shorter array when there are fewer categories than target names", () => {

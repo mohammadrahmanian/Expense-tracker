@@ -34,7 +34,7 @@ export const QuickCategoryGrid: FC<QuickCategoryGridProps> = ({
   return (
     <>
       <div className="grid grid-cols-5 sm:grid-cols-6 gap-3">
-        {quickPickCategories.map((cat, index) => (
+        {quickPickCategories.map((cat) => (
           <QuickCategoryCard
             key={cat.id}
             icon={ICON_BY_NAME[cat.icon ?? "utensils"] ?? ICON_BY_NAME.utensils}
@@ -44,11 +44,6 @@ export const QuickCategoryGrid: FC<QuickCategoryGridProps> = ({
               selectedCategory.toLowerCase() === cat.name.toLowerCase()
             }
             onClick={() => onCardClick(cat.name)}
-            className={
-              index === 4 && quickPickCategories.length === 5
-                ? "hidden sm:flex"
-                : undefined
-            }
           />
         ))}
         <QuickCategoryCard
