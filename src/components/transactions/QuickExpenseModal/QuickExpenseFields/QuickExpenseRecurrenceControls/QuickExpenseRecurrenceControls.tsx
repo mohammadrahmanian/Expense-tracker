@@ -8,8 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { type QuickExpenseFormData } from "../QuickExpenseModal.types";
-import { QuickDateChip } from "./QuickDateChip";
+import { type QuickExpenseFormData } from "../../QuickExpenseModal.types";
+import { QuickDateChip } from "../QuickDateChip";
 
 type RecurrenceFrequency = NonNullable<
   QuickExpenseFormData["recurrenceFrequency"]

@@ -30,10 +30,14 @@ QuickExpenseModal/
 │   └── QuickIncomeCategorySelect.tsx # income grid + "Other" -> Select of remaining API categories (fixed list, unchanged)
 └── QuickExpenseFields/
     ├── QuickExpenseFields.tsx             # smart: composes the sections below, owns "More options" open state
-    ├── QuickExpenseCategorySection.tsx    # UI: category grid (expense vs income), remounts on tab switch
+    ├── QuickExpenseCategorySection/
+    │   ├── QuickExpenseCategorySection.tsx # UI: category grid (expense vs income), remounts on tab switch
+    │   └── index.ts                        # barrel: export { QuickExpenseCategorySection }
     ├── QuickExpenseAmountField.tsx        # UI: amount input + validation error
     ├── QuickExpenseDescriptionField.tsx   # UI: description input
-    ├── QuickExpenseRecurrenceControls.tsx # UI: date chip, recurring toggle, frequency select
+    ├── QuickExpenseRecurrenceControls/
+    │   ├── QuickExpenseRecurrenceControls.tsx # UI: date chip, recurring toggle, frequency select
+    │   └── index.ts                            # barrel: export { QuickExpenseRecurrenceControls }
     ├── QuickExpenseMoreOptions.tsx        # UI: collapsible trigger wrapping MoreOptionsSection
     ├── QuickDateChip.tsx                  # date picker chip
     └── MoreOptionsSection.tsx             # notes textarea

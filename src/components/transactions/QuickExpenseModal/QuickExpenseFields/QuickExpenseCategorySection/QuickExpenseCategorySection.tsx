@@ -3,7 +3,7 @@ import { Category } from "@/types";
 import {
   QuickCategorySelect,
   QuickIncomeCategorySelect,
-} from "../QuickCategorySelect";
+} from "../../QuickCategorySelect";
 
 type TransactionKind = "expense" | "income";
 
