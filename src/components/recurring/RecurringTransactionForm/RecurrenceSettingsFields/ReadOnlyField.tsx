@@ -20,7 +20,7 @@ export const ReadOnlyField: FC<ReadOnlyFieldProps> = ({
 }) => (
   <div className="space-y-2">
     <Label>{label}</Label>
-    <div className="flex h-12 items-center gap-2 rounded-sm border border-border bg-neutral-100 px-3 dark:border-neutral-700 dark:bg-neutral-800">
+    <div className="flex h-10 items-center gap-2 rounded-sm border border-border bg-neutral-100 px-3 dark:border-neutral-700 dark:bg-neutral-800">
       {Icon && (
         <Icon className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" />
       )}

@@ -29,7 +29,7 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
     onSubmit,
     isPending,
     categoriesLoading,
-    incomeCategoriesEmpty,
+    categoriesEmpty,
     currencySymbol,
     activeCategories,
   } = useQuickExpenseModal({ onClose });
@@ -63,7 +63,7 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
             <Button
               type="submit"
               className="flex-1"
-              disabled={isPending || categoriesLoading || incomeCategoriesEmpty}
+              disabled={isPending || categoriesLoading || categoriesEmpty}
             >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isPending ? "Adding..." : submitLabel}

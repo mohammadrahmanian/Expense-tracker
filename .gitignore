@@ -26,9 +26,12 @@ dev-dist
 
 *.tsbuildinfo
 
-plan.md
 # Environment files
 .env
 .env.*
 # Sentry Config File
 .env.sentry-build-plugin
+
+# Agent generated temporary files
+plan.md
+REVIEW.md

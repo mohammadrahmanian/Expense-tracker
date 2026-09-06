@@ -60,7 +60,7 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
   return (
     <>
       {/* Category Grid Section — key remounts picker so tab switch resets local UI (e.g. Other) */}
-      <div key={transactionKind} className="py-6">
+      <div key={transactionKind} className="pt-6 pb-0 sm:pb-6">
         {transactionKind === "expense" ? (
           <QuickCategorySelect
             selectedCategory={categoryName}

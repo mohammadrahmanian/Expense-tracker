@@ -36,7 +36,7 @@ const ResponsiveDialogContent = React.forwardRef<
         // Base styles
         "fixed z-50 flex flex-col w-full border bg-background shadow-lg",
         // Desktop: centered modal
-        "sm:left-[50%] sm:top-[50%] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl",
+        "sm:left-[50%] sm:top-[50%] sm:right-auto sm:bottom-auto sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl",
         // Desktop animations
         "sm:duration-200 sm:data-[state=open]:animate-in sm:data-[state=closed]:animate-out sm:data-[state=closed]:fade-out-0 sm:data-[state=open]:fade-in-0",
         "sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
