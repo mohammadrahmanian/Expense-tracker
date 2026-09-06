@@ -1,0 +1,1 @@
+export { QuickExpenseCategorySection } from "./QuickExpenseCategorySection";
