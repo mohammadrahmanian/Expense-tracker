@@ -25,7 +25,7 @@ export const QuickExpenseMoreOptions: FC<QuickExpenseMoreOptionsProps> = ({
       <CollapsibleTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-1.5 text-[13px] font-medium text-gold-500"
+          className="flex items-center gap-1.5 text-[13px] font-medium text-gold-500 dark:text-gold-300"
         >
           <Settings className="h-3.5 w-3.5" />
           <span>More options (notes)</span>

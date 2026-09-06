@@ -13,7 +13,7 @@ export const QuickExpenseDescriptionField: FC<
 > = ({ register }) => {
   return (
     <div className="relative">
-      <Pencil className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+      <Pencil className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500 dark:text-neutral-300" />
       <Input
         variant="filled"
         {...register("transactionName")}

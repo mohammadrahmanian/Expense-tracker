@@ -17,7 +17,7 @@ export const QuickExpenseAmountField: FC<QuickExpenseAmountFieldProps> = ({
   return (
     <>
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[30px] font-semibold text-neutral-500">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[30px] font-semibold text-neutral-500 dark:text-neutral-300">
           {currencySymbol}
         </span>
         <Input
@@ -30,7 +30,9 @@ export const QuickExpenseAmountField: FC<QuickExpenseAmountFieldProps> = ({
         />
       </div>
       {error && (
-        <p className="-mt-2 text-caption text-danger-500">{error.message}</p>
+        <p className="-mt-2 text-caption text-danger-500 dark:text-danger-300">
+          {error.message}
+        </p>
       )}
     </>
   );
