@@ -29,9 +29,14 @@ QuickExpenseModal/
 │   │   └── QuickCategoryCard.tsx     # UI: single quick-pick card button (icon, label, selected state)
 │   └── QuickIncomeCategorySelect.tsx # income grid + "Other" -> Select of remaining API categories (fixed list, unchanged)
 └── QuickExpenseFields/
-    ├── QuickExpenseFields.tsx        # amount, description, date chip, recurrence, "More options"
-    ├── QuickDateChip.tsx             # date picker chip
-    └── MoreOptionsSection.tsx        # notes textarea (collapsible)
+    ├── QuickExpenseFields.tsx             # smart: composes the sections below, owns "More options" open state
+    ├── QuickExpenseCategorySection.tsx    # UI: category grid (expense vs income), remounts on tab switch
+    ├── QuickExpenseAmountField.tsx        # UI: amount input + validation error
+    ├── QuickExpenseDescriptionField.tsx   # UI: description input
+    ├── QuickExpenseRecurrenceControls.tsx # UI: date chip, recurring toggle, frequency select
+    ├── QuickExpenseMoreOptions.tsx        # UI: collapsible trigger wrapping MoreOptionsSection
+    ├── QuickDateChip.tsx                  # date picker chip
+    └── MoreOptionsSection.tsx             # notes textarea
 ```
 
 ## State & data flow
