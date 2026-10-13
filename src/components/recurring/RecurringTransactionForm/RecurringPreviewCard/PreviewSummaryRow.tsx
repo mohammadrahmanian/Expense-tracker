@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
+import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types";
 
@@ -16,7 +16,7 @@ export const PreviewSummaryRow: FC<PreviewSummaryRowProps> = ({
   amount,
   category,
 }) => {
-  const Icon = ICON_BY_NAME[category?.icon ?? "utensils"] ?? ICON_BY_NAME.utensils;
+  const Icon = getCategoryIcon(category?.icon);
 
   return (
     <div className="flex items-center gap-3">

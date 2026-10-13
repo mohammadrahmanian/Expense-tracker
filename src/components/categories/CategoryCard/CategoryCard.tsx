@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import type { Category } from "@/types";
-import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
+import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CategoryIconWrap } from "./CategoryIconWrap";
@@ -33,8 +33,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({
   onDelete,
 }) => {
   const { formatAmount } = useCurrency();
-  const iconName = category.icon ?? "utensils";
-  const Icon = ICON_BY_NAME[iconName] ?? ICON_BY_NAME["utensils"];
+  const Icon = getCategoryIcon(category.icon);
   const budget = category.budgetAmount ?? null;
   const pct = budgetProgressPercent(monthlySpent, budget);
   const amountVerb = category.type === "EXPENSE" ? "spent" : "earned";
