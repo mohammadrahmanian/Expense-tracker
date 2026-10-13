@@ -19,6 +19,7 @@ type QuickCategoryGridProps = {
   otherSelectCategories: Category[];
   selectedCategoryId?: string;
   onCardClick: (name: string) => void;
+  onOtherClick: () => void;
   onOtherSelect: (categoryId: string) => void;
 };
 
@@ -29,6 +30,7 @@ export const QuickCategoryGrid: FC<QuickCategoryGridProps> = ({
   otherSelectCategories,
   selectedCategoryId,
   onCardClick,
+  onOtherClick,
   onOtherSelect,
 }) => {
   return (
@@ -51,7 +53,7 @@ export const QuickCategoryGrid: FC<QuickCategoryGridProps> = ({
           icon={Ellipsis}
           label="Other"
           isSelected={otherExpanded}
-          onClick={() => onCardClick("Other")}
+          onClick={onOtherClick}
         />
       </div>
 

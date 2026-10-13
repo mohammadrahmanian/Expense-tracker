@@ -48,6 +48,7 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
             form={form}
             currencySymbol={currencySymbol}
             categories={activeCategories}
+            categoriesLoading={categoriesLoading}
             transactionKind={transactionKind}
           />
 

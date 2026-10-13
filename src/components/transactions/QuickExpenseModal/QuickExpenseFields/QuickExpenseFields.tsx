@@ -14,6 +14,7 @@ type QuickExpenseFieldsProps = {
   form: UseFormReturn<QuickExpenseFormData>;
   currencySymbol: string;
   categories: Category[];
+  categoriesLoading: boolean;
   transactionKind: TransactionKind;
 };
 
@@ -21,6 +22,7 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
   form,
   currencySymbol,
   categories,
+  categoriesLoading,
   transactionKind,
 }) => {
   const {
@@ -41,6 +43,7 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
         transactionKind={transactionKind}
         categoryName={categoryName}
         categories={categories}
+        isLoading={categoriesLoading}
         onSelect={(name) =>
           setValue("categoryName", name, { shouldValidate: true })
         }

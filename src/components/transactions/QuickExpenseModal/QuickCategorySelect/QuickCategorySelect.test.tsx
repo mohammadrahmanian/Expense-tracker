@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Category } from "@/types";
 import { QuickCategorySelect } from "./QuickCategorySelect";
@@ -113,5 +113,69 @@ describe("QuickCategorySelect", () => {
       screen.getByText(/don't have any expense categories yet/i),
     ).toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("selects a real category named Other instead of opening the dropdown", async () => {
+    mockMatchMedia(true);
+    const onSelect = vi.fn();
+    // "Health" has no match, so its slot falls back to the real "Other".
+    const categories = [makeCategory("1", "Food"), makeCategory("2", "Other")];
+
+    const user = userEvent.setup();
+    render(
+      <QuickCategorySelect
+        selectedCategory=""
+        onSelect={onSelect}
+        categories={categories}
+      />,
+    );
+
+    const [realOther, otherToggle] = screen.getAllByRole("button", {
+      name: "Other",
+    });
+    await user.click(realOther);
+    expect(onSelect).toHaveBeenLastCalledWith("Other");
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+
+    await user.click(otherToggle);
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
+
+  it("shows a selection hidden by a resize inside the Other dropdown", () => {
+    let listener: (() => void) | undefined;
+    const mql = {
+      matches: true,
+      addEventListener: (_: string, cb: () => void) => (listener = cb),
+      removeEventListener: vi.fn(),
+    };
+    vi.spyOn(window, "matchMedia").mockReturnValue(
+      mql as unknown as MediaQueryList,
+    );
+
+    const categories = [
+      makeCategory("1", "Food"),
+      makeCategory("2", "Health"),
+      makeCategory("3", "Household"),
+      makeCategory("4", "Fun"),
+      makeCategory("5", "Clothes"),
+    ];
+    render(
+      <QuickCategorySelect
+        selectedCategory="Clothes"
+        onSelect={vi.fn()}
+        categories={categories}
+      />,
+    );
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+
+    act(() => {
+      mql.matches = false;
+      listener?.();
+    });
+
+    expect(
+      screen.queryByRole("button", { name: "Clothes" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toHaveTextContent("Clothes");
   });
 });
