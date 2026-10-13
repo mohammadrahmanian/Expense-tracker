@@ -18,6 +18,7 @@ function Calendar({
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
+        ...classNames,
         months: cn(
           "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
           classNames?.months,

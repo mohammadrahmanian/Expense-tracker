@@ -7,13 +7,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCurrency } from "@/contexts/CurrencyContext";
 import type { Category } from "@/types";
 import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { CategoryIconWrap } from "./CategoryIconWrap";
-import { budgetProgressPercent } from "./CategoryCard.utils";
+import { CategoryTotals } from "./CategoryTotals";
 
 type CategoryCardProps = {
   category: Category;
@@ -32,16 +30,12 @@ export const CategoryCard: FC<CategoryCardProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const { formatAmount } = useCurrency();
   const iconName = category.icon ?? "utensils";
   const Icon = ICON_BY_NAME[iconName] ?? ICON_BY_NAME["utensils"];
-  const budget = category.budgetAmount ?? null;
-  const pct = budgetProgressPercent(monthlySpent, budget);
-  const amountVerb = category.type === "EXPENSE" ? "spent" : "earned";
 
   return (
-    <Card className="flex flex-col gap-4 border-border bg-surface p-5 shadow-none">
-      <div className="flex items-center justify-between gap-2">
+    <Card className="flex flex-col gap-4 border-border bg-surface shadow-none">
+      <div className="flex items-center justify-between gap-2 pl-5">
         <CategoryIconWrap color={category.color} Icon={Icon} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -70,48 +64,16 @@ export const CategoryCard: FC<CategoryCardProps> = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <p className="text-base font-semibold text-foreground">{category.name}</p>
-      <div className="flex flex-col gap-2">
-        {totalsLoading ? (
-          <>
-            <Skeleton className="h-4 w-28" aria-hidden />
-            <Skeleton className="h-1.5 w-full rounded-full" aria-hidden />
-            <div className="flex items-center justify-between gap-2">
-              <Skeleton className="h-3 w-24" aria-hidden />
-              <Skeleton className="h-3 w-20" aria-hidden />
-            </div>
-          </>
-        ) : (
-          <>
-            <p className="text-caption text-muted-foreground">
-              {monthlyCount} transaction{monthlyCount === 1 ? "" : "s"}
-            </p>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700">
-              <div
-                role="progressbar"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={Math.round(pct)}
-                aria-label={`Budget used for ${category.name}`}
-                className="h-full rounded-full transition-[width]"
-                style={{
-                  width: `${pct}%`,
-                  backgroundColor: category.color,
-                }}
-              />
-            </div>
-            <div className="flex items-center justify-between gap-2 text-[11px]">
-              <span className="font-medium text-neutral-600 dark:text-neutral-400">
-                {formatAmount(monthlySpent)} {amountVerb}
-              </span>
-              <span className="text-muted-foreground">
-                {budget != null && budget > 0
-                  ? `${formatAmount(budget)} budget`
-                  : "No budget"}
-              </span>
-            </div>
-          </>
-        )}
+      <p className="px-5 text-base font-semibold text-foreground">
+        {category.name}
+      </p>
+      <div className="flex flex-col gap-2 px-5 pb-5">
+        <CategoryTotals
+          category={category}
+          monthlySpent={monthlySpent}
+          monthlyCount={monthlyCount}
+          totalsLoading={totalsLoading}
+        />
       </div>
     </Card>
   );
