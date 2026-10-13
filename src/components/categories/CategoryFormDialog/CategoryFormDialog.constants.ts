@@ -11,6 +11,7 @@ import {
   Plane,
   Receipt,
   ShoppingBag,
+  Tag,
   Tv,
   Utensils,
 } from "lucide-react";
@@ -60,3 +61,10 @@ export const DEFAULT_CATEGORY_FORM = {
 export const ICON_BY_NAME = Object.fromEntries(
   ICON_OPTIONS.map(({ name, Icon }) => [name, Icon]),
 ) as Record<string, LucideIcon>;
+
+/** Neutral icon for categories with no icon or an unknown icon name. */
+export const FALLBACK_CATEGORY_ICON: LucideIcon = Tag;
+
+export function getCategoryIcon(iconName?: string | null): LucideIcon {
+  return (iconName && ICON_BY_NAME[iconName]) || FALLBACK_CATEGORY_ICON;
+}

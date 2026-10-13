@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Category } from "@/types";
-import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
+import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
 import { CategoryIconWrap } from "./CategoryIconWrap";
 import { CategoryTotals } from "./CategoryTotals";
@@ -30,8 +30,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const iconName = category.icon ?? "utensils";
-  const Icon = ICON_BY_NAME[iconName] ?? ICON_BY_NAME["utensils"];
+  const Icon = getCategoryIcon(category.icon);
 
   return (
     <Card className="flex flex-col gap-4 border-border bg-surface shadow-none">
