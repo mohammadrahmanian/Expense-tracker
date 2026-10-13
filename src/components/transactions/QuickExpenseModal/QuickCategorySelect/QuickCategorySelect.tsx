@@ -1,5 +1,6 @@
 import { useMemo, useState, type FC } from "react";
 import { Category } from "@/types";
+import { QuickCategoryEmptyState } from "./QuickCategoryEmptyState";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { QuickCategoryGrid } from "./QuickCategoryGrid";
 import {
@@ -34,24 +35,23 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
   );
   const isOtherCategory =
     selectedCategory !== "" && !quickNames.has(selectedCategory.toLowerCase());
-  const [otherExpanded, setOtherExpanded] = useState(isOtherCategory);
+  const [otherRequested, setOtherRequested] = useState(false);
+  // Derived so a selection hidden by a breakpoint change stays visible in Other.
+  const otherExpanded =
+    isOtherCategory || (otherRequested && selectedCategory === "");
 
   const handleCardClick = (name: string) => {
-    if (name === "Other") {
-      setOtherExpanded(true);
-      if (!isOtherCategory) onSelect("");
-    } else {
-      setOtherExpanded(false);
-      onSelect(name);
-    }
+    setOtherRequested(false);
+    onSelect(name);
+  };
+  const handleOtherClick = () => {
+    setOtherRequested(true);
+    if (!isOtherCategory) onSelect("");
   };
   const handleOtherSelect = (categoryId: string) => {
     const cat = categories.find((c) => c.id === categoryId);
     if (cat) onSelect(cat.name);
   };
-
-  const findCategory = (name: string) =>
-    categories.find((cat) => cat.name.toLowerCase() === name.toLowerCase());
 
   const selectedCategoryId = isOtherCategory
     ? categories.find(
@@ -63,17 +63,7 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
   );
 
   if (categories.length === 0) {
-    return (
-      <div className="space-y-4">
-        <span className="text-overline text-neutral-500 uppercase tracking-[1.5px]">
-          Category
-        </span>
-        <p className="rounded-md border border-neutral-200 bg-neutral-50 p-4 text-[13px] text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900/40 dark:text-neutral-400">
-          You don&apos;t have any expense categories yet. Add categories in your
-          category settings, then come back here to record an expense.
-        </p>
-      </div>
-    );
+    return <QuickCategoryEmptyState transactionKind="expense" />;
   }
 
   return (
@@ -88,17 +78,9 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
         otherSelectCategories={otherSelectCategories}
         selectedCategoryId={selectedCategoryId}
         onCardClick={handleCardClick}
+        onOtherClick={handleOtherClick}
         onOtherSelect={handleOtherSelect}
       />
-
-      {selectedCategory &&
-        !findCategory(selectedCategory) &&
-        !otherExpanded && (
-          <p className="text-caption text-gold-700 bg-gold-50 border border-gold-200 rounded-md p-3 dark:bg-gold-900 dark:text-gold-200 dark:border-gold-700">
-            &ldquo;{selectedCategory}&rdquo; category will be created
-            automatically.
-          </p>
-        )}
       {error && <p className="text-caption text-danger-500">{error}</p>}
     </div>
   );

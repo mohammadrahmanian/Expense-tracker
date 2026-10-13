@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import { Ellipsis } from "lucide-react";
 import { Category } from "@/types";
-import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
+import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import {
   Select,
   SelectContent,
@@ -19,6 +19,7 @@ type QuickCategoryGridProps = {
   otherSelectCategories: Category[];
   selectedCategoryId?: string;
   onCardClick: (name: string) => void;
+  onOtherClick: () => void;
   onOtherSelect: (categoryId: string) => void;
 };
 
@@ -29,6 +30,7 @@ export const QuickCategoryGrid: FC<QuickCategoryGridProps> = ({
   otherSelectCategories,
   selectedCategoryId,
   onCardClick,
+  onOtherClick,
   onOtherSelect,
 }) => {
   return (
@@ -37,7 +39,7 @@ export const QuickCategoryGrid: FC<QuickCategoryGridProps> = ({
         {quickPickCategories.map((cat) => (
           <QuickCategoryCard
             key={cat.id}
-            icon={ICON_BY_NAME[cat.icon ?? "utensils"] ?? ICON_BY_NAME.utensils}
+            icon={getCategoryIcon(cat.icon)}
             label={cat.name}
             color={cat.color}
             isSelected={
@@ -51,7 +53,7 @@ export const QuickCategoryGrid: FC<QuickCategoryGridProps> = ({
           icon={Ellipsis}
           label="Other"
           isSelected={otherExpanded}
-          onClick={() => onCardClick("Other")}
+          onClick={onOtherClick}
         />
       </div>
 
