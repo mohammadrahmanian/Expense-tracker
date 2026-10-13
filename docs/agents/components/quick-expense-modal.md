@@ -27,6 +27,8 @@ QuickExpenseModal/
 │   │   └── QuickCategoryGrid.tsx     # UI: renders quick-pick cards + "Other" -> Select of remaining API categories
 │   ├── QuickCategoryCard/
 │   │   └── QuickCategoryCard.tsx     # UI: single quick-pick card button (icon, label, selected state)
+│   ├── QuickCategoryEmptyState/
+│   │   └── QuickCategoryEmptyState.tsx # UI: "no categories yet" block, shared by expense + income pickers
 │   └── QuickIncomeCategorySelect.tsx # income grid + "Other" -> Select of remaining API categories (fixed list, unchanged)
 └── QuickExpenseFields/
     ├── QuickExpenseFields.tsx             # smart: composes the sections below, owns "More options" open state
@@ -54,7 +56,7 @@ QuickExpenseModal/
   - **Income** picker grid is still driven by the **fixed** `incomeCategories` list in `QuickExpenseModal.types.ts` — API categories only appear in the "Other" dropdown (unchanged).
   - **Responsive quick-pick count**: mobile shows 4 real quick-pick cards + "Other" (5 items/row); desktop shows all 5 real quick-pick cards + "Other" (6 items/row). Implemented in `QuickCategorySelect.tsx` via `useMediaQuery("(min-width: 640px)")` (matches Tailwind `sm`) — `visibleQuickPicks` is sliced to the first 4 resolved categories when not desktop, and that same sliced list (not the full 5) is what's passed to `QuickCategoryGrid` **and** used to build `quickNames`/`otherSelectCategories`. This keeps the CSS-hidden-card and Other-exclusion-set in sync: a category dropped from the visible cards on mobile always falls through into the Other dropdown instead of disappearing. `QuickCategoryGrid` itself does no responsive hiding — it renders exactly the array it's given.
   - **Loading state**: `QuickExpenseCategorySection` gets `isLoading` (from `categoriesLoading`) and renders card skeletons instead of either picker, so the empty state never flashes before data arrives.
-  - **Empty state**: if `categories.length === 0`, `QuickCategorySelect` returns an early empty-state block (same pattern as `QuickIncomeCategorySelect`) instead of the grid. `useQuickExpenseModal` exposes a generic `categoriesEmpty = activeCategories.length === 0` (covers both tabs), which `QuickExpenseModal.tsx` uses to disable Submit alongside `isPending`/`categoriesLoading`.
+  - **Empty state**: if `categories.length === 0`, `QuickCategorySelect` and `QuickIncomeCategorySelect` both return the shared `QuickCategoryEmptyState` (with `transactionKind`) instead of the grid. `useQuickExpenseModal` exposes a generic `categoriesEmpty = activeCategories.length === 0` (covers both tabs), which `QuickExpenseModal.tsx` uses to disable Submit alongside `isPending`/`categoriesLoading`.
 - **Close**: `handleClose` resets form, resets tab to `"expense"`, then calls `onClose`.
 
 ## Zod schema (`quickExpenseSchema`)
