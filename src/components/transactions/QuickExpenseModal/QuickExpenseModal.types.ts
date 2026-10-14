@@ -1,24 +1,5 @@
-import {
-  BanknoteArrowDown,
-  Car,
-  Coins,
-  Ellipsis,
-  FileText,
-  HandCoins,
-  ShoppingBag,
-  Tv,
-  Utensils,
-} from "lucide-react";
+import { BanknoteArrowDown, Coins, Ellipsis, HandCoins } from "lucide-react";
 import { z } from "zod";
-
-export const expenseCategories = [
-  { name: "Food", icon: Utensils, color: "#B8860B" },
-  { name: "Transport", icon: Car, color: "#6B6560" },
-  { name: "Shopping", icon: ShoppingBag, color: "#2B6CB0" },
-  { name: "Bills", icon: FileText, color: "#8B7A2B" },
-  { name: "Fun", icon: Tv, color: "#2D8C45" },
-  { name: "Other", icon: Ellipsis, color: "#9C958E" },
-] as const;
 
 /** Fixed income quick-pick cards (API categories not in this set appear under Other). */
 export const incomeCategories = [

@@ -14,9 +14,7 @@ export const PreviewOccurrencesList: FC<PreviewOccurrencesListProps> = ({
   amount,
 }) => {
   if (occurrences.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground">No upcoming dates</p>
-    );
+    return <p className="text-sm text-muted-foreground">No upcoming dates</p>;
   }
 
   return (

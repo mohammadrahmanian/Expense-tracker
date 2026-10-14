@@ -4,7 +4,7 @@ import { CalendarClock, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { RecurringFrequencyPill } from "@/components/recurring/RecurringFrequencyPill";
-import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
+import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import {
   formatPerOccurrenceSubline,
   parseRecurringDate,
@@ -26,8 +26,7 @@ export const RecurringDetailHeroMobile: FC<RecurringDetailHeroMobileProps> = ({
   status,
   formatAmount,
 }) => {
-  const Icon =
-    ICON_BY_NAME[category?.icon ?? "utensils"] ?? ICON_BY_NAME.utensils;
+  const Icon = getCategoryIcon(category?.icon);
   const badge = STATUS_BADGE[status];
   const isIncome = transaction.type === "INCOME";
 
@@ -65,7 +64,8 @@ export const RecurringDetailHeroMobile: FC<RecurringDetailHeroMobileProps> = ({
         </span>
         <span className="flex items-center gap-2">
           <CalendarClock className="h-3.5 w-3.5 shrink-0" />
-          Since {format(parseRecurringDate(transaction.startDate), "MMM d, yyyy")}
+          Since{" "}
+          {format(parseRecurringDate(transaction.startDate), "MMM d, yyyy")}
         </span>
       </div>
     </Card>

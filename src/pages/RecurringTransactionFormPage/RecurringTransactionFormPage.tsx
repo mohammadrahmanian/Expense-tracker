@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { RecurringTransactionForm } from "@/components/recurring/RecurringTransactionForm";
-import type { RecurringFormState } from "@/components/recurring/RecurringTransactionForm/RecurringTransactionForm.types";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,16 +19,10 @@ const RecurringTransactionFormPage = () => {
   const from = (location.state as { from?: unknown } | null)?.from;
   const returnTo = getRecurringFormReturnTo(from, id);
 
-  const { data: recurringTransactions, isLoading } =
-    useRecurringTransactions();
+  const { data: recurringTransactions, isLoading } = useRecurringTransactions();
   const transaction = id
     ? recurringTransactions?.find((rt) => rt.id === id)
     : undefined;
-
-  const [formState, setFormState] = useState<RecurringFormState>({
-    isPending: false,
-    isCategoriesLoading: false,
-  });
 
   const notFound = mode === "edit" && !isLoading && !transaction;
   const showSkeleton = mode === "edit" && (isLoading || !transaction);
@@ -52,13 +45,7 @@ const RecurringTransactionFormPage = () => {
         />
       </div>
       <div className="hidden lg:block">
-        <RecurringFormDesktopHeader
-          mode={mode}
-          formId={FORM_ID}
-          isPending={formState.isPending}
-          isDisabled={formState.isPending || formState.isCategoriesLoading}
-          onCancel={onCancel}
-        />
+        <RecurringFormDesktopHeader mode={mode} />
       </div>
 
       <div className="mt-5 lg:mt-0">
@@ -75,7 +62,6 @@ const RecurringTransactionFormPage = () => {
             transaction={transaction}
             onSuccess={onSuccess}
             onCancel={onCancel}
-            onFormStateChange={setFormState}
           />
         ) : (
           <RecurringTransactionForm
@@ -83,7 +69,6 @@ const RecurringTransactionFormPage = () => {
             mode="create"
             onSuccess={onSuccess}
             onCancel={onCancel}
-            onFormStateChange={setFormState}
           />
         )}
       </div>

@@ -19,12 +19,30 @@ QuickExpenseModal/
 ├── QuickExpenseModal.types.ts        # Zod schema + fixed category lists
 ├── QuickExpenseModal.utils.ts        # createQuickExpenseSubmitHandler (pure)
 ├── QuickCategorySelect/
-│   ├── QuickCategorySelect.tsx       # expense grid + "Other" -> Select of remaining API categories
-│   └── QuickIncomeCategorySelect.tsx # income grid + "Other" -> Select of remaining API categories
+│   ├── QuickCategorySelect.tsx       # smart: resolves quick-pick categories, owns "Other" state
+│   ├── QuickCategorySelect.utils.ts  # resolveQuickPickCategories (pure) + EXPENSE_QUICK_PICK_NAMES
+│   ├── QuickCategorySelect.utils.test.ts
+│   ├── QuickCategorySelect.test.tsx  # responsive visible-card count + empty state
+│   ├── QuickCategoryGrid/
+│   │   └── QuickCategoryGrid.tsx     # UI: renders quick-pick cards + "Other" -> Select of remaining API categories
+│   ├── QuickCategoryCard/
+│   │   └── QuickCategoryCard.tsx     # UI: single quick-pick card button (icon, label, selected state)
+│   ├── QuickCategoryEmptyState/
+│   │   └── QuickCategoryEmptyState.tsx # UI: "no categories yet" block, shared by expense + income pickers
+│   └── QuickIncomeCategorySelect.tsx # income grid + "Other" -> Select of remaining API categories (fixed list, unchanged)
 └── QuickExpenseFields/
-    ├── QuickExpenseFields.tsx        # amount, description, date chip, recurrence, "More options"
-    ├── QuickDateChip.tsx             # date picker chip
-    └── MoreOptionsSection.tsx        # notes textarea (collapsible)
+    ├── QuickExpenseFields.tsx             # smart: composes the sections below, owns "More options" open state
+    ├── QuickExpenseCategorySection/
+    │   ├── QuickExpenseCategorySection.tsx # UI: category grid (expense vs income), remounts on tab switch
+    │   └── index.ts                        # barrel: export { QuickExpenseCategorySection }
+    ├── QuickExpenseAmountField.tsx        # UI: amount input + validation error
+    ├── QuickExpenseDescriptionField.tsx   # UI: description input
+    ├── QuickExpenseRecurrenceControls/
+    │   ├── QuickExpenseRecurrenceControls.tsx # UI: date chip, recurring toggle, frequency select
+    │   └── index.ts                            # barrel: export { QuickExpenseRecurrenceControls }
+    ├── QuickExpenseMoreOptions.tsx        # UI: collapsible trigger wrapping MoreOptionsSection
+    ├── QuickDateChip.tsx                  # date picker chip
+    └── MoreOptionsSection.tsx             # notes textarea
 ```
 
 ## State & data flow
@@ -33,7 +51,12 @@ QuickExpenseModal/
 - **Tab state**: local `transactionKind: "expense" | "income"` in the smart component. Switching tabs:
   - clears `categoryName` (without firing validation) and clears its error;
   - remounts the category picker via `key={transactionKind}` so picker-local UI (e.g. "Other" expanded) resets.
-- **Categories**: fetched via `useCategories("EXPENSE")` and `useCategories("INCOME")` (TanStack Query); results are named `apiExpenseCategories` / `apiIncomeCategories` in the modal to avoid clashing with the fixed quick-pick exports. The picker grid is driven by the **fixed** `expenseCategories` / `incomeCategories` lists in `QuickExpenseModal.types.ts` — API categories only appear in the "Other" dropdown.
+- **Categories**: fetched via `useCategories("EXPENSE")` and `useCategories("INCOME")` (TanStack Query); results are named `apiExpenseCategories` / `apiIncomeCategories` in the modal to avoid clashing with the fixed quick-pick exports.
+  - **Expense** quick-pick cards are resolved from the user's real EXPENSE categories: `QuickCategorySelect` calls `resolveQuickPickCategories(categories, EXPENSE_QUICK_PICK_NAMES)` (both in `QuickCategorySelect/QuickCategorySelect.utils.ts`), memoized on `categories`. `EXPENSE_QUICK_PICK_NAMES` is `["Food", "Health", "Household", "Fun", "Clothes"]`. The resolver does a two-pass match: (1) case-insensitive name match per target name, (2) any unmatched slot is filled, in order, by the next real category not already used by an earlier slot (by name-match or fallback); a slot is dropped (not padded) if there aren't enough categories. The "Other" pseudo-card is always fixed (icon `Ellipsis`, label "Other") and is never sourced from `resolveQuickPickCategories` or from `QuickExpenseModal.types.ts`. It has its own `onOtherClick` handler in `QuickCategoryGrid`, so a real category named "Other" used as a quick-pick card still selects normally. The Other dropdown is open when `isOtherCategory || (otherRequested && selectedCategory === "")` — derived, not stored — so a selection whose card is hidden by a breakpoint change shows in the dropdown. The "Other" dropdown excludes whatever categories ended up as quick-pick cards for this user (derived from `quickPickCategories`, not a fixed list).
+  - **Income** picker grid is still driven by the **fixed** `incomeCategories` list in `QuickExpenseModal.types.ts` — API categories only appear in the "Other" dropdown (unchanged).
+  - **Responsive quick-pick count**: mobile shows 4 real quick-pick cards + "Other" (5 items/row); desktop shows all 5 real quick-pick cards + "Other" (6 items/row). Implemented in `QuickCategorySelect.tsx` via `useMediaQuery("(min-width: 640px)")` (matches Tailwind `sm`) — `visibleQuickPicks` is sliced to the first 4 resolved categories when not desktop, and that same sliced list (not the full 5) is what's passed to `QuickCategoryGrid` **and** used to build `quickNames`/`otherSelectCategories`. This keeps the CSS-hidden-card and Other-exclusion-set in sync: a category dropped from the visible cards on mobile always falls through into the Other dropdown instead of disappearing. `QuickCategoryGrid` itself does no responsive hiding — it renders exactly the array it's given.
+  - **Loading state**: `QuickExpenseCategorySection` gets `isLoading` (from `categoriesLoading`) and renders card skeletons instead of either picker, so the empty state never flashes before data arrives.
+  - **Empty state**: if `categories.length === 0`, `QuickCategorySelect` and `QuickIncomeCategorySelect` both return the shared `QuickCategoryEmptyState` (with `transactionKind`) instead of the grid. `useQuickExpenseModal` exposes a generic `categoriesEmpty = activeCategories.length === 0` (covers both tabs), which `QuickExpenseModal.tsx` uses to disable Submit alongside `isPending`/`categoriesLoading`.
 - **Close**: `handleClose` resets form, resets tab to `"expense"`, then calls `onClose`.
 
 ## Zod schema (`quickExpenseSchema`)
@@ -59,8 +82,8 @@ Flow:
 1. Parse `amount` via `normalizeAmount` (`,` → `.`) then `parseFloat`.
 2. Find category by **case-insensitive** name match in `categories`.
 3. If not found, create it via `createCategoryAsync` (`useCreateCategory`’s `mutateAsync`):
-   - EXPENSE: use color from the matching `expenseCategories` entry (`expenseCategories.find((c) => c.name === data.categoryName)?.color` in `QuickExpenseModal.utils.ts`); if none, `INCOME_NEW_CATEGORY_FALLBACK_COLOR` (`"#6366f1"`).
-   - INCOME: use color from the matching `incomeCategories` entry (`incomeCategories.find((c) => c.name === data.categoryName)?.color` in `QuickExpenseModal.utils.ts`); if none, `INCOME_NEW_CATEGORY_FALLBACK_COLOR` (`"#6366f1"`).
+   - EXPENSE: always `NEW_CATEGORY_FALLBACK_COLOR` (`"#6366f1"`). Expense picks come from real categories, so this path only runs if a category was deleted after the modal loaded.
+   - INCOME: use color from the matching `incomeCategories` entry (`incomeCategories.find((c) => c.name === data.categoryName)?.color` in `QuickExpenseModal.utils.ts`); if none, `NEW_CATEGORY_FALLBACK_COLOR` (`"#6366f1"`).
 4. Title = `transactionName.trim()` or `"{categoryName} expense|income"`.
 5. Call `createTransaction({ ... }, { onSuccess })` — only after a category exists (found or created).
 
@@ -81,7 +104,7 @@ Applies when the chosen name has **no** matching API category and **`createCateg
 
 - Uses `ResponsiveDialog` (mobile bottom sheet, desktop centered modal).
 - Header uses the `Segment` control (expense/income tabs).
-- Submit button disables when: mutation pending, categories loading, **or** income tab with zero income categories.
+- Submit button disables when: mutation pending, categories loading, **or** the active tab (expense or income) has zero categories (`categoriesEmpty`).
 - Currency symbol comes from `useCurrency()` + `currencySymbols`.
 - "More options" section is a `Collapsible` revealing `MoreOptionsSection` (notes).
 
@@ -94,6 +117,7 @@ Applies when the chosen name has **no** matching API category and **`createCateg
 ## Common edit recipes
 
 - **New form field** → add to `quickExpenseSchema`, extend `defaultValues` in `QuickExpenseModal.tsx`, render in `QuickExpenseFields.tsx`, pass through to `createTransaction` payload in `QuickExpenseModal.utils.ts`.
-- **New quick category** → add an entry to `expenseCategories` or `incomeCategories` in `QuickExpenseModal.types.ts`. Each record has `name`, `icon` (from `lucide-react`), and `color` — set `color` for both lists so `createQuickExpenseSubmitHandler` in `QuickExpenseModal.utils.ts` can resolve it when auto-creating a missing category.
+- **New expense quick-pick name** → edit `EXPENSE_QUICK_PICK_NAMES` in `QuickCategorySelect/QuickCategorySelect.utils.ts` (names are matched against the user's real EXPENSE categories, not a fixed icon/color list).
+- **New income quick category** → add an entry to `incomeCategories` in `QuickExpenseModal.types.ts`. Each record has `name`, `icon` (from `lucide-react`), and `color` — `color` is used by `createQuickExpenseSubmitHandler` in `QuickExpenseModal.utils.ts` when auto-creating a missing category.
 - **Change submit behavior** → edit `createQuickExpenseSubmitHandler` only; keep `QuickExpenseModal.tsx` declarative.
 - **Don't** move form state out of RHF, don't add a second source of truth for `categoryName`, don't fetch categories inside child components.

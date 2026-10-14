@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
+import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import { RecurringTableRowUI } from "./RecurringTableRowUI";
 import { formatRowSubtitle } from "@/lib/recurring-transactions.utils";
 import type { Category, RecurringStatus, RecurringTransaction } from "@/types";
@@ -28,8 +28,7 @@ export const RecurringTableRow: FC<RecurringTableRowProps> = ({
   isDeleting,
 }) => {
   const color = category?.color ?? "#9C958E";
-  const Icon =
-    ICON_BY_NAME[category?.icon ?? "utensils"] ?? ICON_BY_NAME["utensils"];
+  const Icon = getCategoryIcon(category?.icon);
   const isActive = status === "active";
   const amountColor = isActive
     ? transaction.type === "INCOME"

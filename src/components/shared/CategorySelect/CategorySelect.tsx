@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
+import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -20,7 +20,7 @@ type CategorySelectProps = {
 };
 
 const CategoryIconChip: FC<{ category: Category }> = ({ category }) => {
-  const Icon = ICON_BY_NAME[category.icon ?? "utensils"] ?? ICON_BY_NAME.utensils;
+  const Icon = getCategoryIcon(category.icon);
   return (
     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-sm bg-gold-50 dark:bg-gold-700/25">
       <Icon className="h-3.5 w-3.5" style={{ color: category.color }} />
@@ -43,7 +43,7 @@ export const CategorySelect: FC<CategorySelectProps> = ({
         Category{required && <span className="text-danger-500"> *</span>}
       </Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className={cn("h-12", error && "border-danger-500")}>
+        <SelectTrigger className={cn(error && "border-danger-500")}>
           {selected ? (
             <div className="flex items-center gap-2 min-w-0">
               <CategoryIconChip category={selected} />

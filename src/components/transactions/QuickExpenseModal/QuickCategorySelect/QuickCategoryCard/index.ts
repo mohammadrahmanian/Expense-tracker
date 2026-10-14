@@ -1,0 +1,1 @@
+export { QuickCategoryCard } from "./QuickCategoryCard";
