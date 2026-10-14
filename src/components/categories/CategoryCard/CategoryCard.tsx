@@ -1,4 +1,4 @@
-import { type FC } from "react";
+import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -8,8 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Category } from "@/types";
-import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
+import { type FC } from "react";
 import { CategoryIconWrap } from "./CategoryIconWrap";
 import { CategoryTotals } from "./CategoryTotals";
 
@@ -34,7 +34,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({
 
   return (
     <Card className="flex flex-col gap-4 border-border bg-surface shadow-none">
-      <div className="flex items-center justify-between gap-2 pl-5">
+      <div className="flex items-start justify-between gap-2 pl-3">
         <CategoryIconWrap color={category.color} Icon={Icon} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -42,7 +42,7 @@ export const CategoryCard: FC<CategoryCardProps> = ({
               type="button"
               variant="ghost"
               size="icon"
-              className="h-9 w-9 shrink-0 text-muted-foreground"
+              className="h-9 w-9 shrink-0"
               aria-label={`Actions for ${category.name}`}
             >
               <MoreVertical className="h-[18px] w-[18px]" />
@@ -63,10 +63,10 @@ export const CategoryCard: FC<CategoryCardProps> = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <p className="px-5 text-base font-semibold text-foreground">
+      <p className="px-3 text-base font-semibold text-foreground">
         {category.name}
       </p>
-      <div className="flex flex-col gap-2 px-5 pb-5">
+      <div className="flex flex-col gap-2 px-3 pb-3">
         <CategoryTotals
           category={category}
           monthlySpent={monthlySpent}

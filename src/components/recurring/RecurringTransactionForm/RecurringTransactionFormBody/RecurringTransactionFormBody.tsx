@@ -45,7 +45,11 @@ export const RecurringTransactionFormBody: FC<RecurringFormBodyProps> = ({
           />
           <div className="border-t border-border" />
           {mode === "edit" ? (
-            <RecurrenceSettingsFields mode="edit" form={form} transaction={transaction} />
+            <RecurrenceSettingsFields
+              mode="edit"
+              form={form}
+              transaction={transaction}
+            />
           ) : (
             <RecurrenceSettingsFields mode="create" form={form} />
           )}

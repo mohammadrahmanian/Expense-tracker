@@ -1,7 +1,7 @@
-import { type FC } from "react";
 import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types";
+import { type FC } from "react";
 
 type PreviewSummaryRowProps = {
   title: string;

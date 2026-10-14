@@ -35,3 +35,4 @@ dev-dist
 # Agent generated temporary files
 plan.md
 REVIEW.md
+./docs/plans/*

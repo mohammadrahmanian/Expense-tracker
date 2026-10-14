@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeAll } from "vitest";
+import { Category } from "@/types";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Category } from "@/types";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { QuickCategorySelect } from "./QuickCategorySelect";
 
 function makeCategory(id: string, name: string): Category {

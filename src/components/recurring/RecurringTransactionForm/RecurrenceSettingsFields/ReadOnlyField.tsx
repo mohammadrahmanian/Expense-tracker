@@ -24,12 +24,7 @@ export const ReadOnlyField: FC<ReadOnlyFieldProps> = ({
       {Icon && (
         <Icon className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" />
       )}
-      <p
-        className={cn(
-          "text-sm text-foreground",
-          capitalize && "capitalize",
-        )}
-      >
+      <p className={cn("text-sm text-foreground", capitalize && "capitalize")}>
         {value}
       </p>
     </div>
