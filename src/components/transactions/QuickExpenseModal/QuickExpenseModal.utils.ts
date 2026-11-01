@@ -3,7 +3,6 @@ import { Category, Transaction } from "@/types";
 import { toast } from "sonner";
 import {
   QuickExpenseFormData,
-  expenseCategories,
   incomeCategories,
 } from "./QuickExpenseModal.types";
 
@@ -39,14 +38,15 @@ export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
 
     if (!category) {
       try {
-        const color =
-          deps.transactionType === "EXPENSE"
-            ? expenseCategories.find(
+        // Expense picks always come from real categories, so only the
+        // income quick-pick list can supply a preset color here.
+        const presetColor =
+          deps.transactionType === "INCOME"
+            ? incomeCategories.find(
                 (c) => c.name.toLowerCase() === data.categoryName.toLowerCase(),
-              )?.color || NEW_CATEGORY_FALLBACK_COLOR
-            : incomeCategories.find(
-                (c) => c.name.toLowerCase() === data.categoryName.toLowerCase(),
-              )?.color || NEW_CATEGORY_FALLBACK_COLOR;
+              )?.color
+            : undefined;
+        const color = presetColor || NEW_CATEGORY_FALLBACK_COLOR;
         category = await deps.createCategoryAsync({
           name: data.categoryName,
           type: deps.transactionType,

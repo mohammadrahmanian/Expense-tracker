@@ -15,7 +15,9 @@ export const QuickActionsRow: FC<QuickActionsRowProps> = ({ row }) => (
     <row.icon
       className={cn(
         "h-4 w-4 shrink-0",
-        row.danger ? "text-danger-500" : "text-neutral-500 dark:text-neutral-400",
+        row.danger
+          ? "text-danger-500"
+          : "text-neutral-500 dark:text-neutral-400",
       )}
     />
     <div className="flex min-w-0 flex-1 flex-col">

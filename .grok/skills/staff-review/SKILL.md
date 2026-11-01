@@ -49,6 +49,7 @@ What landed. What matches the plan. Dominant risks.
 ## Findings
 
 ### F1 — <title>
+
 **Severity:** bug | suggestion | nit
 **Plan:** <section or step>
 **File:** path:line
@@ -61,11 +62,12 @@ Concrete steps or a short patch. Not “consider refactoring.”
 
 ## Plan checklist
 
-| Requirement | Status |
-| --- | --- |
-| ... | Pass / Fail (Fx) |
+| Requirement | Status           |
+| ----------- | ---------------- |
+| ...         | Pass / Fail (Fx) |
 
 ## Recommended fix order
+
 1. ...
 ```
 

@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { RecurringTransaction } from "@/types";
-import { buildUpdatePayload, getEditDefaultValues } from "./RecurringTransactionForm.utils";
+import {
+  buildUpdatePayload,
+  getEditDefaultValues,
+} from "./RecurringTransactionForm.utils";
 
 // The API stores dates as UTC midnight of the intended civil day (see
 // F6.md). `getEditDefaultValues` reads them back via `parseRecurringDate`,
@@ -38,7 +41,10 @@ describe("buildUpdatePayload dirty-check round-trip", () => {
   it("still detects an unrelated field change without spuriously touching endDate", () => {
     process.env.TZ = "America/Los_Angeles";
     const defaults = getEditDefaultValues(transaction);
-    const payload = buildUpdatePayload({ ...defaults, title: "New rent" }, transaction);
+    const payload = buildUpdatePayload(
+      { ...defaults, title: "New rent" },
+      transaction,
+    );
 
     expect(payload.title).toBe("New rent");
     expect("endDate" in payload).toBe(false);

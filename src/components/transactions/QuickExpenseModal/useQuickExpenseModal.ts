@@ -53,8 +53,7 @@ export function useQuickExpenseModal({ onClose }: UseQuickExpenseModalArgs) {
       ? incomeCategoriesLoading
       : expenseCategoriesLoading;
 
-  const incomeCategoriesEmpty =
-    transactionKind === "income" && apiIncomeCategories.length === 0;
+  const categoriesEmpty = activeCategories.length === 0;
 
   const handleClose = () => {
     form.reset();
@@ -96,7 +95,7 @@ export function useQuickExpenseModal({ onClose }: UseQuickExpenseModalArgs) {
     onSubmit,
     isPending,
     categoriesLoading,
-    incomeCategoriesEmpty,
+    categoriesEmpty,
     currencySymbol: currencySymbols[currency],
     activeCategories,
   };

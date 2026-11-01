@@ -1,6 +1,7 @@
 import { useState, type FC } from "react";
 import { cn } from "@/lib/utils";
 import { Category } from "@/types";
+import { QuickCategoryEmptyState } from "./QuickCategoryEmptyState";
 import { incomeCategories } from "../QuickExpenseModal.types";
 import {
   Select,
@@ -64,17 +65,7 @@ export const QuickIncomeCategorySelect: FC<QuickIncomeCategorySelectProps> = ({
   );
 
   if (categories.length === 0) {
-    return (
-      <div className="space-y-4">
-        <span className="text-overline text-neutral-500 uppercase tracking-[1.5px]">
-          Category
-        </span>
-        <p className="rounded-md border border-neutral-200 bg-neutral-50 p-4 text-[13px] text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900/40 dark:text-neutral-400">
-          You don&apos;t have any income categories yet. Add categories in your
-          category settings, then come back here to record income.
-        </p>
-      </div>
-    );
+    return <QuickCategoryEmptyState transactionKind="income" />;
   }
 
   return (

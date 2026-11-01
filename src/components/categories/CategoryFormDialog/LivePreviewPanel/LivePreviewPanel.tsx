@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { Category } from "@/types";
 import { Eye, Folder, Info, MoreHorizontal } from "lucide-react";
-import { ICON_BY_NAME } from "../CategoryFormDialog.constants";
+import { getCategoryIcon } from "../CategoryFormDialog.constants";
 
 type LivePreviewPanelProps = {
   name: string;
@@ -25,7 +25,7 @@ export const LivePreviewPanel: FC<LivePreviewPanelProps> = ({
   categories,
 }) => {
   const { formatAmount } = useCurrency();
-  const Icon = ICON_BY_NAME[iconName] ?? ICON_BY_NAME["utensils"];
+  const Icon = getCategoryIcon(iconName);
   const parentLabel = parentId
     ? (categories.find((c) => c.id === parentId)?.name ??
       "Unresolved parent category")

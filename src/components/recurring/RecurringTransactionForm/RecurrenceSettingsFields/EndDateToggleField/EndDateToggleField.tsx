@@ -44,7 +44,7 @@ export const EndDateToggleField: FC<EndDateToggleFieldProps> = ({
         disabledDates={(date) => date < minDate}
       />
     ) : (
-      <div className="flex h-12 items-center gap-2 rounded-sm border border-border bg-neutral-100 px-3 opacity-50 dark:border-neutral-700 dark:bg-neutral-800">
+      <div className="flex h-10 items-center gap-2 rounded-sm border border-border bg-neutral-100 px-3 opacity-50 dark:border-neutral-700 dark:bg-neutral-800">
         <Calendar className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" />
         <span className="text-sm text-neutral-500 dark:text-neutral-400">
           Runs indefinitely

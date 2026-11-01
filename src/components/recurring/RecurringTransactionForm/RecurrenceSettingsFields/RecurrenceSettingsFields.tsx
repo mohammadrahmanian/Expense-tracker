@@ -62,7 +62,10 @@ export const RecurrenceSettingsFields: FC<RecurrenceSettingsFieldsProps> = (
         ) : (
           <ReadOnlyField
             label="Start date"
-            value={format(parseRecurringDate(props.transaction.startDate), "PPP")}
+            value={format(
+              parseRecurringDate(props.transaction.startDate),
+              "PPP",
+            )}
             hint="Start date cannot be changed after creation"
             icon={Calendar}
           />

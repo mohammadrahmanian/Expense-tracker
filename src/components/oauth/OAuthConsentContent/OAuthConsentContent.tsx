@@ -32,7 +32,9 @@ export const OAuthConsentContent: FC<OAuthConsentContentProps> = ({
   onDeny,
 }) => {
   if (isInitializingAuth) {
-    return <OAuthConsentStatus variant="loading" title="Checking your session…" />;
+    return (
+      <OAuthConsentStatus variant="loading" title="Checking your session…" />
+    );
   }
   if (!hasRequestId) {
     return (
@@ -59,7 +61,9 @@ export const OAuthConsentContent: FC<OAuthConsentContentProps> = ({
     return (
       <OAuthConsentStatus
         variant="error"
-        title={decisionExpired ? "This request has expired" : "Something went wrong"}
+        title={
+          decisionExpired ? "This request has expired" : "Something went wrong"
+        }
         description={
           decisionExpired
             ? "Start the connection again from the app you came from."

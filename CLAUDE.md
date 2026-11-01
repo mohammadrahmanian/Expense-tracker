@@ -1,4 +1,5 @@
 ## Communication style
+
 Always answer in short and in the ASD-STE100 format. Avoid unnecessary verbosity. Use clear and concise language.
 
 ## Agent Workflow
@@ -8,7 +9,6 @@ Use the **git-operator** subagent for creating branches and pull requests.
 Use the **frontend-developer** subagent for frontend development tasks.
 
 After completing any implementation (feature, bug fix, refactor, or test), use the **post-implementation-validator** agent to verify the code has no type errors, test failures, or other issues before considering the task complete.
-
 
 ---
 

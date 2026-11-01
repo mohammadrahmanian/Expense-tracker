@@ -45,11 +45,7 @@ describe("OAuthConsentCard", () => {
 
   it("disables both buttons while submitting", () => {
     render(
-      <OAuthConsentCard
-        {...baseProps}
-        isSubmitting
-        pendingAction="approve"
-      />,
+      <OAuthConsentCard {...baseProps} isSubmitting pendingAction="approve" />,
     );
     expect(screen.getByRole("button", { name: /approve/i })).toBeDisabled();
     expect(screen.getByRole("button", { name: /deny/i })).toBeDisabled();

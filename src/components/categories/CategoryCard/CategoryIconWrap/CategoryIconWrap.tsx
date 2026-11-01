@@ -1,5 +1,5 @@
-import { type FC } from "react";
 import type { LucideIcon } from "lucide-react";
+import { type FC } from "react";
 
 type CategoryIconWrapProps = {
   color: string;
@@ -10,7 +10,7 @@ export const CategoryIconWrap: FC<CategoryIconWrapProps> = ({
   color,
   Icon,
 }) => (
-  <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md">
+  <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md mt-3">
     <div
       className="pointer-events-none absolute inset-0 rounded-md bg-neutral-50 dark:bg-neutral-800"
       aria-hidden

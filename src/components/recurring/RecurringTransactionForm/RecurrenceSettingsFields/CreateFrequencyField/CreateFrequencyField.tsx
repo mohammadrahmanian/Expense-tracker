@@ -36,7 +36,7 @@ export const CreateFrequencyField: FC<CreateFrequencyFieldProps> = ({
         }
       >
         <SelectTrigger
-          className={cn("h-12", errors.recurrenceFrequency && "border-danger-500")}
+          className={cn(errors.recurrenceFrequency && "border-danger-500")}
         >
           <SelectValue placeholder="Select frequency" />
         </SelectTrigger>

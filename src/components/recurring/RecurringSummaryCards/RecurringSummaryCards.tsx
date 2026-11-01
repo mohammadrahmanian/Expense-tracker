@@ -6,9 +6,7 @@ const ComingSoonCard: FC<{ overline: string }> = ({ overline }) => (
     <span className="text-overline uppercase text-muted-foreground tracking-wider">
       {overline}
     </span>
-    <span className="text-base font-semibold text-foreground">
-      Coming soon
-    </span>
+    <span className="text-base font-semibold text-foreground">Coming soon</span>
   </Card>
 );
 

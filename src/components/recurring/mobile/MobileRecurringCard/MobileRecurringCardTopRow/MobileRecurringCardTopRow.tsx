@@ -1,4 +1,4 @@
-import { ICON_BY_NAME } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
+import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
 import {
   formatNextRunRelative,
   parseRecurringDate,
@@ -22,8 +22,7 @@ export const MobileRecurringCardTopRow: FC<MobileRecurringCardTopRowProps> = ({
   formatAmount,
 }) => {
   const color = category?.color ?? "#9C958E";
-  const Icon =
-    ICON_BY_NAME[category?.icon ?? "utensils"] ?? ICON_BY_NAME["utensils"];
+  const Icon = getCategoryIcon(category?.icon);
   const isActive = status === "active";
   const amountColor = isActive
     ? transaction.type === "INCOME"
