@@ -26,10 +26,12 @@ QuickExpenseModal/
 │   ├── QuickCategoryGrid/
 │   │   └── QuickCategoryGrid.tsx     # UI: renders quick-pick cards + "Other" -> Select of remaining API categories
 │   ├── QuickCategoryCard/
-│   │   └── QuickCategoryCard.tsx     # UI: single quick-pick card button (icon, label, selected state)
+│   │   └── QuickCategoryCard.tsx     # UI: single quick-pick card button (icon, label, selected state); shared by expense + income
+│   ├── QuickCategoryOtherSelect/
+│   │   └── QuickCategoryOtherSelect.tsx # UI: collapsible "Other" Select, shared by expense + income
 │   ├── QuickCategoryEmptyState/
 │   │   └── QuickCategoryEmptyState.tsx # UI: "no categories yet" block, shared by expense + income pickers
-│   └── QuickIncomeCategorySelect.tsx # income grid + "Other" -> Select of remaining API categories (fixed list, unchanged)
+│   └── QuickIncomeCategorySelect.tsx # income grid (QuickCategoryCard) + "Other" -> Select of remaining API categories (fixed list)
 └── QuickExpenseFields/
     ├── QuickExpenseFields.tsx             # smart: composes the sections below, owns "More options" open state
     ├── QuickExpenseCategorySection/
@@ -106,6 +108,7 @@ Applies when the chosen name has **no** matching API category and **`createCateg
 - Header uses the `Segment` control (expense/income tabs).
 - Submit button disables when: mutation pending, categories loading, **or** the active tab (expense or income) has zero categories (`categoriesEmpty`).
 - Currency symbol comes from `useCurrency()` + `currencySymbols`.
+- **Category cards**: expense and income both render `QuickCategoryCard` in a `grid-cols-5 sm:grid-cols-6` grid, so card size is the same on both tabs (`h-14` mobile, `h-20` desktop). Icons never use the category color; they inherit the card text color (neutral, or gold when selected).
 - "More options" section is a `Collapsible` revealing `MoreOptionsSection` (notes).
 
 ## Mutations used

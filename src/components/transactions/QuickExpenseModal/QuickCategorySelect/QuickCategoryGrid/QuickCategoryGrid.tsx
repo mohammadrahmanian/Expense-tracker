@@ -2,15 +2,8 @@ import { type FC } from "react";
 import { Ellipsis } from "lucide-react";
 import { Category } from "@/types";
 import { getCategoryIcon } from "@/components/categories/CategoryFormDialog/CategoryFormDialog.constants";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { QuickCategoryCard } from "../QuickCategoryCard";
+import { QuickCategoryOtherSelect } from "../QuickCategoryOtherSelect";
 
 type QuickCategoryGridProps = {
   quickPickCategories: Category[];
@@ -41,7 +34,6 @@ export const QuickCategoryGrid: FC<QuickCategoryGridProps> = ({
             key={cat.id}
             icon={getCategoryIcon(cat.icon)}
             label={cat.name}
-            color={cat.color}
             isSelected={
               selectedCategory.toLowerCase() === cat.name.toLowerCase()
             }
@@ -57,27 +49,12 @@ export const QuickCategoryGrid: FC<QuickCategoryGridProps> = ({
         />
       </div>
 
-      <Collapsible open={otherExpanded}>
-        <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
-          <div className="px-px pt-1">
-            <Select
-              value={selectedCategoryId ?? ""}
-              onValueChange={onOtherSelect}
-            >
-              <SelectTrigger variant="underlined">
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {otherSelectCategories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+      <QuickCategoryOtherSelect
+        open={otherExpanded}
+        categories={otherSelectCategories}
+        selectedCategoryId={selectedCategoryId}
+        onSelect={onOtherSelect}
+      />
     </>
   );
 };

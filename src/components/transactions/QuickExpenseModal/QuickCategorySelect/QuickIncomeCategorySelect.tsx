@@ -1,16 +1,9 @@
 import { useState, type FC } from "react";
-import { cn } from "@/lib/utils";
 import { Category } from "@/types";
 import { QuickCategoryEmptyState } from "./QuickCategoryEmptyState";
 import { incomeCategories } from "../QuickExpenseModal.types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { QuickCategoryCard } from "./QuickCategoryCard";
+import { QuickCategoryOtherSelect } from "./QuickCategoryOtherSelect";
 
 const QUICK_INCOME_NAMES = new Set(
   incomeCategories
@@ -55,11 +48,8 @@ export const QuickIncomeCategorySelect: FC<QuickIncomeCategorySelectProps> = ({
   };
 
   const selectedCategoryId = isOtherCategory
-    ? categories.find(
-        (c) => c.name.toLowerCase() === selectedCategory.toLowerCase(),
-      )?.id
+    ? findCategory(selectedCategory)?.id
     : undefined;
-
   const otherSelectCategories = categories.filter(
     (cat) => !QUICK_INCOME_NAMES.has(cat.name.toLowerCase()),
   );
@@ -73,54 +63,28 @@ export const QuickIncomeCategorySelect: FC<QuickIncomeCategorySelectProps> = ({
       <span className="text-overline text-neutral-500 uppercase tracking-[1.5px]">
         Category
       </span>
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
-        {incomeCategories.map((cat) => {
-          const Icon = cat.icon;
-          const isSelected =
-            cat.name === "Other"
-              ? otherExpanded
-              : selectedCategory.toLowerCase() === cat.name.toLowerCase();
-
-          return (
-            <button
-              key={cat.name}
-              type="button"
-              onClick={() => handleCardClick(cat.name)}
-              className={cn(
-                "flex h-20 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-md transition-colors",
-                isSelected
-                  ? "border-2 border-gold-500 bg-gold-50 text-gold-500 dark:bg-gold-500/10 dark:border-gold-500 dark:text-gold-400"
-                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700",
-              )}
-            >
-              <Icon className="h-[22px] w-[22px]" />
-              <span className="text-[11px] font-semibold">{cat.name}</span>
-            </button>
-          );
-        })}
+      <div className="grid grid-cols-5 sm:grid-cols-6 gap-3">
+        {incomeCategories.map((cat) => (
+          <QuickCategoryCard
+            key={cat.name}
+            icon={cat.icon}
+            label={cat.name}
+            isSelected={
+              cat.name === "Other"
+                ? otherExpanded
+                : selectedCategory.toLowerCase() === cat.name.toLowerCase()
+            }
+            onClick={() => handleCardClick(cat.name)}
+          />
+        ))}
       </div>
 
-      <Collapsible open={otherExpanded}>
-        <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
-          <div className="px-px pt-1">
-            <Select
-              value={selectedCategoryId ?? ""}
-              onValueChange={handleOtherSelect}
-            >
-              <SelectTrigger variant="underlined">
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {otherSelectCategories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+      <QuickCategoryOtherSelect
+        open={otherExpanded}
+        categories={otherSelectCategories}
+        selectedCategoryId={selectedCategoryId}
+        onSelect={handleOtherSelect}
+      />
 
       {selectedCategory &&
         !findCategory(selectedCategory) &&

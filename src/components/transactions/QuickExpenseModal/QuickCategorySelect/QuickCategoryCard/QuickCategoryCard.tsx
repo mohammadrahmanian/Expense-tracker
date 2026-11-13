@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 type QuickCategoryCardProps = {
   icon: LucideIcon;
   label: string;
-  color?: string;
   isSelected: boolean;
   onClick: () => void;
   className?: string;
@@ -14,7 +13,6 @@ type QuickCategoryCardProps = {
 export const QuickCategoryCard: FC<QuickCategoryCardProps> = ({
   icon: Icon,
   label,
-  color,
   isSelected,
   onClick,
   className,
@@ -31,10 +29,7 @@ export const QuickCategoryCard: FC<QuickCategoryCardProps> = ({
         className,
       )}
     >
-      <Icon
-        className="h-[18px] w-[18px] sm:h-[22px] sm:w-[22px]"
-        style={color ? { color } : undefined}
-      />
+      <Icon className="h-[18px] w-[18px] sm:h-[22px] sm:w-[22px]" />
       <span
         className="px-1 max-w-full truncate text-[10px] sm:text-[11px] font-semibold"
         title={label}
