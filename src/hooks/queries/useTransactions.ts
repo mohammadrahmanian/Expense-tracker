@@ -18,6 +18,7 @@ type TransactionParams = {
  * Hook for fetching all transactions with optional filters
  *
  * @param params - Optional filters for transactions (pagination, sorting, filters)
+ * @param enabled - Whether the query should run; defaults to `true`. Pass `false` to suspend fetching (e.g. on mobile where the infinite query is used instead)
  * @returns Query result with transactions data, loading state, and error
  *
  * @example
@@ -37,9 +38,10 @@ type TransactionParams = {
  * const total = data?.total || 0;
  * ```
  */
-export function useTransactions(params?: TransactionParams) {
+export function useTransactions(params?: TransactionParams, enabled = true) {
   return useQuery({
     queryKey: queryKeys.transactions.list(params),
     queryFn: () => transactionsService.getAll(params),
+    enabled,
   });
 }

@@ -2,23 +2,12 @@ import { type FC } from "react";
 import {
   ResponsiveDialog as Dialog,
   ResponsiveDialogContent as DialogContent,
-  ResponsiveDialogDescription as DialogDescription,
-  ResponsiveDialogHeader as DialogHeader,
-  ResponsiveDialogTitle as DialogTitle,
 } from "@/components/ui/responsive-dialog";
-import { TransactionFormFooter } from "../TransactionForm/TransactionFormFooter";
-import { currencySymbols, useCurrency } from "@/contexts/CurrencyContext";
-import { useCreateCategory } from "@/hooks/mutations/useCreateCategory";
-import { useCreateTransaction } from "@/hooks/mutations/useCreateTransaction";
-import { useCategories } from "@/hooks/queries/useCategories";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { QuickExpenseFields } from "./QuickExpenseFields";
-import {
-  type QuickExpenseFormData,
-  quickExpenseSchema,
-} from "./QuickExpenseModal.types";
-import { createQuickExpenseSubmitHandler } from "./QuickExpenseModal.utils";
+import { QuickExpenseModalHeader } from "./QuickExpenseModalHeader";
+import { useQuickExpenseModal } from "./useQuickExpenseModal";
 
 type QuickExpenseModalProps = {
   isOpen: boolean;
@@ -29,52 +18,58 @@ export const QuickExpenseModal: FC<QuickExpenseModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { currency } = useCurrency();
-  const { data: categories = [], isLoading: categoriesLoading } =
-    useCategories("EXPENSE");
-  const createCategory = useCreateCategory();
-  const createTransaction = useCreateTransaction();
-
-  const form = useForm<QuickExpenseFormData>({
-    resolver: zodResolver(quickExpenseSchema),
-    defaultValues: { transactionName: "", amount: "", categoryName: "", date: new Date() },
-  });
-
-  const isPending = createCategory.isPending || createTransaction.isPending;
-
-  const handleClose = () => {
-    form.reset();
-    onClose();
-  };
-
-  const onSubmit = createQuickExpenseSubmitHandler({
-    categories,
-    createCategoryAsync: createCategory.mutateAsync,
-    createTransaction: createTransaction.mutate,
-    onSuccess: handleClose,
-  });
+  const {
+    form,
+    transactionKind,
+    handleTabChange,
+    title,
+    description,
+    submitLabel,
+    handleClose,
+    onSubmit,
+    isPending,
+    categoriesLoading,
+    categoriesEmpty,
+    currencySymbol,
+    activeCategories,
+  } = useQuickExpenseModal({ onClose });
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-xl">
-        <DialogHeader>
-          <DialogTitle>Quick Add Expense</DialogTitle>
-          <DialogDescription>
-            Quickly add a Food, Health, or Household expense.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent className="sm:max-w-[600px]">
+        <QuickExpenseModalHeader
+          title={title}
+          description={description}
+          tabValue={transactionKind}
+          onTabChange={handleTabChange}
+        />
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <QuickExpenseFields
             form={form}
-            currencySymbol={currencySymbols[currency]}
-            categories={categories}
+            currencySymbol={currencySymbol}
+            categories={activeCategories}
+            categoriesLoading={categoriesLoading}
+            transactionKind={transactionKind}
           />
-          <TransactionFormFooter
-            isEditing={false}
-            isPending={isPending}
-            isCategoriesLoading={categoriesLoading}
-            onCancel={handleClose}
-          />
+
+          <div className="-mx-6 mt-4 flex items-center gap-3 border-t border-neutral-200 px-6 pb-5 pt-4 dark:border-neutral-700">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleClose}
+              disabled={isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1"
+              disabled={isPending || categoriesLoading || categoriesEmpty}
+            >
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isPending ? "Adding..." : submitLabel}
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

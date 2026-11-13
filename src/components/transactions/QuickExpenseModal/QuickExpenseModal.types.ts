@@ -1,10 +1,12 @@
-import { Heart, Home, UtensilsCrossed } from "lucide-react";
+import { BanknoteArrowDown, Coins, Ellipsis, HandCoins } from "lucide-react";
 import { z } from "zod";
 
-export const quickCategories = [
-  { name: "Food", icon: UtensilsCrossed, color: "#FF6B6B" },
-  { name: "Health", icon: Heart, color: "#4ECDC4" },
-  { name: "Household", icon: Home, color: "#45B7D1" },
+/** Fixed income quick-pick cards (API categories not in this set appear under Other). */
+export const incomeCategories = [
+  { name: "Salary", icon: BanknoteArrowDown, color: "#2D8C45" },
+  { name: "Bonus", icon: HandCoins, color: "#B8860B" },
+  { name: "Refund", icon: Coins, color: "#2B6CB0" },
+  { name: "Other", icon: Ellipsis, color: "#9C958E" },
 ] as const;
 
 export const quickExpenseSchema = z.object({
@@ -25,6 +27,11 @@ export const quickExpenseSchema = z.object({
     ),
   categoryName: z.string().min(1, "Category is required"),
   date: z.date(),
+  notes: z.string().optional(),
+  isRecurring: z.boolean().default(false),
+  recurrenceFrequency: z
+    .enum(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"])
+    .optional(),
 });
 
 export type QuickExpenseFormData = z.infer<typeof quickExpenseSchema>;

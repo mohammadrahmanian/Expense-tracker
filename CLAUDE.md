@@ -1,4 +1,10 @@
+## Communication style
+
+Always answer in short and in the ASD-STE100 format. Avoid unnecessary verbosity. Use clear and concise language.
+
 ## Agent Workflow
+
+Use the **git-operator** subagent for creating branches and pull requests.
 
 Use the **frontend-developer** subagent for frontend development tasks.
 

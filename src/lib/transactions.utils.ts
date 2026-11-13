@@ -1,15 +1,134 @@
+import {
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  subDays,
+  subMonths,
+  format,
+  isToday,
+  isYesterday,
+} from "date-fns";
 import { Category, Transaction } from "@/types";
+
+export type DatePreset =
+  | "today"
+  | "yesterday"
+  | "this_week"
+  | "this_month"
+  | "last_month"
+  | "custom_date"
+  | "custom_range"
+  | null;
 
 export type TransactionFilterState = {
   searchTerm: string;
   typeFilter: "all" | "INCOME" | "EXPENSE";
   categoryFilter: string;
+  datePreset: DatePreset;
   startDate: Date | undefined;
   endDate: Date | undefined;
+  minAmount: number | undefined;
+  maxAmount: number | undefined;
   currentPage: number;
   pageSize: number;
   sortField: "date" | "amount";
   sortOrder: "asc" | "desc";
+};
+
+export type DateFilterProps = {
+  datePreset: DatePreset;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  onDatePresetChange: (preset: DatePreset) => void;
+  onCustomDateSelect: (date: Date) => void;
+  onCustomRangeSelect: (from: Date, to: Date) => void;
+};
+
+export type SearchProps = {
+  searchTerm: string;
+  onSearchTermChange: (v: string) => void;
+};
+
+export type TypeFilterProps = {
+  typeFilter: "all" | "INCOME" | "EXPENSE";
+  onTypeFilterChange: (v: "all" | "INCOME" | "EXPENSE") => void;
+};
+
+export type SortProps = {
+  sortField: "date" | "amount";
+  sortOrder: "asc" | "desc";
+  onSort: (field: "date" | "amount") => void;
+};
+
+export type AmountRangeProps = {
+  minAmount: number | undefined;
+  maxAmount: number | undefined;
+  onMinAmountChange: (v: number | undefined) => void;
+  onMaxAmountChange: (v: number | undefined) => void;
+};
+
+export type PaginationProps = {
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+};
+
+export const computeDateRange = (
+  preset: DatePreset,
+): { start: Date | undefined; end: Date | undefined } => {
+  const now = new Date();
+  switch (preset) {
+    case "today":
+      return { start: startOfDay(now), end: endOfDay(now) };
+    case "yesterday": {
+      const yesterday = subDays(now, 1);
+      return { start: startOfDay(yesterday), end: endOfDay(yesterday) };
+    }
+    case "this_week":
+      return {
+        start: startOfWeek(now, { weekStartsOn: 1 }),
+        end: endOfWeek(now, { weekStartsOn: 1 }),
+      };
+    case "this_month":
+      return { start: startOfMonth(now), end: endOfMonth(now) };
+    case "last_month": {
+      const lastMonth = subMonths(now, 1);
+      return { start: startOfMonth(lastMonth), end: endOfMonth(lastMonth) };
+    }
+    default:
+      return { start: undefined, end: undefined };
+  }
+};
+
+const resolveDateRange = (
+  state: TransactionFilterState,
+): { start: Date | undefined; end: Date | undefined } => {
+  if (state.startDate || state.endDate) {
+    return { start: state.startDate, end: state.endDate };
+  }
+  return computeDateRange(state.datePreset);
+};
+
+const formatDateBoundaries = (
+  start: Date | undefined,
+  end: Date | undefined,
+): { fromDate?: string; toDate?: string } => {
+  const result: { fromDate?: string; toDate?: string } = {};
+  if (start) {
+    const s = new Date(start);
+    s.setHours(0, 0, 0, 0);
+    result.fromDate = s.toISOString();
+  }
+  if (end) {
+    const e = new Date(end);
+    e.setHours(23, 59, 59, 999);
+    result.toDate = e.toISOString();
+  }
+  return result;
 };
 
 export const buildQueryParams = (state: TransactionFilterState) => {
@@ -23,6 +142,8 @@ export const buildQueryParams = (state: TransactionFilterState) => {
     toDate?: string;
     categoryId?: string;
     query?: string;
+    minAmount?: number;
+    maxAmount?: number;
   } = {
     sort: state.sortField,
     order: state.sortOrder,
@@ -33,18 +154,39 @@ export const buildQueryParams = (state: TransactionFilterState) => {
   if (state.searchTerm) params.query = state.searchTerm;
   if (state.typeFilter !== "all") params.type = state.typeFilter;
   if (state.categoryFilter !== "all") params.categoryId = state.categoryFilter;
+  if (state.minAmount !== undefined) params.minAmount = state.minAmount;
+  if (state.maxAmount !== undefined) params.maxAmount = state.maxAmount;
 
-  if (state.startDate) {
-    const start = new Date(state.startDate);
-    start.setHours(0, 0, 0, 0);
-    params.fromDate = start.toISOString();
-  }
+  const { start, end } = resolveDateRange(state);
+  Object.assign(params, formatDateBoundaries(start, end));
 
-  if (state.endDate) {
-    const end = new Date(state.endDate);
-    end.setHours(23, 59, 59, 999);
-    params.toDate = end.toISOString();
-  }
+  return params;
+};
+
+export const buildInfiniteQueryParams = (state: TransactionFilterState) => {
+  const params: {
+    sort: "date" | "amount";
+    order: "asc" | "desc";
+    type?: "INCOME" | "EXPENSE";
+    fromDate?: string;
+    toDate?: string;
+    categoryId?: string;
+    query?: string;
+    minAmount?: number;
+    maxAmount?: number;
+  } = {
+    sort: state.sortField,
+    order: state.sortOrder,
+  };
+
+  if (state.searchTerm) params.query = state.searchTerm;
+  if (state.typeFilter !== "all") params.type = state.typeFilter;
+  if (state.categoryFilter !== "all") params.categoryId = state.categoryFilter;
+  if (state.minAmount !== undefined) params.minAmount = state.minAmount;
+  if (state.maxAmount !== undefined) params.maxAmount = state.maxAmount;
+
+  const { start, end } = resolveDateRange(state);
+  Object.assign(params, formatDateBoundaries(start, end));
 
   return params;
 };
@@ -64,16 +206,78 @@ export const calculatePageTotals = (transactions: Transaction[]) => {
 export const hasActiveFilters = (
   state: Pick<
     TransactionFilterState,
-    "searchTerm" | "typeFilter" | "categoryFilter" | "startDate" | "endDate"
+    | "searchTerm"
+    | "typeFilter"
+    | "categoryFilter"
+    | "datePreset"
+    | "minAmount"
+    | "maxAmount"
   >,
 ): boolean =>
   !!(
     state.searchTerm ||
     state.typeFilter !== "all" ||
     state.categoryFilter !== "all" ||
-    state.startDate ||
-    state.endDate
+    (state.datePreset && state.datePreset !== "this_month") ||
+    state.minAmount !== undefined ||
+    state.maxAmount !== undefined
   );
+
+export type TransactionDateGroup = {
+  dateKey: string;
+  dateLabel: string;
+  date: Date;
+  transactions: Transaction[];
+  dailyNet: number;
+};
+
+export const groupTransactionsByDate = (
+  transactions: Transaction[],
+  sortOrder: "asc" | "desc" = "desc",
+): TransactionDateGroup[] => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const grouped = new Map<string, Transaction[]>();
+
+  for (const tx of transactions) {
+    const d = new Date(tx.date);
+    const key = format(d, "yyyy-MM-dd");
+    const existing = grouped.get(key);
+    if (existing) {
+      existing.push(tx);
+    } else {
+      grouped.set(key, [tx]);
+    }
+  }
+
+  return Array.from(grouped.entries())
+    .map(([key, txs]) => {
+      const date = new Date(txs[0].date);
+      let dateLabel: string;
+
+      if (isToday(date)) {
+        dateLabel = `Today, ${format(date, "MMM dd")}`;
+      } else if (isYesterday(date)) {
+        dateLabel = `Yesterday, ${format(date, "MMM dd")}`;
+      } else if (date.getFullYear() === currentYear) {
+        dateLabel = format(date, "MMM dd");
+      } else {
+        dateLabel = format(date, "MMM dd, yyyy");
+      }
+
+      const dailyNet = txs.reduce(
+        (sum, t) => sum + (t.type === "INCOME" ? t.amount : -t.amount),
+        0,
+      );
+
+      return { dateKey: key, dateLabel, date, transactions: txs, dailyNet };
+    })
+    .sort((a, b) =>
+      sortOrder === "asc"
+        ? a.date.getTime() - b.date.getTime()
+        : b.date.getTime() - a.date.getTime(),
+    );
+};
 
 export const getCategoryById = (
   categories: Category[] | undefined,

@@ -16,6 +16,7 @@ const ResponsiveDialogOverlay = React.forwardRef<
     ref={ref}
     className={cn(
       "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] sm:duration-200 sm:ease-out",
       className,
     )}
     {...props}
@@ -33,28 +34,26 @@ const ResponsiveDialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         // Base styles
-        "fixed z-50 flex flex-col w-full border bg-background shadow-lg duration-200",
+        "fixed z-50 flex flex-col w-full border bg-background shadow-lg",
         // Desktop: centered modal
-        "sm:left-[50%] sm:top-[50%] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl",
+        "sm:left-[50%] sm:top-[50%] sm:right-auto sm:bottom-auto sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl",
         // Desktop animations
-        "sm:data-[state=open]:animate-in sm:data-[state=closed]:animate-out sm:data-[state=closed]:fade-out-0 sm:data-[state=open]:fade-in-0",
+        "sm:duration-200 sm:data-[state=open]:animate-in sm:data-[state=closed]:animate-out sm:data-[state=closed]:fade-out-0 sm:data-[state=open]:fade-in-0",
         "sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
         "sm:data-[state=closed]:slide-out-to-left-1/2 sm:data-[state=closed]:slide-out-to-top-[48%]",
         "sm:data-[state=open]:slide-in-from-left-1/2 sm:data-[state=open]:slide-in-from-top-[48%]",
         // Mobile: bottom sheet
         "bottom-0 left-0 right-0 rounded-t-[10px] mobile-safe-bottom",
-        // Mobile animations
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        "data-[state=closed]:animate-slide-out-to-bottom data-[state=open]:animate-slide-in-from-bottom",
+        // Mobile animations (iOS-style slide with vaul-like easing)
+        "duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] sm:ease-out data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
+        "data-[state=open]:slide-in-from-bottom-full data-[state=closed]:slide-out-to-bottom-full",
         // Mobile max height only
-        "max-h-[80vh] sm:max-h-fit",
+        "max-h-[85vh] sm:max-h-fit",
         className,
       )}
       {...props}
     >
-      {/* Mobile drag indicator */}
-      <div className="mx-auto w-12 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-2 mb-4 sm:hidden" />
-
       {/* Scrollable content area */}
       <div className="flex-auto min-h-0 overflow-y-auto px-6 sm:pt-6 sm:max-h-[90vh]">
         {children}

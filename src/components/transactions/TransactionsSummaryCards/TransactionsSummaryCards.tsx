@@ -1,12 +1,12 @@
 import { type FC } from "react";
 import { cn } from "@/lib/utils";
-import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { SummaryCard } from "./SummaryCard";
 
 type TransactionsSummaryCardsProps = {
   totalIncome: number;
   totalExpenses: number;
   net: number;
+  totalTransactions: number;
   hasError: boolean;
   isLoading: boolean;
   formatAmount: (amount: number) => string;
@@ -16,57 +16,44 @@ export const TransactionsSummaryCards: FC<TransactionsSummaryCardsProps> = ({
   totalIncome,
   totalExpenses,
   net,
+  totalTransactions,
   hasError,
   isLoading,
   formatAmount,
 }) => (
   <div
     className={cn(
-      "grid gap-4 md:grid-cols-3",
+      "grid grid-cols-2 gap-4 md:grid-cols-4",
       hasError && "opacity-50 pointer-events-none",
     )}
   >
     <SummaryCard
-      icon={<ArrowUpRight className="h-5 w-5 text-green-600 dark:text-green-400" />}
       title="Total Income"
+      value={`+${formatAmount(totalIncome)}`}
+      valueClassName="text-success-500"
       isLoading={isLoading}
       hasError={hasError}
-      valueClass="text-2xl font-bold text-green-600 dark:text-green-400"
-      formattedValue={`+${formatAmount(totalIncome)}`}
     />
     <SummaryCard
-      icon={<ArrowDownLeft className="h-5 w-5 text-red-600 dark:text-red-400" />}
       title="Total Expenses"
+      value={`-${formatAmount(totalExpenses)}`}
+      valueClassName="text-danger-500"
       isLoading={isLoading}
       hasError={hasError}
-      valueClass="text-2xl font-bold text-red-600 dark:text-red-400"
-      formattedValue={`-${formatAmount(totalExpenses)}`}
     />
     <SummaryCard
-      icon={
-        <div
-          className={cn(
-            "h-5 w-5 rounded-full",
-            hasError
-              ? "bg-gray-400 dark:bg-gray-500"
-              : net >= 0
-                ? "bg-green-600 dark:bg-green-400"
-                : "bg-red-600 dark:bg-red-400",
-          )}
-        />
-      }
-      title="Net Amount"
+      title="Net Balance"
+      value={`${net >= 0 ? "+" : "-"}${formatAmount(Math.abs(net))}`}
+      valueClassName="text-primary"
       isLoading={isLoading}
       hasError={hasError}
-      valueClass={cn(
-        "text-2xl font-bold",
-        hasError
-          ? "text-gray-900 dark:text-white"
-          : net >= 0
-            ? "text-green-600 dark:text-green-400"
-            : "text-red-600 dark:text-red-400",
-      )}
-      formattedValue={`${net >= 0 ? "+" : "-"}${formatAmount(Math.abs(net))}`}
+    />
+    <SummaryCard
+      title="Transactions"
+      value={String(totalTransactions)}
+      valueClassName="text-foreground"
+      isLoading={isLoading}
+      hasError={hasError}
     />
   </div>
 );

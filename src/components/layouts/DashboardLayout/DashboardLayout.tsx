@@ -8,6 +8,9 @@ import { DashboardSidebar } from "./DashboardSidebar";
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
+  hideHeader = false,
+  hideFab = false,
+  hideBottomTab = false,
 }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
@@ -22,7 +25,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   }, [sidebarCollapsed]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Desktop sidebar */}
       <div
         className={cn(
@@ -30,17 +33,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           sidebarCollapsed ? "lg:w-20" : "lg:w-72",
         )}
       >
-        <div
-          className={cn(
-            "h-full transition-all duration-300",
-            sidebarCollapsed ? "px-2 py-4" : "p-4",
-          )}
-        >
-          <DashboardSidebar
-            collapsed={sidebarCollapsed}
-            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-          />
-        </div>
+        <DashboardSidebar
+          collapsed={sidebarCollapsed}
+          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
       </div>
 
       {/* Main content */}
@@ -50,16 +46,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           sidebarCollapsed ? "lg:pl-20" : "lg:pl-72",
         )}
       >
-        <DashboardHeader />
+        {!hideHeader && <DashboardHeader />}
 
         <main className="flex-1">
-          <div className="py-6 pb-32 lg:pb-6">
-            <div className="max-w-7xl mx-auto px-4">{children}</div>
+          <div className={cn(hideBottomTab ? "pb-6" : "pb-32", "lg:pb-6")}>
+            <div className="max-w-7xl mx-auto px-4 py-4">{children}</div>
           </div>
         </main>
 
-        <FloatingActionButton />
-        <BottomTabBar />
+        {!hideFab && <FloatingActionButton />}
+        {!hideBottomTab && <BottomTabBar />}
       </div>
     </div>
   );

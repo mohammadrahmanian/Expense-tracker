@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Icon } from "@iconify/react";
-import { NavigationItem } from "./DashboardLayout.types";
+import { NavigationItem, NavigationSection } from "./DashboardLayout.types";
 
 export const navigation: NavigationItem[] = [
   {
@@ -43,6 +43,24 @@ export const navigation: NavigationItem[] = [
     icon: ({ className }: { className?: string }) => (
       <Icon icon="hugeicons:folder-02" className={cn("h-5 w-5", className)} />
     ),
+  },
+];
+
+export const navigationSections: NavigationSection[] = [
+  {
+    label: "OVERVIEW",
+    items: [
+      navigation[0], // Dashboard
+      navigation[1], // Transactions
+      navigation[2], // Recurring
+    ],
+  },
+  {
+    label: "MANAGE",
+    items: [
+      navigation[3], // Reports
+      navigation[4], // Categories
+    ],
   },
 ];
 

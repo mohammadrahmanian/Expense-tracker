@@ -1,10 +1,11 @@
 import { type FC } from "react";
+import { startOfToday } from "date-fns";
 import { DateSelect } from "@/components/shared/DateSelect";
 import { UseFormReturn } from "react-hook-form";
-import { RecurringTransactionCreateFormData } from "../../RecurringTransactionForm.types";
+import { RecurringTransactionFormValues } from "../../RecurringTransactionForm.types";
 
 type CreateStartDateFieldProps = {
-  form: UseFormReturn<RecurringTransactionCreateFormData>;
+  form: UseFormReturn<RecurringTransactionFormValues>;
 };
 
 export const CreateStartDateField: FC<CreateStartDateFieldProps> = ({
@@ -19,10 +20,13 @@ export const CreateStartDateField: FC<CreateStartDateFieldProps> = ({
   return (
     <DateSelect
       value={watch("startDate")}
-      onChange={(date) => setValue("startDate", date ?? new Date())}
-      label="Start Date"
+      onChange={(date) =>
+        setValue("startDate", date ?? new Date(), { shouldValidate: true })
+      }
+      label="Start date"
       placeholder="Select start date"
       error={errors.startDate?.message}
+      disabledDates={(date) => date < startOfToday()}
       required
     />
   );

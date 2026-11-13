@@ -39,6 +39,9 @@ export const queryKeys = {
     lists: () => [...queryKeys.transactions.all, "list"] as const,
     list: (params?: TransactionQueryParams) =>
       [...queryKeys.transactions.lists(), params] as const,
+    infiniteLists: () => [...queryKeys.transactions.all, "infinite"] as const,
+    infiniteList: (params?: Omit<TransactionQueryParams, "offset">) =>
+      [...queryKeys.transactions.infiniteLists(), params] as const,
     details: () => [...queryKeys.transactions.all, "detail"] as const,
     detail: (id: string) => [...queryKeys.transactions.details(), id] as const,
   },
@@ -51,6 +54,8 @@ export const queryKeys = {
     lists: () => [...queryKeys.categories.all, "list"] as const,
     list: (type?: "INCOME" | "EXPENSE") =>
       [...queryKeys.categories.lists(), { type }] as const,
+    monthlyTotals: (year: number, month: number) =>
+      [...queryKeys.categories.all, "monthly-totals", { year, month }] as const,
     details: () => [...queryKeys.categories.all, "detail"] as const,
     detail: (id: string) => [...queryKeys.categories.details(), id] as const,
   },

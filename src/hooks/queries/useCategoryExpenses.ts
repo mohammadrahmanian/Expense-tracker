@@ -51,7 +51,10 @@ export function useCategoryExpenses() {
       const categoryTotals = new Map<string, number>();
       currentMonthExpenses.forEach((transaction) => {
         const current = categoryTotals.get(transaction.categoryId) || 0;
-        categoryTotals.set(transaction.categoryId, current + transaction.amount);
+        categoryTotals.set(
+          transaction.categoryId,
+          current + transaction.amount,
+        );
       });
 
       // Create CategorySpending array

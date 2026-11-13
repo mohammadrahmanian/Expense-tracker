@@ -1,8 +1,9 @@
 import { normalizeAmount } from "@/lib/amount-utils";
 import { Category, Transaction } from "@/types";
+import { toast } from "sonner";
 import {
   QuickExpenseFormData,
-  quickCategories,
+  incomeCategories,
 } from "./QuickExpenseModal.types";
 
 type CreateCategoryInput = Omit<
@@ -16,6 +17,7 @@ type CreateTransactionInput = Omit<
 
 interface QuickExpenseSubmitDeps {
   categories: Category[];
+  transactionType: "INCOME" | "EXPENSE";
   createCategoryAsync: (data: CreateCategoryInput) => Promise<Category>;
   createTransaction: (
     data: CreateTransactionInput,
@@ -23,6 +25,8 @@ interface QuickExpenseSubmitDeps {
   ) => void;
   onSuccess: () => void;
 }
+
+const NEW_CATEGORY_FALLBACK_COLOR = "#6366f1";
 
 export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
   return async (data: QuickExpenseFormData) => {
@@ -34,29 +38,43 @@ export function createQuickExpenseSubmitHandler(deps: QuickExpenseSubmitDeps) {
 
     if (!category) {
       try {
+        // Expense picks always come from real categories, so only the
+        // income quick-pick list can supply a preset color here.
+        const presetColor =
+          deps.transactionType === "INCOME"
+            ? incomeCategories.find(
+                (c) => c.name.toLowerCase() === data.categoryName.toLowerCase(),
+              )?.color
+            : undefined;
+        const color = presetColor || NEW_CATEGORY_FALLBACK_COLOR;
         category = await deps.createCategoryAsync({
           name: data.categoryName,
-          type: "EXPENSE",
-          color:
-            quickCategories.find((c) => c.name === data.categoryName)?.color ||
-            "#6366f1",
+          type: deps.transactionType,
+          color,
+          budgetPeriod: "MONTHLY",
         });
       } catch {
+        toast.error("Category creation failed. Try again!");
         return;
       }
     }
 
+    const kindLabel = deps.transactionType === "INCOME" ? "income" : "expense";
     const title =
-      data.transactionName?.trim() || `${data.categoryName} expense`;
+      data.transactionName?.trim() || `${data.categoryName} ${kindLabel}`;
 
     deps.createTransaction(
       {
         title,
         amount: numericAmount,
-        type: "EXPENSE",
+        type: deps.transactionType,
         categoryId: category.id,
         date: data.date,
-        isRecurring: false,
+        description: data.notes || undefined,
+        isRecurring: data.isRecurring,
+        recurrenceFrequency: data.isRecurring
+          ? data.recurrenceFrequency
+          : undefined,
       },
       { onSuccess: deps.onSuccess },
     );

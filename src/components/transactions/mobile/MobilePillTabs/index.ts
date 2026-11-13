@@ -1,0 +1,1 @@
+export { MobilePillTabs } from "./MobilePillTabs";

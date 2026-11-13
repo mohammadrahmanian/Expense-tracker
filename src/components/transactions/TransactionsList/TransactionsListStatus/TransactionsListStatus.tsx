@@ -34,8 +34,7 @@ export const TransactionsListStatus: FC<TransactionsListStatusProps> = ({
             )}
             {categoriesError && (
               <p>
-                &bull; Categories:{" "}
-                {categoriesErrorMessage || "Unknown error"}
+                &bull; Categories: {categoriesErrorMessage || "Unknown error"}
               </p>
             )}
           </div>

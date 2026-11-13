@@ -1,0 +1,1 @@
+export { QuickCategoryGrid } from "./QuickCategoryGrid";

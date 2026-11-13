@@ -1,13 +1,21 @@
 import React from "react";
 
-export interface DashboardLayoutProps {
+export type DashboardLayoutProps = {
   children: React.ReactNode;
-}
+  hideHeader?: boolean;
+  hideFab?: boolean;
+  hideBottomTab?: boolean;
+};
 
 export interface NavigationItem {
   name: string;
   href: string;
   icon: React.FC<{ className?: string }>;
+}
+
+export interface NavigationSection {
+  label: string;
+  items: NavigationItem[];
 }
 
 export interface DashboardSidebarProps {

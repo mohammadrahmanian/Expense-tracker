@@ -1,9 +1,9 @@
-import { type FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HighchartsContainer } from "@/components/ui/highcharts-chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { escapeHtml } from "@/lib/utils";
 import { type MonthlyData } from "@/types";
+import { type FC } from "react";
 
 type MonthlyComparisonChartProps = {
   monthlyData: MonthlyData[];
@@ -51,9 +51,7 @@ export const MonthlyComparisonChart: FC<MonthlyComparisonChartProps> = ({
             chart: { type: "column" },
             title: { text: undefined },
             xAxis: {
-              categories: monthlyData.map(
-                (d) => d.monthLabel || d.month,
-              ),
+              categories: monthlyData.map((d) => d.monthLabel || d.month),
               labels: { style: { fontSize: "10px" } },
             },
             yAxis: {

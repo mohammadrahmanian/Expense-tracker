@@ -1,22 +1,29 @@
-import { type FC } from "react";
-import { AmountField } from "@/components/shared/AmountField";
-import { DateSelect } from "@/components/shared/DateSelect";
-import { FormInput } from "@/components/shared/FormInput";
+import { useState, type FC } from "react";
 import { Category } from "@/types";
 import { UseFormReturn } from "react-hook-form";
-import { QuickCategorySelect } from "../QuickCategorySelect";
 import { type QuickExpenseFormData } from "../QuickExpenseModal.types";
+import { QuickExpenseCategorySection } from "./QuickExpenseCategorySection";
+import { QuickExpenseAmountField } from "./QuickExpenseAmountField";
+import { QuickExpenseDescriptionField } from "./QuickExpenseDescriptionField";
+import { QuickExpenseRecurrenceControls } from "./QuickExpenseRecurrenceControls";
+import { QuickExpenseMoreOptions } from "./QuickExpenseMoreOptions";
+
+type TransactionKind = "expense" | "income";
 
 type QuickExpenseFieldsProps = {
   form: UseFormReturn<QuickExpenseFormData>;
   currencySymbol: string;
   categories: Category[];
+  categoriesLoading: boolean;
+  transactionKind: TransactionKind;
 };
 
 export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
   form,
   currencySymbol,
   categories,
+  categoriesLoading,
+  transactionKind,
 }) => {
   const {
     register,
@@ -26,38 +33,51 @@ export const QuickExpenseFields: FC<QuickExpenseFieldsProps> = ({
   } = form;
 
   const categoryName = watch("categoryName");
+  const isRecurring = watch("isRecurring");
+  const notes = watch("notes") ?? "";
+  const [moreOpen, setMoreOpen] = useState(false);
 
   return (
     <>
-      <QuickCategorySelect
-        selectedCategory={categoryName}
+      <QuickExpenseCategorySection
+        transactionKind={transactionKind}
+        categoryName={categoryName}
+        categories={categories}
+        isLoading={categoriesLoading}
         onSelect={(name) =>
           setValue("categoryName", name, { shouldValidate: true })
         }
-        categories={categories}
         error={errors.categoryName?.message}
       />
-      <FormInput
-        label="Transaction Name (optional)"
-        id="transactionName"
-        placeholder={
-          categoryName ? `${categoryName} expense` : "Enter transaction name..."
-        }
-        {...register("transactionName")}
-        error={errors.transactionName?.message}
-      />
-      <AmountField
-        currencySymbol={currencySymbol}
-        {...register("amount")}
-        error={errors.amount?.message}
-        required
-      />
-      <DateSelect
-        label="Date"
-        value={watch("date")}
-        onChange={(date) => setValue("date", date ?? new Date())}
-        error={errors.date?.message}
-      />
+
+      <div className="space-y-4">
+        <QuickExpenseAmountField
+          register={register}
+          currencySymbol={currencySymbol}
+          error={errors.amount}
+        />
+
+        <QuickExpenseDescriptionField register={register} />
+
+        <QuickExpenseRecurrenceControls
+          date={watch("date")}
+          onDateChange={(date) => setValue("date", date)}
+          isRecurring={isRecurring}
+          onRecurringChange={(pressed) => {
+            setValue("isRecurring", pressed);
+            setValue("recurrenceFrequency", pressed ? "MONTHLY" : undefined);
+          }}
+          recurrenceFrequency={watch("recurrenceFrequency")}
+          onFrequencyChange={(value) => setValue("recurrenceFrequency", value)}
+        />
+
+        <QuickExpenseMoreOptions
+          open={moreOpen}
+          onOpenChange={setMoreOpen}
+          notes={notes}
+          onNotesChange={(v) => setValue("notes", v)}
+        />
+      </div>
     </>
   );
 };

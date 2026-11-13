@@ -1,9 +1,12 @@
-import { type FC } from "react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { useMemo, useState, type FC } from "react";
 import { Category } from "@/types";
-import { quickCategories } from "../QuickExpenseModal.types";
+import { QuickCategoryEmptyState } from "./QuickCategoryEmptyState";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { QuickCategoryGrid } from "./QuickCategoryGrid";
+import {
+  EXPENSE_QUICK_PICK_NAMES,
+  resolveQuickPickCategories,
+} from "./QuickCategorySelect.utils";
 
 type QuickCategorySelectProps = {
   selectedCategory: string;
@@ -18,48 +21,67 @@ export const QuickCategorySelect: FC<QuickCategorySelectProps> = ({
   categories,
   error,
 }) => {
-  const findCategory = (name: string) =>
-    categories.find((cat) => cat.name.toLowerCase() === name.toLowerCase());
+  const isDesktop = useMediaQuery("(min-width: 640px)");
+  const quickPickCategories = useMemo(
+    () => resolveQuickPickCategories(categories, EXPENSE_QUICK_PICK_NAMES),
+    [categories],
+  );
+  const visibleQuickPicks = isDesktop
+    ? quickPickCategories
+    : quickPickCategories.slice(0, 4);
+  const quickNames = useMemo(
+    () => new Set(visibleQuickPicks.map((c) => c.name.toLowerCase())),
+    [visibleQuickPicks],
+  );
+  const isOtherCategory =
+    selectedCategory !== "" && !quickNames.has(selectedCategory.toLowerCase());
+  const [otherRequested, setOtherRequested] = useState(false);
+  // Derived so a selection hidden by a breakpoint change stays visible in Other.
+  const otherExpanded =
+    isOtherCategory || (otherRequested && selectedCategory === "");
+
+  const handleCardClick = (name: string) => {
+    setOtherRequested(false);
+    onSelect(name);
+  };
+  const handleOtherClick = () => {
+    setOtherRequested(true);
+    if (!isOtherCategory) onSelect("");
+  };
+  const handleOtherSelect = (categoryId: string) => {
+    const cat = categories.find((c) => c.id === categoryId);
+    if (cat) onSelect(cat.name);
+  };
+
+  const selectedCategoryId = isOtherCategory
+    ? categories.find(
+        (c) => c.name.toLowerCase() === selectedCategory.toLowerCase(),
+      )?.id
+    : undefined;
+  const otherSelectCategories = categories.filter(
+    (cat) => !quickNames.has(cat.name.toLowerCase()),
+  );
+
+  if (categories.length === 0) {
+    return <QuickCategoryEmptyState transactionKind="expense" />;
+  }
 
   return (
-    <div className="space-y-2">
-      <Label>Category</Label>
-      <div className="grid grid-cols-3 gap-2">
-        {quickCategories.map((cat) => {
-          const Icon = cat.icon;
-          const isSelected = selectedCategory === cat.name;
-          const exists = !!findCategory(cat.name);
-
-          return (
-            <Button
-              key={cat.name}
-              type="button"
-              variant={isSelected ? "default" : "outline"}
-              className={cn(
-                "h-16 flex flex-col items-center justify-center gap-1",
-                isSelected && "bg-blue-600 hover:bg-blue-700",
-                !exists && "opacity-75",
-              )}
-              onClick={() => onSelect(cat.name)}
-            >
-              <Icon className="h-5 w-5" />
-              <span className="text-xs">{cat.name}</span>
-              {!exists && (
-                <span className="text-[10px] text-red-500">Missing</span>
-              )}
-            </Button>
-          );
-        })}
-      </div>
-      {selectedCategory && !findCategory(selectedCategory) && (
-        <div className="p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-md">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
-            The &ldquo;{selectedCategory}&rdquo; category will be created
-            automatically when you add this expense.
-          </p>
-        </div>
-      )}
-      {error && <p className="text-sm text-red-500">{error}</p>}
+    <div className="space-y-4">
+      <span className="text-overline text-neutral-500 uppercase tracking-[1.5px]">
+        Category
+      </span>
+      <QuickCategoryGrid
+        quickPickCategories={visibleQuickPicks}
+        selectedCategory={selectedCategory}
+        otherExpanded={otherExpanded}
+        otherSelectCategories={otherSelectCategories}
+        selectedCategoryId={selectedCategoryId}
+        onCardClick={handleCardClick}
+        onOtherClick={handleOtherClick}
+        onOtherSelect={handleOtherSelect}
+      />
+      {error && <p className="text-caption text-danger-500">{error}</p>}
     </div>
   );
 };

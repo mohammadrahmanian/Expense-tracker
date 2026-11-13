@@ -31,7 +31,8 @@ export const Reports: FC = () => {
   );
 
   const { isValid: datesAreValid, error: validationError } = useMemo(
-    () => validateDateRange(timeRange, customStartDate, customEndDate, dateRange),
+    () =>
+      validateDateRange(timeRange, customStartDate, customEndDate, dateRange),
     [timeRange, customStartDate, customEndDate, dateRange],
   );
 
@@ -46,8 +47,9 @@ export const Reports: FC = () => {
     enabled: datesAreValid,
   });
 
-  const error = validationError
-    ?? (queryError ? "Failed to load reports. Please try again." : null);
+  const error =
+    validationError ??
+    (queryError ? "Failed to load reports. Please try again." : null);
 
   const categorySpending = useMemo(
     () => addCategoryPercentages(reportsData?.categoryBreakdown.expenses),
@@ -80,10 +82,18 @@ export const Reports: FC = () => {
           />
         )}
 
-        <ReportsSummaryStats summary={summary} isLoading={isLoading} formatAmount={formatAmount} />
+        <ReportsSummaryStats
+          summary={summary}
+          isLoading={isLoading}
+          formatAmount={formatAmount}
+        />
 
         <div className="grid gap-3 md:grid-cols-3">
-          <IncomeVsExpensesChart monthlyData={monthlyData} isLoading={isLoading} formatAmount={formatAmount} />
+          <IncomeVsExpensesChart
+            monthlyData={monthlyData}
+            isLoading={isLoading}
+            formatAmount={formatAmount}
+          />
           <CategoryBreakdownChart
             monthlyData={monthlyData}
             categorySpending={categorySpending}
@@ -93,7 +103,11 @@ export const Reports: FC = () => {
             isLoading={isLoading}
             formatAmount={formatAmount}
           />
-          <MonthlyComparisonChart monthlyData={monthlyData} isLoading={isLoading} formatAmount={formatAmount} />
+          <MonthlyComparisonChart
+            monthlyData={monthlyData}
+            isLoading={isLoading}
+            formatAmount={formatAmount}
+          />
         </div>
 
         <ReportsPieCharts

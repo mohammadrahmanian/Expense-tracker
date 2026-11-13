@@ -50,7 +50,10 @@ export const HeroSection: FC = () => (
       Take control. Track smart. Save more.
     </motion.p>
 
-    <motion.div variants={fadeUp} className="flex justify-center items-center gap-6">
+    <motion.div
+      variants={fadeUp}
+      className="flex justify-center items-center gap-6"
+    >
       <Link to="/register">
         <Button
           size="lg"

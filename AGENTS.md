@@ -68,6 +68,28 @@ const form = useForm<FormData>({
 <div className="bg-white text-black">
 ```
 
+**Never use raw hex color codes in class names.** Always use the design system color tokens defined in `tailwind.config.ts`.
+
+**Always use the reusable `Card` component** from `@/components/ui/card` when implementing a card container. Never recreate card styles with raw `div` elements.
+
+```typescript
+// ✅ Correct
+import { Card } from "@/components/ui/card";
+<Card className="p-5 flex flex-col gap-4">...</Card>
+
+// ❌ Wrong
+<div className="rounded-lg border border-neutral-200 bg-surface p-5">...</div>
+```
+
+```typescript
+// ✅ Correct
+<div className="bg-surface text-neutral-900 border-neutral-200">
+<div className="bg-gold-50 text-gold-500">
+
+// ❌ Wrong
+<div className="bg-[#FFFDF8] text-[#1A1A18] border-[#E8E2D8]">
+```
+
 ### API Calls
 
 **Always use service layer.** Never call axios directly in components.
@@ -133,6 +155,63 @@ TransactionForm/
 // ❌ Wrong
 TransactionForm.tsx      // 250 lines — everything in one file
 ```
+
+### Prop Drilling
+
+**When a component receives 10+ props, group related props into typed "prop bag" objects.** Define shared bag types in the relevant `*.utils.ts` file and have the owning hook return pre-built, memoized bags.
+
+```typescript
+// ✅ Correct — shared bag types in utils, hook returns bags
+// src/lib/transactions.utils.ts
+export type DateFilterProps = {
+  datePreset: DatePreset;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  onDatePresetChange: (preset: DatePreset) => void;
+  onCustomDateSelect: (date: Date) => void;
+  onCustomRangeSelect: (from: Date, to: Date) => void;
+};
+
+// Hook returns memoized bag
+const dateFilterProps: DateFilterProps = useMemo(() => ({ ... }), [deps]);
+
+// Page passes bag as single prop
+<TransactionsList dateFilter={dateFilterProps} />
+
+// Intermediate components forward the bag without destructuring
+<TransactionTabFilterControls dateFilter={props.dateFilter} />
+
+// ❌ Wrong — 30 flat props drilled through 3+ levels
+<TransactionsList datePreset={state.datePreset} startDate={state.startDate}
+  endDate={state.endDate} onDatePresetChange={(v) => dispatch({...})}
+  onCustomDateSelect={(d) => dispatch({...})} ... />
+```
+
+**Rules:**
+
+- Bag types live in the shared utils file (e.g., `transactions.utils.ts`), not in component files
+- Hooks encapsulate `dispatch` — never expose `dispatch` to page components
+- Use `useMemo` for bag objects to maintain referential stability
+- Leaf components destructure from the bag; intermediate components forward the bag object
+
+---
+
+## Component Lookup Table
+
+Before reading a component's source, check this table. Each entry points to a short context file (`docs/agents/components/*.md`) that summarizes purpose, folder layout, state/data flow, schema, and common edit recipes — enough to work on the component **without** loading its full implementation into context.
+
+**How to use this table:**
+
+1. When a task mentions one of the components below (by name, folder, or file), **read the linked context file first** instead of opening the component's `.tsx` files.
+2. If the context file answers your question, proceed with the change. Only open the actual source files for details the context file doesn't cover (e.g. exact JSX, styling tweaks).
+3. If you edit a component's behavior, schema, folder layout, or submit/data flow, **update the matching context file in the same change** so it stays accurate. If a listed file becomes stale or wrong, fix it before continuing.
+4. When adding a new non-trivial component, create a new entry here and a matching `docs/agents/components/<name>.md` following the same shape (Purpose, Entry point, Folder layout, State & data flow, Schema if any, Submit/flow, UI notes, Common edit recipes).
+5. Never cite or rely on this table for information it doesn't contain — fall back to reading source.
+
+| Component           | Path                                             | Context file                                                            |
+| ------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
+| `QuickExpenseModal` | `src/components/transactions/QuickExpenseModal/` | [quick-expense-modal.md](docs/agents/components/quick-expense-modal.md) |
+| `DateRangeDropdown` | `src/components/transactions/DateRangeDropdown/` | [date-range-dropdown.md](docs/agents/components/date-range-dropdown.md) |
 
 ---
 

@@ -10,6 +10,13 @@ export interface Category {
   name: string;
   color: string;
   type: "INCOME" | "EXPENSE";
+  /** Lucide icon name, e.g. "utensils" */
+  icon?: string;
+  parentId?: string | null;
+  /** Budget amount in account currency */
+  budgetAmount?: number | null;
+  /** How often the budget applies (API may add more values later) */
+  budgetPeriod?: "MONTHLY" | null;
 }
 
 export interface Transaction {
@@ -21,6 +28,7 @@ export interface Transaction {
   categoryId: string;
   category?: Category;
   userId: string;
+  description?: string;
   isRecurring?: boolean;
   recurrenceFrequency?: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
   createdAt: Date;
@@ -52,6 +60,12 @@ export interface DashboardStats {
   monthlyIncome: number;
   monthlyExpenses: number;
   monthlySaving: number;
+  /** Prior month total income; when set, UI can show MoM % on dashboard income card */
+  previousMonthIncome?: number;
+  /** Prior month total expenses; when set, UI can show MoM % on dashboard expenses card */
+  previousMonthExpenses?: number;
+  /** Prior month savings; when set, UI can show MoM % on dashboard savings card */
+  previousMonthSaving?: number;
 }
 
 export interface CategorySpending {
@@ -114,3 +128,5 @@ export interface RecurringTransaction {
   category?: Category;
   recurrenceFrequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 }
+
+export type RecurringStatus = "active" | "paused" | "ended";

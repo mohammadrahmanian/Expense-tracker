@@ -1,10 +1,10 @@
-import { useMemo, type FC } from "react";
-import { useTheme } from "next-themes";
 import { ComponentErrorBoundary } from "@/components/ErrorBoundary";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HighchartsContainer } from "@/components/ui/highcharts-chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type MonthlyData } from "@/types";
+import { useTheme } from "next-themes";
+import { useMemo, type FC } from "react";
 import { getIncomeVsExpensesOptions } from "./IncomeVsExpensesChart.utils";
 
 type IncomeVsExpensesChartProps = {
@@ -63,7 +63,11 @@ export const IncomeVsExpensesChart: FC<IncomeVsExpensesChartProps> = ({
           ) : monthlyData.length > 0 ? (
             <HighchartsContainer
               className="w-full"
-              options={getIncomeVsExpensesOptions(monthlyData, formatAmount, markerLineColor)}
+              options={getIncomeVsExpensesOptions(
+                monthlyData,
+                formatAmount,
+                markerLineColor,
+              )}
             />
           ) : (
             <div className="text-center py-8">

@@ -1,6 +1,5 @@
 import { type FC } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { type Category, type Transaction } from "@/types";
@@ -25,46 +24,46 @@ export const RecentTransactions: FC<RecentTransactionsProps> = ({
     categories?.find((cat) => cat.id === categoryId);
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Recent Transactions</CardTitle>
+    <div className="rounded-lg bg-surface dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-5">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-h2 text-neutral-900 dark:text-white">
+          Recent Transactions
+        </h2>
         <Link to="/transactions">
           <Button variant="outline" size="sm">
             View All
           </Button>
         </Link>
-      </CardHeader>
-      <CardContent>
-        {isError ? (
-          <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
-            <AlertCircle className="h-8 w-8 mb-2" />
-            <p className="text-sm font-medium">Unable to load transactions</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {errorMessage || "An error occurred"}
-            </p>
-          </div>
-        ) : transactions.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500 dark:text-gray-400">
-              No transactions yet. Start by adding your first transaction!
-            </p>
-            <Link to="/transactions" className="mt-4 inline-block">
-              <Button>Add Transaction</Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {transactions.map((transaction) => (
-              <RecentTransactionItem
-                key={transaction.id}
-                transaction={transaction}
-                category={getCategoryById(transaction.categoryId)}
-                formatAmount={formatAmount}
-              />
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      </div>
+      {isError ? (
+        <div className="flex flex-col items-center justify-center py-8 text-neutral-500">
+          <AlertCircle className="h-8 w-8 mb-2" />
+          <p className="text-body font-medium">Unable to load transactions</p>
+          <p className="text-caption text-neutral-500 mt-1">
+            {errorMessage || "An error occurred"}
+          </p>
+        </div>
+      ) : transactions.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-neutral-500">
+            No transactions yet. Start by adding your first transaction!
+          </p>
+          <Link to="/transactions" className="mt-4 inline-block">
+            <Button>Add Transaction</Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {transactions.map((transaction) => (
+            <RecentTransactionItem
+              key={transaction.id}
+              transaction={transaction}
+              category={getCategoryById(transaction.categoryId)}
+              formatAmount={formatAmount}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 };

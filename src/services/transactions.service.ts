@@ -13,6 +13,8 @@ export const transactionsService = {
     toDate?: string;
     categoryId?: string;
     query?: string;
+    minAmount?: number;
+    maxAmount?: number;
   }): Promise<{ items: Transaction[]; total: number; count: number }> => {
     try {
       const queryParams = new URLSearchParams();
@@ -30,6 +32,10 @@ export const transactionsService = {
         if (params.categoryId)
           queryParams.append("categoryId", params.categoryId);
         if (params.query) queryParams.append("query", params.query);
+        if (params.minAmount !== undefined)
+          queryParams.append("minAmount", params.minAmount.toString());
+        if (params.maxAmount !== undefined)
+          queryParams.append("maxAmount", params.maxAmount.toString());
       }
 
       const queryString = queryParams.toString();

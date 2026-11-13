@@ -1,47 +1,69 @@
-import { type FC } from "react";
-import { Button } from "@/components/ui/button";
-import { ResponsiveDialogFooter as DialogFooter } from "@/components/ui/responsive-dialog";
+import { type FC, type ReactNode } from "react";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type RecurringTransactionFormFooterProps = {
+  layout: "mobile" | "desktop";
   mode: "create" | "edit";
   isPending: boolean;
   isCategoriesLoading: boolean;
   onCancel: () => void;
+  firstOccurrenceNote: ReactNode;
 };
 
 export const RecurringTransactionFormFooter: FC<
   RecurringTransactionFormFooterProps
-> = ({ mode, isPending, isCategoriesLoading, onCancel }) => {
-  const submitLabel =
-    mode === "edit" ? "Save Changes" : "Create Recurring Transaction";
+> = ({ layout, mode, isPending, isCategoriesLoading, onCancel, firstOccurrenceNote }) => {
   const pendingLabel = mode === "edit" ? "Saving..." : "Creating...";
+  const isDisabled = isPending || isCategoriesLoading;
+
+  const submitContent = (label: string) =>
+    isPending ? (
+      <>
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        {pendingLabel}
+      </>
+    ) : (
+      label
+    );
+
+  if (layout === "desktop") {
+    return (
+      <div className="flex items-center justify-between gap-4 border-t border-border bg-neutral-50 px-6 py-4 dark:border-neutral-800 dark:bg-neutral-900">
+        {firstOccurrenceNote}
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isPending}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isDisabled}>
+            {submitContent(mode === "edit" ? "Save changes" : "Save recurring")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <DialogFooter>
-      <Button
-        type="button"
-        variant="outline"
-        onClick={onCancel}
-        className="flex-1"
-        disabled={isPending}
-      >
-        Cancel
-      </Button>
-      <Button
-        type="submit"
-        className="flex-1"
-        disabled={isPending || isCategoriesLoading}
-      >
-        {isPending ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {pendingLabel}
-          </>
-        ) : (
-          submitLabel
+    <div className="sticky bottom-0 flex flex-col gap-3 border-t border-border bg-background px-4 py-4 mobile-safe-bottom">
+      {firstOccurrenceNote}
+      <Button type="submit" className="w-full" disabled={isDisabled}>
+        {submitContent(
+          mode === "edit" ? "Save changes" : "Save recurring transaction",
         )}
       </Button>
-    </DialogFooter>
+      <button
+        type="button"
+        onClick={onCancel}
+        disabled={isPending}
+        className="text-center text-sm font-medium text-muted-foreground disabled:opacity-50"
+      >
+        Cancel
+      </button>
+    </div>
   );
 };
