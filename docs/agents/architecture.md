@@ -21,8 +21,7 @@ src/
 ├── hooks/               # Custom React hooks
 │   ├── queries/         # TanStack Query hooks for GET operations
 │   ├── mutations/       # TanStack Mutation hooks for CUD operations
-│   ├── use-mobile.tsx   # Responsive breakpoint detection
-│   └── use-toast.ts     # Toast notifications
+│   └── use-mobile.tsx   # Responsive breakpoint detection
 │
 ├── lib/                 # Utility functions
 │   ├── query-keys.ts    # Centralized query key factories
