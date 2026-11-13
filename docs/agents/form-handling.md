@@ -80,18 +80,10 @@ function TransactionForm({ onSubmit, defaultValues }: TransactionFormProps) {
 
 ## Form Field Components
 
-Use shadcn/ui form components for consistency:
+Use the shared field components with `register` (or `Controller` for non-native inputs):
 
 ```typescript
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { FormInput } from '@/components/shared/FormInput';
 
 // In your component
 const form = useForm<FormData>({
@@ -99,23 +91,15 @@ const form = useForm<FormData>({
 });
 
 return (
-  <Form {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      <FormField
-        control={form.control}
-        name="title"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Title</FormLabel>
-            <FormControl>
-              <Input placeholder="Grocery shopping" {...field} />
-            </FormControl>
-            <FormMessage /> {/* Shows validation error */}
-          </FormItem>
-        )}
-      />
-    </form>
-  </Form>
+  <form onSubmit={form.handleSubmit(onSubmit)}>
+    <FormInput
+      id="title"
+      label="Title"
+      placeholder="Grocery shopping"
+      error={form.formState.errors.title?.message}
+      {...form.register('title')}
+    />
+  </form>
 );
 ```
 
@@ -187,20 +171,14 @@ function MyForm() {
 
 ### Validation Errors
 
-Shown inline via `<FormMessage />`:
+Shown inline through the field `error` prop:
 
 ```typescript
-<FormField
-  name="email"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Email</FormLabel>
-      <FormControl>
-        <Input {...field} />
-      </FormControl>
-      <FormMessage /> {/* "Email is required" */}
-    </FormItem>
-  )}
+<FormInput
+  id="email"
+  label="Email"
+  error={errors.email?.message} // "Email is required"
+  {...register('email')}
 />
 ```
 
@@ -288,86 +266,82 @@ Use `{Feature}FormSchema` pattern:
 ## Complete Example
 
 ```typescript
+import { type FC } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { FormInput } from '@/components/shared/FormInput';
+import { TypeSelect } from '@/components/shared/TypeSelect';
+import { Button } from '@/components/ui/button';
+
 // Schema
 const categoryFormSchema = z.object({
   name: z.string().min(1, 'Name is required').max(50),
   type: z.enum(['INCOME', 'EXPENSE']),
-  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color'),
 });
 
 type CategoryFormData = z.infer<typeof categoryFormSchema>;
 
 // Component
-interface CategoryFormProps {
+type CategoryFormProps = {
   defaultValues?: Partial<CategoryFormData>;
   onSubmit: (data: CategoryFormData) => Promise<void>;
   onCancel: () => void;
-}
+};
 
-function CategoryForm({ defaultValues, onSubmit, onCancel }: CategoryFormProps) {
-  const form = useForm<CategoryFormData>({
+export const CategoryForm: FC<CategoryFormProps> = ({
+  defaultValues,
+  onSubmit,
+  onCancel,
+}) => {
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<CategoryFormData>({
     resolver: zodResolver(categoryFormSchema),
-    defaultValues: {
-      type: 'EXPENSE',
-      color: '#3b82f6',
-      ...defaultValues,
-    },
+    defaultValues: { type: 'EXPENSE', ...defaultValues },
   });
 
-  const handleSubmit = async (data: CategoryFormData) => {
+  const onSubmitForm = async (data: CategoryFormData) => {
     await onSubmit(data);
-    form.reset();
+    reset();
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-4">
+      <FormInput
+        id="name"
+        label="Name"
+        required
+        error={errors.name?.message}
+        {...register('name')}
+      />
 
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="INCOME">Income</SelectItem>
-                  <SelectItem value="EXPENSE">Expense</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <Controller
+        control={control}
+        name="type"
+        render={({ field }) => (
+          <TypeSelect
+            value={field.value}
+            onChange={field.onChange}
+            error={errors.type?.message}
+            required
+          />
+        )}
+      />
 
-        <div className="flex gap-2 justify-end">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? 'Saving...' : 'Save'}
-          </Button>
-        </div>
-      </form>
-    </Form>
+      <div className="flex gap-2 justify-end">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Saving...' : 'Save'}
+        </Button>
+      </div>
+    </form>
   );
-}
+};
 ```
