@@ -40,7 +40,7 @@ MobileTransactionRow/
 - Motion value `x`; `drag="x"`, `dragConstraints={ left: -SWIPE_ACTIONS_WIDTH, right: 0 }`, `dragElastic: 0.1`, `dragDirectionLock`, `dragMomentum: false`.
 - **Snap on drag end:** open if velocity `< -400 px/s`; else open if velocity `<= 400` and `x < -SWIPE_ACTIONS_WIDTH / 2`; else closed. Calls `onOpenChange` only when the result differs from `isOpen`.
 - An effect animates `x` (spring) when `isOpen` changes from outside (another row opened, focus, `close()`).
-- **Tap vs drag:** `onPointerDown` resets a `wasDraggedRef`; `onDragStart` sets it. `onClick` returns early after a drag. A tap on an open row calls `close()`; a tap on a closed row does nothing.
+- **Tap vs drag:** `onPointerDown` resets a `wasDraggedRef`; `onDragStart` sets it. `onClick` returns early after a drag. A tap on an open row calls `close()`; a tap on a closed row does nothing. framer-motion stops the snap animation on pointer down, so `onPointerUp` / `onPointerCancel` call `snapTo(isOpen)` when no drag started. This keeps the row from staying half open.
 - `close()` animates to `0` and calls `onOpenChange(false)`.
 - The content has `touch-pan-y` (CSS `touch-action: pan-y`) so vertical page scroll still works.
 

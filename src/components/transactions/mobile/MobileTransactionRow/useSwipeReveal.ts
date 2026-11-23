@@ -49,6 +49,12 @@ export const useSwipeReveal = ({
     if (open !== isOpen) onOpenChange(open);
   };
 
+  // framer-motion stops the running snap animation on pointer down. When the
+  // pointer session ends without a drag, settle the row at its current state.
+  const handlePointerEnd = () => {
+    if (!wasDraggedRef.current) snapTo(isOpen);
+  };
+
   const handleClick = () => {
     if (wasDraggedRef.current) return;
     if (isOpen) close();
@@ -67,6 +73,8 @@ export const useSwipeReveal = ({
     onDragStart: () => {
       wasDraggedRef.current = true;
     },
+    onPointerUp: handlePointerEnd,
+    onPointerCancel: handlePointerEnd,
     onDragEnd: handleDragEnd,
     onClick: handleClick,
   };
