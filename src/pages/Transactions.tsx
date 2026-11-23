@@ -106,6 +106,7 @@ export const Transactions: FC = () => {
           hasActiveFilters={activeFilters}
           onApplyBulkFilters={applyBulkFilters}
           onEdit={handleEdit}
+          onDelete={handleDelete}
           formatAmount={formatAmount}
         />
       </div>
