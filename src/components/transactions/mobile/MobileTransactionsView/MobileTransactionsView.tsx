@@ -1,13 +1,10 @@
-import { useMemo, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { MobileTransactionsHeader } from "@/components/transactions/mobile/MobileTransactionsHeader";
 import { MobileSearchBar } from "@/components/transactions/mobile/MobileSearchBar";
 import { MobilePillTabs } from "@/components/transactions/mobile/MobilePillTabs";
 import { MobileSummaryCards } from "@/components/transactions/mobile/MobileSummaryCards";
-import { MobileTransactionGroup } from "@/components/transactions/mobile/MobileTransactionGroup";
 import { MobileFilterBottomsheet } from "@/components/transactions/mobile/MobileFilterBottomsheet";
 import {
-  calculatePageTotals,
-  groupTransactionsByDate,
   type DateFilterProps,
   type SearchProps,
   type TransactionFilterState,
@@ -15,15 +12,13 @@ import {
 } from "@/lib/transactions.utils";
 import type { BulkFilterPayload } from "@/hooks/useTransactionFilters";
 import { Category, Transaction } from "@/types";
-import { Loader2 } from "lucide-react";
-import type { InfiniteData } from "@tanstack/react-query";
-import { MobileLoadingSkeleton } from "./MobileLoadingSkeleton";
+import { MobileTransactionList } from "./MobileTransactionList";
+import type { MobileInfiniteData } from "./MobileTransactionsView.types";
 import { useInfiniteScroll } from "./useInfiniteScroll";
-
-type PageData = { items: Transaction[]; total: number; count: number };
+import { useTransactionGroups } from "./useTransactionGroups";
 
 type MobileTransactionsViewProps = {
-  infiniteData: InfiniteData<PageData> | undefined;
+  infiniteData: MobileInfiniteData;
   totalTransactions: number;
   categories: Category[] | undefined;
   isLoading: boolean;
@@ -37,6 +32,7 @@ type MobileTransactionsViewProps = {
   hasActiveFilters: boolean;
   onApplyBulkFilters: (payload: BulkFilterPayload) => void;
   onEdit: (transaction: Transaction) => void;
+  onDelete: (id: string) => void;
   formatAmount: (amount: number) => string;
 };
 
@@ -45,20 +41,7 @@ export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (
 ) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const transactions = useMemo(
-    () => props.infiniteData?.pages.flatMap((p) => p.items) ?? [],
-    [props.infiniteData],
-  );
-
-  const totals = useMemo(
-    () => calculatePageTotals(transactions),
-    [transactions],
-  );
-  const groups = useMemo(
-    () => groupTransactionsByDate(transactions),
-    [transactions],
-  );
-
+  const { totals, groups } = useTransactionGroups(props.infiniteData);
   const { sentinelRef } = useInfiniteScroll({
     hasNextPage: props.hasNextPage,
     isFetchingNextPage: props.isFetchingNextPage,
@@ -88,31 +71,16 @@ export const MobileTransactionsView: FC<MobileTransactionsViewProps> = (
         formatAmount={props.formatAmount}
       />
 
-      {props.isLoading ? (
-        <MobileLoadingSkeleton />
-      ) : transactions.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-sm text-muted-foreground">No transactions found</p>
-        </div>
-      ) : (
-        <>
-          {groups.map((group) => (
-            <MobileTransactionGroup
-              key={group.dateKey}
-              group={group}
-              categories={props.categories}
-              formatAmount={props.formatAmount}
-              onEdit={props.onEdit}
-            />
-          ))}
-          <div ref={sentinelRef} className="h-1" />
-          {props.isFetchingNextPage && (
-            <div className="flex items-center justify-center py-4">
-              <Loader2 className="h-5 w-5 animate-spin text-primary" />
-            </div>
-          )}
-        </>
-      )}
+      <MobileTransactionList
+        groups={groups}
+        categories={props.categories}
+        isLoading={props.isLoading}
+        isFetchingNextPage={props.isFetchingNextPage}
+        sentinelRef={sentinelRef}
+        formatAmount={props.formatAmount}
+        onEdit={props.onEdit}
+        onDelete={props.onDelete}
+      />
 
       <MobileFilterBottomsheet
         open={isFilterOpen}

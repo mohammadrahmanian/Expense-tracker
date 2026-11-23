@@ -11,14 +11,20 @@ type MobileTransactionGroupProps = {
   group: TransactionDateGroup;
   categories: Category[] | undefined;
   formatAmount: (amount: number) => string;
+  openRowId: string | null;
+  onRowOpenChange: (id: string, open: boolean) => void;
   onEdit: (transaction: Transaction) => void;
+  onDelete: (id: string) => void;
 };
 
 export const MobileTransactionGroup: FC<MobileTransactionGroupProps> = ({
   group,
   categories,
   formatAmount,
+  openRowId,
+  onRowOpenChange,
   onEdit,
+  onDelete,
 }) => (
   <div>
     <div className="sticky top-0 z-10 flex items-center justify-between bg-background px-5 py-2.5 pb-1.5">
@@ -43,7 +49,10 @@ export const MobileTransactionGroup: FC<MobileTransactionGroupProps> = ({
         transaction={tx}
         category={getCategoryById(categories, tx.categoryId, tx.type)}
         formatAmount={formatAmount}
+        isOpen={openRowId === tx.id}
+        onOpenChange={(open) => onRowOpenChange(tx.id, open)}
         onEdit={onEdit}
+        onDelete={onDelete}
       />
     ))}
   </div>

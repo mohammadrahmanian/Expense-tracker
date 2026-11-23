@@ -208,10 +208,11 @@ Before reading a component's source, check this table. Each entry points to a sh
 4. When adding a new non-trivial component, create a new entry here and a matching `docs/agents/components/<name>.md` following the same shape (Purpose, Entry point, Folder layout, State & data flow, Schema if any, Submit/flow, UI notes, Common edit recipes).
 5. Never cite or rely on this table for information it doesn't contain — fall back to reading source.
 
-| Component           | Path                                             | Context file                                                            |
-| ------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
-| `QuickExpenseModal` | `src/components/transactions/QuickExpenseModal/` | [quick-expense-modal.md](docs/agents/components/quick-expense-modal.md) |
-| `DateRangeDropdown` | `src/components/transactions/DateRangeDropdown/` | [date-range-dropdown.md](docs/agents/components/date-range-dropdown.md) |
+| Component              | Path                                                       | Context file                                                                  |
+| ---------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `QuickExpenseModal`    | `src/components/transactions/QuickExpenseModal/`           | [quick-expense-modal.md](docs/agents/components/quick-expense-modal.md)       |
+| `DateRangeDropdown`    | `src/components/transactions/DateRangeDropdown/`           | [date-range-dropdown.md](docs/agents/components/date-range-dropdown.md)       |
+| `MobileTransactionRow` | `src/components/transactions/mobile/MobileTransactionRow/` | [mobile-transaction-row.md](docs/agents/components/mobile-transaction-row.md) |
 
 ---
 
